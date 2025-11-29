@@ -70,89 +70,120 @@
       gap: 16px;
     }
 
-    /* ========= HEADER ========= */
+    /* ========= NEUER HEADER MIT LOGO & TURN ========= */
 
-    .top-bar {
+    .top-header {
+      position: relative;
+      padding: 14px 20px 26px;
+    }
+
+    .logo-centered {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 18px;
-      border-radius: var(--radius-lg);
-      background: rgba(3,7,18,0.9);
-      border: 1px solid rgba(209,213,219,0.18);
-      box-shadow: var(--shadow-strong);
-      backdrop-filter: blur(12px);
+      justify-content: center;
     }
 
-    .brand-section {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .logo-pill {
-      padding: 8px 18px;
-      border-radius: var(--radius-pill);
-      border: 1px solid #ffffff;
-      background: linear-gradient(to top, #020617, var(--primary-dark), var(--primary-soft));
-      font-weight: 800;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      text-shadow: 0 0 14px rgba(255,255,255,0.4);
-      font-size: 0.9rem;
-      color: #ffffff;
-    }
-
-    .brand-sub {
-      display: flex;
-      flex-direction: column;
-      font-size: 0.8rem;
-      color: var(--text-dim);
-    }
-
-    .brand-sub strong {
-      color: #e5e7eb;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      font-size: 0.7rem;
-    }
-
-    .top-right {
-      display: flex;
-      flex-direction: column;
+    .logo-badge {
+      position: relative;
+      padding: 12px 32px 18px;
+      border-radius: 26px;
+      background: #7c3aed;
+      box-shadow:
+        0 14px 30px rgba(0,0,0,0.9),
+        0 0 0 4px #000,
+        0 0 0 6px #facc15;
+      display: inline-flex;
       align-items: flex-end;
       gap: 6px;
     }
 
-    .turn-indicator {
+    .logo-badge::after {
+      content: "";
+      position: absolute;
+      bottom: -14px;
+      left: 28px;
+      width: 22px;
+      height: 18px;
+      background: #7c3aed;
+      border-radius: 0 0 18px 18px;
+      transform: skewX(-18deg);
+      box-shadow: 0 14px 30px rgba(0,0,0,1);
+    }
+
+    .logo-main {
+      font-size: 2.2rem;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      color: #facc15;
+      text-shadow:
+        -2px 2px 0 #000,
+        0 0 16px rgba(250,204,21,0.8);
+    }
+
+    .logo-question {
+      font-size: 1.7rem;
+      line-height: 1;
+      font-weight: 900;
+      color: #facc15;
+      text-shadow:
+        -2px 2px 0 #000,
+        0 0 12px rgba(250,204,21,0.8);
+    }
+
+    .turn-overlay {
+      position: absolute;
+      right: 32px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.9rem;
+      color: #a855ff;
+      text-shadow: 0 0 14px rgba(168,85,255,0.9);
+    }
+
+    .turn-player {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: radial-gradient(circle at top, rgba(168,85,255,0.35), transparent 65%);
-      border-radius: 999px;
-      padding: 6px 14px;
-      font-size: 0.85rem;
-      color: var(--primary);
-      text-shadow: 0 0 12px rgba(168,85,255,0.8);
-    }
-
-    .turn-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: var(--primary);
-      box-shadow: 0 0 12px rgba(168,85,255,0.9);
-    }
-
-    .round-chip {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
       padding: 4px 12px;
       border-radius: 999px;
-      border: 1px solid rgba(148,163,184,0.6);
-      color: var(--text-dim);
+      background: rgba(15,23,42,0.85);
+      border: 1px solid rgba(168,85,255,0.6);
+      box-shadow: 0 10px 24px rgba(0,0,0,1);
+    }
+
+    .turn-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      background: linear-gradient(to top, #020617, var(--primary-dark), var(--primary-soft));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: #f9fafb;
+      box-shadow: 0 10px 24px rgba(0,0,0,1);
+    }
+
+    .turn-label {
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+
+    .turn-star {
+      font-size: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .turn-overlay {
+        right: 16px;
+        top: auto;
+        bottom: 6px;
+        transform: none;
+      }
     }
 
     /* ========= BOARD ========= */
@@ -218,7 +249,6 @@
       pointer-events: none;
     }
 
-    /* Kategorien: von unten schwarz nach oben lila */
     .pill.category-pill {
       background: linear-gradient(
         to top,
@@ -229,7 +259,6 @@
       border: 2px solid #ffffff;
     }
 
-    /* Fragen: von unten schwarz nach oben lila, graue Outline */
     .pill.value-pill {
       background: linear-gradient(
         to top,
@@ -339,7 +368,7 @@
       box-shadow: 0 6px 16px rgba(0,0,0,1);
     }
 
-    /* ========= TEAMS: 4 Karten mit Avataren ========= */
+    /* ========= TEAMS ========= */
 
     .teams-bar {
       margin-top: 10px;
@@ -431,7 +460,7 @@
     .team-score-buttons button.plus { color: #bbf7d0; }
     .team-score-buttons button.minus { color: var(--danger); }
 
-    /* ========= MODAL (nur Frage, keine Antwort) ========= */
+    /* ========= MODAL ========= */
 
     .modal-backdrop {
       position: fixed;
@@ -542,8 +571,6 @@
     }
 
     @media (max-width: 768px) {
-      .top-bar { flex-direction: column; align-items: flex-start; }
-      .top-right { align-items: flex-start; }
       .board { transform: scale(0.85); }
       .teams-bar { grid-template-columns: repeat(2, minmax(0,1fr)); }
       .board-footer { flex-direction: column; align-items: flex-start; }
@@ -553,21 +580,22 @@
 <body>
 <div class="app-shell">
 
-  <!-- HEADER -->
-  <header class="top-bar">
-    <div class="brand-section">
-      <div class="logo-pill">QUIZ DUELL</div>
-      <div class="brand-sub">
-        <strong>Jeopardy Board</strong>
-        <span>Overlay für Stream &amp; Events</span>
+  <!-- NEUER HEADER -->
+  <header class="top-header">
+    <div class="logo-centered">
+      <div class="logo-badge">
+        <span class="logo-main">QUIZ</span>
+        <span class="logo-question">?!</span>
       </div>
     </div>
-    <div class="top-right">
-      <div class="turn-indicator">
-        <span class="turn-dot"></span>
-        <span><span id="turnTeamName">Team 1</span> ist dran</span>
+
+    <div class="turn-overlay">
+      <span class="turn-star">★</span>
+      <div class="turn-player">
+        <div class="turn-avatar" id="turnAvatarHeader">T1</div>
+        <span class="turn-label" id="turnTeamName">Team 1's Turn</span>
       </div>
-      <div class="round-chip">Runde 1 • Standard</div>
+      <span class="turn-star">★</span>
     </div>
   </header>
 
@@ -610,7 +638,6 @@
     </div>
 
     <div class="modal-footer-row">
-      <!-- bewusst keine Antwort-Anzeige auf dem Board -->
       <button type="button" id="backToBoardBtn">Schließen</button>
     </div>
   </div>
@@ -621,7 +648,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
 <script>
-  /* ========= GAME-DATEN (Fragen / Teams) ========= */
+  /* ========= GAME-DATEN ========= */
 
   const gameData = {
     categories: [
@@ -693,13 +720,13 @@
   const initialState = {
     currentTeamIndex: 0,
     scores: Array(NUM_TEAMS).fill(0),
-    used: {},               // key: "catIndex-qIndex": true
-    currentQuestion: null   // { catIndex, qIndex } oder null
+    used: {},
+    currentQuestion: null
   };
 
   /* ========= Firebase ========= */
 
-  // !!! HIER DEINE EIGENE CONFIG EINTRAGEN !!!
+  // HIER deine firebaseConfig einsetzen (genau wie im Controller)
   const firebaseConfig = {
   apiKey: "AIzaSyCRCG2C89X9eK_s9Lg44jc3rFRrsIua42Q",
   authDomain: "minecraftquiz-f5686.firebaseapp.com",
@@ -709,12 +736,11 @@
   messagingSenderId: "278820007596",
   appId: "1:278820007596:web:67ab6be9e47be45a04f909"
 };
-
   if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
   }
   const db = firebase.database();
-  const GAME_ID = "quiz-1";           // beliebig setzen, aber in controller.html gleich!
+  const GAME_ID = "quiz-1";
   const gameRef = db.ref("games/" + GAME_ID);
 
   /* ========= DOM-VARS ========= */
@@ -733,12 +759,13 @@
   const openControllerBtn = document.getElementById("openControllerBtn");
   const closeModalBtn = document.getElementById("closeModalBtn");
   const backToBoardBtn = document.getElementById("backToBoardBtn");
-  const turnTeamName = document.getElementById("turnTeamName");
+  const turnTeamNameEl = document.getElementById("turnTeamName");
+  const turnAvatarHeader = document.getElementById("turnAvatarHeader");
 
-  let currentState = null;          // wird aus DB gelesen
-  const pillMap = new Map();        // key "cat-q" -> DOM-Element
+  let currentState = null;
+  const pillMap = new Map();
 
-  /* ========= BOARD RENDERN ========= */
+  /* ========= BOARD ========= */
 
   function renderBoardStructure() {
     boardEl.innerHTML = "";
@@ -754,7 +781,6 @@
       boardEl.style.setProperty("--col-count", colCount);
     }
 
-    // Kategorien
     categories.forEach((cat) => {
       const cell = document.createElement("div");
       cell.className = "cell category";
@@ -770,7 +796,6 @@
       boardEl.appendChild(cell);
     });
 
-    // Fragen
     const maxQuestions = Math.max(...categories.map(c => c.questions.length));
 
     for (let qIndex = 0; qIndex < maxQuestions; qIndex++) {
@@ -806,7 +831,7 @@
     }
   }
 
-  /* ========= TEAMS-KARTEN ========= */
+  /* ========= TEAMS ========= */
 
   function renderTeamsStructure() {
     teamsBar.innerHTML = "";
@@ -903,15 +928,27 @@
     const activeTeam = gameData.teams[state.currentTeamIndex];
     if (activeTeam) {
       const name = activeTeam.label || `Team ${state.currentTeamIndex+1}`;
-      document.getElementById("turnTeamName").textContent = name;
       const firstPlayer = (activeTeam.players && activeTeam.players[0]) || name;
-      const initials = firstPlayer.split(" ").map(x => x[0]).join("").substring(0,2).toUpperCase();
+      const initials = firstPlayer
+        .split(" ")
+        .map(x => x[0])
+        .join("")
+        .substring(0,2)
+        .toUpperCase();
+
+      if (turnTeamNameEl) {
+        turnTeamNameEl.textContent = `${name}'s Turn`;
+      }
+      if (turnAvatarHeader) {
+        turnAvatarHeader.textContent = initials;
+      }
+
       modalTurnAvatar.textContent = initials;
       modalTurnText.textContent = `${name} ist dran`;
     }
   }
 
-  /* ========= MODAL AUS STATE ========= */
+  /* ========= MODAL & USED-STATE ========= */
 
   function updateModalFromState(state) {
     const cq = state.currentQuestion;
@@ -930,11 +967,8 @@
     }
   }
 
-  /* ========= FRAGEN ALS USED MARKIEREN ========= */
-
   function updateUsedFromState(state) {
     const used = state.used || {};
-    // alles reset
     pillMap.forEach(el => el.classList.remove("used"));
     Object.keys(used).forEach(key => {
       const el = pillMap.get(key);
@@ -942,7 +976,7 @@
     });
   }
 
-  /* ========= STATE AUS DB LADEN ========= */
+  /* ========= DB-LISTENER ========= */
 
   gameRef.on("value", (snapshot) => {
     if (!snapshot.exists()) {
