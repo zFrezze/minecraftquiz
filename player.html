@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quiz Player & Buzzer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap">
+  <style>
+    :root {
+      --primary: #a855ff;
+      --primary-soft: #7c3aed;
+      --primary-dark: #4c1d95;
+      --text-main: #f9fafb;
+      --text-dim: #9ca3af;
+      --danger: #f97373;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #111827, #020617 80%);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+    }
+
+    .card {
+      width: min(500px, 100%);
+      background: rgba(15,23,42,0.96);
+      border-radius: 18px;
+      border: 1px solid rgba(148,163,184,0.6);
+      box-shadow: 0 18px 40px rgba(0,0,0,1);
+      padding: 14px 14px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+    }
+
+    .status-tag {
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.7);
+      background: rgba(15,23,42,0.9);
+      font-size: 0.7rem;
+    }
+
+    .team-select {
+      margin-top: 6px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .team-pill {
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      border: 1px solid rgba(148,163,184,0.7);
+      background: rgba(15,23,42,0.9);
+      color: var(--text-dim);
+      cursor: pointer;
+    }
+
+    .team-pill.active {
+      background: rgba(129,140,248,0.2);
+      border-color: #a855ff;
+      color: #e5e7eb;
+    }
+
+    .question-box {
+      border-radius: 14px;
+      background: linear-gradient(to top, var(--primary-dark), var(--primary-soft));
+      padding: 12px 12px 12px;
+      box-shadow: 0 18px 40px rgba(0,0,0,1);
+    }
+
+    .question-meta {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.85;
+    }
+
+    .question-text {
+      margin-top: 8px;
+      font-size: 1rem;
+      line-height: 1.4;
+    }
+
+    .media-box {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .media-box img {
+      max-width: 100%;
+      max-height: 220px;
+      border-radius: 12px;
+      box-shadow: 0 14px 30px rgba(0,0,0,1);
+    }
+
+    .media-box audio {
+      width: 100%;
+      max-width: 360px;
+    }
+
+    .info-line {
+      margin-top: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .info-neutral { color: var(--text-main); opacity: 0.9; }
+    .info-ready { color: #bbf7d0; text-shadow: 0 0 10px rgba(34,197,94,0.8); }
+    .info-locked { color: #fecaca; text-shadow: 0 0 10px rgba(248,113,113,0.7); }
+
+    .buzzer-wrapper {
+      margin-top: 12px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .buzzer-button {
+      width: 150px;
+      height: 150px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: radial-gradient(circle at top, #f97373, #b91c1c);
+      color: #f9fafb;
+      box-shadow: 0 18px 40px rgba(0,0,0,1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.08s ease, opacity 0.08s ease;
+    }
+
+    .buzzer-button:active {
+      transform: translateY(2px) scale(0.97);
+      box-shadow: 0 10px 24px rgba(0,0,0,1);
+      filter: brightness(0.95);
+    }
+
+    .buzzer-button.disabled {
+      opacity: 0.4;
+      cursor: default;
+      filter: grayscale(0.4);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.8);
+    }
+
+    .small {
+      margin-top: 6px;
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      line-height: 1.35;
+    }
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <div>Player &amp; Buzzer</div>
+    <div class="status-tag" id="statusTag">Verbinde…</div>
+  </div>
+
+  <div class="team-select" id="teamSelectRow">
+    <!-- Team Pills werden per JS eingefügt -->
+  </div>
+
+  <div class="question-box">
+    <div class="question-meta" id="qMeta">Keine Frage aktiv</div>
+    <div class="question-text" id="qText">Warte auf Frage vom Board…</div>
+
+    <div class="media-box" id="mediaBox" style="display:none;">
+      <img id="qImage" alt="" style="display:none;">
+      <audio id="qAudio" controls style="display:none;"></audio>
+    </div>
+
+    <div class="info-line info-neutral" id="infoLine">
+      Wähle dein Team oben &amp; warte auf die nächste Frage.
+    </div>
+  </div>
+
+  <div class="buzzer-wrapper">
+    <button id="buzzerBtn" class="buzzer-button disabled">BUZZ</button>
+  </div>
+
+  <div class="small">
+    • Du siehst immer die aktuelle Frage, aber nie die Lösung.<br>
+    • Wenn jemand falsch antwortet, wird der Buzzer frei – wer zuerst drückt, ist dran.<br>
+    • Nur der Moderator im Controller vergibt Punkte.
+  </div>
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+<script>
+  let gameData = null;
+  let NUM_TEAMS = 0;
+  let currentState = null;
+  let myTeamIndex = 0;
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCRCG2C89X9eK_s9Lg44jc3rFRrsIua42Q",
+    authDomain: "minecraftquiz-f5686.firebaseapp.com",
+    databaseURL: "https://minecraftquiz-f5686-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "minecraftquiz-f5686",
+    storageBucket: "minecraftquiz-f5686.firebasestorage.app",
+    messagingSenderId: "278820007596",
+    appId: "1:278820007596:web:67ab6be9e47be45a04f909"
+  };
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+  const db = firebase.database();
+  const GAME_ID = "quiz-1";
+  const gameRef = db.ref("games/" + GAME_ID);
+
+  // DOM
+  const statusTag = document.getElementById("statusTag");
+  const teamSelectRow = document.getElementById("teamSelectRow");
+  const qMeta = document.getElementById("qMeta");
+  const qText = document.getElementById("qText");
+  const mediaBox = document.getElementById("mediaBox");
+  const qImage = document.getElementById("qImage");
+  const qAudio = document.getElementById("qAudio");
+  const infoLine = document.getElementById("infoLine");
+  const buzzerBtn = document.getElementById("buzzerBtn");
+
+  function setStatus(text, ok = true) {
+    statusTag.textContent = text;
+    statusTag.style.color = ok ? "#bbf7d0" : "#fecaca";
+    statusTag.style.borderColor = ok ? "rgba(34,197,94,0.6)" : "rgba(248,113,113,0.8)";
+  }
+
+  async function loadGameData() {
+    const res = await fetch("gameData.json");
+    gameData = await res.json();
+    NUM_TEAMS = gameData.teams.length;
+  }
+
+  function loadTeamFromStorage() {
+    const stored = localStorage.getItem("quizPlayerTeamIndex");
+    if (stored !== null) {
+      const idx = Number(stored);
+      if (!Number.isNaN(idx) && idx >= 0 && idx < NUM_TEAMS) {
+        myTeamIndex = idx;
+      }
+    }
+  }
+
+  function saveTeamToStorage() {
+    localStorage.setItem("quizPlayerTeamIndex", String(myTeamIndex));
+  }
+
+  function renderTeamSelect() {
+    teamSelectRow.innerHTML = "";
+    gameData.teams.forEach((team, index) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "team-pill" + (index === myTeamIndex ? " active" : "");
+      btn.textContent = team.label || `Team ${index+1}`;
+      btn.dataset.index = String(index);
+      teamSelectRow.appendChild(btn);
+    });
+  }
+
+  teamSelectRow.addEventListener("click", (e) => {
+    const t = e.target;
+    if (!(t instanceof HTMLElement)) return;
+    const idx = t.dataset.index;
+    if (idx == null) return;
+    const n = Number(idx);
+    if (Number.isNaN(n)) return;
+    myTeamIndex = n;
+    saveTeamToStorage();
+    renderTeamSelect();
+    updateInfoLine(currentState);
+  });
+
+  function updateQuestionFromState(state) {
+    const cq = state?.currentQuestion;
+    if (!cq || !gameData) {
+      qMeta.textContent = "Keine Frage aktiv";
+      qText.textContent = "Warte auf Frage vom Board…";
+      mediaBox.style.display = "none";
+      qImage.style.display = "none";
+      qAudio.style.display = "none";
+      return;
+    }
+
+    const { catIndex, qIndex } = cq;
+    const cat = gameData.categories[catIndex];
+    const q = cat?.questions[qIndex];
+    if (!cat || !q) return;
+
+    qMeta.textContent = `${cat.name} • ${q.value}`;
+    qText.textContent = q.question;
+
+    let hasMedia = false;
+    if (q.image) {
+      qImage.src = q.image;
+      qImage.style.display = "block";
+      hasMedia = true;
+    } else {
+      qImage.style.display = "none";
+    }
+    if (q.audio) {
+      qAudio.src = q.audio;
+      qAudio.style.display = "block";
+      hasMedia = true;
+    } else {
+      qAudio.style.display = "none";
+    }
+    mediaBox.style.display = hasMedia ? "flex" : "none";
+  }
+
+  function updateInfoLine(state) {
+    if (!state || !gameData) {
+      infoLine.textContent = "Wähle dein Team oben & warte auf die nächste Frage.";
+      infoLine.className = "info-line info-neutral";
+      return;
+    }
+
+    if (!state.currentQuestion) {
+      infoLine.textContent = "Es ist gerade keine Frage aktiv.";
+      infoLine.className = "info-line info-neutral";
+      return;
+    }
+
+    const result = state.questionResult || "none";
+    const buzzOpen = !!state.buzzOpen;
+    const activeIdx = (state.activeAnswerTeamIndex != null)
+      ? state.activeAnswerTeamIndex
+      : state.currentTeamIndex;
+
+    if (result === "correct") {
+      infoLine.textContent = "Frage wurde bereits richtig beantwortet.";
+      infoLine.className = "info-line info-locked";
+      return;
+    }
+
+    if (buzzOpen) {
+      if (state.activeAnswerTeamIndex == null) {
+        infoLine.textContent = "Buzzer ist frei – drücke, wenn du die Antwort weißt!";
+        infoLine.className = "info-line info-ready";
+      } else {
+        if (state.activeAnswerTeamIndex === myTeamIndex) {
+          infoLine.textContent = "Du bist dran – warte auf den Moderator.";
+          infoLine.className = "info-line info-neutral";
+        } else {
+          infoLine.textContent = "Ein anderes Team ist gerade dran.";
+          infoLine.className = "info-line info-locked";
+        }
+      }
+      return;
+    }
+
+    if (!buzzOpen && result === "none") {
+      if (activeIdx === myTeamIndex) {
+        infoLine.textContent = "Dein Team ist gerade normal an der Reihe.";
+        infoLine.className = "info-line info-neutral";
+      } else {
+        infoLine.textContent = "Ein anderes Team ist am Zug – Buzzer ist gesperrt.";
+        infoLine.className = "info-line info-locked";
+      }
+      return;
+    }
+
+    infoLine.textContent = "Warte auf den nächsten Buzzer-Moment.";
+    infoLine.className = "info-line info-neutral";
+  }
+
+  function updateBuzzerState(state) {
+    if (!state || !state.currentQuestion) {
+      setBuzzerDisabled(true);
+      return;
+    }
+
+    const buzzOpen = !!state.buzzOpen;
+    const activeIdx = state.activeAnswerTeamIndex;
+
+    // Buzzer nur, wenn:
+    // - buzzOpen = true
+    // - noch niemand aktiv (activeAnswerTeamIndex == null)
+    if (buzzOpen && activeIdx == null) {
+      setBuzzerDisabled(false);
+    } else {
+      setBuzzerDisabled(true);
+    }
+  }
+
+  function setBuzzerDisabled(disabled) {
+    if (disabled) {
+      buzzerBtn.classList.add("disabled");
+    } else {
+      buzzerBtn.classList.remove("disabled");
+    }
+  }
+
+  buzzerBtn.addEventListener("click", () => {
+    if (!currentState || !currentState.currentQuestion) return;
+
+    // Wenn Buzzer nicht aktiv: ignorieren
+    if (!currentState.buzzOpen || currentState.activeAnswerTeamIndex != null) return;
+
+    // Wer zuerst klickt, setzt sich als aktives Antwort-Team
+    gameRef.update({
+      buzzOpen: false,
+      activeAnswerTeamIndex: myTeamIndex
+    });
+  });
+
+  async function start() {
+    try {
+      await loadGameData();
+      loadTeamFromStorage();
+      renderTeamSelect();
+
+      setStatus("Verbunden…");
+
+      gameRef.on("value", (snapshot) => {
+        if (!snapshot.exists()) {
+          setStatus("Keine Daten – zuerst Board öffnen?", false);
+          return;
+        }
+        const state = snapshot.val();
+        currentState = state;
+        setStatus("Verbunden");
+
+        updateQuestionFromState(state);
+        updateInfoLine(state);
+        updateBuzzerState(state);
+      });
+    } catch (err) {
+      console.error(err);
+      setStatus("Fehler beim Laden von gameData.json", false);
+    }
+  }
+
+  start();
+</script>
+</body>
+</html>
