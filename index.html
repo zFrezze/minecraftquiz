@@ -1,332 +1,424 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8" />
-<title>Quizduell Board</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8" />
+  <title>Quizduell Board</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --purple: #a855ff;
+      --purple-dark: #4c1d95;
+      --purple-soft: #7c3aed;
+      --white: #ffffff;
+      --gray: #9ca3af;
+      --grid-line: #52525b;
+    }
 
-<style>
-/* ===================== ROOT COLORS ===================== */
-:root {
-  --lila: #7c3aed;
-  --lila-dark: #4c1d95;
-  --white: #ffffff;
-  --gray: #9ca3af;
-  --bg-top: #7c3aed;      /* oben lila */
-  --bg-bottom: #000000;   /* unten schwarz */
-  --pill-border-cat: #ffffff;
-  --pill-border-val: #6b7280; 
-}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-/* ===================== GLOBAL ===================== */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+    /* ================= BACKGROUND ================= */
 
-body {
-  font-family: system-ui, sans-serif;
-  color: var(--white);
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  padding: 20px;
-  position: relative;
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--white);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
 
-  /* GRADIENT BOTTOM → TOP */
-  background: linear-gradient(
-    to top,
-    var(--bg-bottom) 0%,
-    #16051f 40%,
-    var(--bg-top) 100%
-  );
-}
+      /* radialer Hintergrund – innen grau, außen schwarz */
+      background:
+        radial-gradient(circle at center,
+          #3f3f46 0%,     /* helleres Grau in der Mitte */
+          #18181b 45%,    /* dunkleres Grau/Lila */
+          #020617 100%    /* außen fast schwarz */
+        );
+    }
 
-/* GRID-LINIEN */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px);
-  background-size: 120px 120px;
-  mix-blend-mode: overlay;
-  opacity: 0.20;
-  z-index: -1;
-}
+    /* graues Grid oben drauf */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(var(--grid-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+      background-size: 110px 110px;
+      opacity: 0.22;
+      mix-blend-mode: screen;
+      z-index: -1;
+    }
 
-/* WRAPPER */
-.wrapper {
-  width: 100%;
-  max-width: 1500px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
+    /* ================= LAYOUT WRAPPER ================= */
 
-/* ===================== HEADER ===================== */
-header {
-  text-align: center;
-  margin-bottom: 10px;
-}
+    .wrapper {
+      width: 100%;
+      max-width: 1500px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
 
-header img {
-  width: 200px;
-  opacity: 0.95;
-}
+    /* ================= HEADER / LOGO ================= */
 
-/* ===================== BOARD ===================== */
-.board {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 14px;
-}
+    header {
+      text-align: center;
+      margin-bottom: 6px;
+    }
 
-/* Kategorien */
-.category {
-  padding: 14px;
-  border-radius: 999px;
-  text-align: center;
-  font-weight: 700;
-  font-size: 1rem;
-  letter-spacing: 0.06em;
-  border: 2px solid var(--pill-border-cat);
-  background: linear-gradient(to top, var(--lila-dark), var(--lila));
-  text-shadow: 0 0 8px rgba(255,255,255,0.4);
-}
+    header h1 {
+      font-size: 1.2rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gray);
+    }
 
-/* Fragefelder */
-.value {
-  padding: 14px;
-  border-radius: 999px;
-  text-align: center;
-  font-weight: 900;
-  font-size: 1.4rem;
-  letter-spacing: 0.06em;
-  border: 2px solid var(--pill-border-val);
-  background: linear-gradient(to top, #2a0f55, #5221b0);
-  cursor: pointer;
-  transition: 0.2s;
-  box-shadow: 0 0 20px rgba(0,0,0,0.4);
-}
+    /* ================= BOARD ================= */
 
-.value:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 0 25px rgba(255,255,255,0.25);
-}
+    .board {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 14px;
+      margin-inline: auto;
+      max-width: 1400px;
+    }
 
-.value.used {
-  opacity: 0.25;
-  pointer-events: none;
-}
+    .category,
+    .value {
+      border-radius: 999px;
+      text-align: center;
+      padding: 14px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7);
+    }
 
-/* ===================== TEAMS UNTEN ===================== */
-.teams {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
-}
+    .category {
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 0.06em;
+      border: 2px solid #ffffff;
+      background: linear-gradient(to top, var(--purple-dark), var(--purple-soft));
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+    }
 
-.team {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  background: rgba(0,0,0,0.45);
-  border: 2px solid rgba(255,255,255,0.2);
-  padding: 12px;
-  border-radius: 16px;
-  backdrop-filter: blur(6px);
-}
+    .value {
+      font-weight: 900;
+      font-size: 1.3rem;
+      letter-spacing: 0.06em;
+      border: 2px solid #6b7280; /* grau */
+      background: linear-gradient(to top, #25114d, #5b21ff);
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+    }
 
-/* Große Avatare */
-.avatar {
-  width: 64px;
-  height: 64px;
-  border-radius: 999px;
-  background: linear-gradient(to top, var(--lila-dark), var(--lila));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.1rem;
-  font-weight: 800;
-  border: 3px solid rgba(0,0,0,0.6);
-  box-shadow: 0 0 12px rgba(0,0,0,0.9);
-}
+    .value:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 24px 50px rgba(0, 0, 0, 0.85);
+    }
 
-.team-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
+    .value.used {
+      opacity: 0.2;
+      pointer-events: none;
+      box-shadow: none;
+    }
 
-.team-name {
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-}
+    /* ================= TEAMS ================= */
 
-.team-score {
-  font-size: 1.3rem;
-  font-weight: 800;
-  color: #fef08a;
-  text-shadow: 0 0 12px rgba(255,235,100,0.65);
-}
+    .teams-wrapper {
+      margin-top: 24px;
+    }
 
-/* ===================== MODAL ===================== */
-.modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.7);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(4px);
-}
+    .teams-title {
+      text-align: center;
+      font-size: 0.9rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--gray);
+      margin-bottom: 10px;
+    }
 
-.modal.show {
-  display: flex;
-}
+    .teams {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
 
-.modal-box {
-  background: linear-gradient(to top, var(--lila-dark), var(--lila));
-  padding: 30px;
-  border-radius: 20px;
-  width: min(700px, 90%);
-  text-align: center;
-  border: 2px solid white;
-  box-shadow: 0 0 40px rgba(0,0,0,0.8);
-}
+    .team-card {
+      background: radial-gradient(circle at top, #111827, #020617 80%);
+      border-radius: 18px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      padding: 14px 10px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.9);
+    }
 
-.modal-box h2 {
-  font-size: 2rem;
-  margin-bottom: 20px;
-}
+    .team-avatar {
+      width: 86px;
+      height: 86px;
+      border-radius: 999px;
+      background: radial-gradient(circle at top, var(--purple-soft), var(--purple-dark));
+      border: 3px solid rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 1);
+    }
 
-.modal-box button {
-  margin-top: 20px;
-  padding: 10px 20px;
-  border-radius: 12px;
-  border: none;
-  background: black;
-  color: white;
-  font-weight: 700;
-  cursor: pointer;
-}
+    .team-label {
+      margin-top: 8px;
+      font-size: 0.8rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gray);
+    }
 
-</style>
+    .team-name {
+      margin-top: 2px;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .team-score {
+      margin-top: 6px;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #fef08a;
+      text-shadow: 0 0 12px rgba(254, 240, 138, 0.8);
+    }
+
+    .team-score-caption {
+      font-size: 0.75rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gray);
+      margin-top: 2px;
+    }
+
+    /* ================= MODAL (Frage) ================= */
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+      z-index: 10;
+    }
+
+    .modal-backdrop.show {
+      display: flex;
+    }
+
+    .modal-box {
+      width: min(720px, 90%);
+      border-radius: 20px;
+      border: 2px solid #ffffff;
+      background: linear-gradient(to top, var(--purple-dark), var(--purple-soft));
+      padding: 24px 24px 18px;
+      box-shadow: 0 28px 70px rgba(0, 0, 0, 1);
+      text-align: center;
+    }
+
+    .modal-meta {
+      font-size: 0.85rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      color: rgba(243, 244, 246, 0.8);
+    }
+
+    .modal-question {
+      font-size: 1.5rem;
+      margin-bottom: 18px;
+    }
+
+    .modal-close-btn {
+      margin-top: 4px;
+      padding: 8px 18px;
+      border-radius: 999px;
+      border: none;
+      background: #020617;
+      color: #f9fafb;
+      font-size: 0.9rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 1);
+    }
+
+    @media (max-width: 1100px) {
+      .board {
+        transform: scale(0.9);
+        transform-origin: top center;
+      }
+      .teams {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+      .board {
+        transform: scale(0.8);
+      }
+      .teams {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
 
 <div class="wrapper">
 
-  <!-- Header / Logo -->
   <header>
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Jeopardy%21_logo.svg/512px-Jeopardy%21_logo.svg.png">
+    <h1>QUIZDUELL</h1>
   </header>
 
-  <!-- Board -->
+  <!-- Spielbrett -->
   <div class="board" id="board"></div>
 
   <!-- Teams -->
-  <div class="teams" id="teams"></div>
-
+  <section class="teams-wrapper">
+    <div class="teams-title">Teams &amp; Punkte</div>
+    <div class="teams" id="teams"></div>
+  </section>
 </div>
 
-<!-- MODAL -->
-<div class="modal" id="modal">
+<!-- Modal für Fragen (optional einfach gehalten) -->
+<div class="modal-backdrop" id="modal">
   <div class="modal-box">
-    <h2 id="modalQuestion"></h2>
-    <button onclick="closeModal()">Schließen</button>
+    <div class="modal-meta" id="modalMeta">Kategorie • 100</div>
+    <div class="modal-question" id="modalQuestion">Hier steht die Frage.</div>
+    <button class="modal-close-btn" onclick="closeModal()">Schließen</button>
   </div>
 </div>
 
 <script>
-/* ====== DATEN ====== */
-const data = {
-  categories: ["Lyrics", "Geografie", "Games", "Sprichwörter", "Abkürzungen", "YT-Titel"],
-  questions: [
-    [100,200,300,500],
-    [100,200,300,500],
-    [100,200,300,500],
-    [100,200,300,500],
-    [100,200,300,500],
-    [100,200,300,500]
-  ],
-  teams: [
-    { name: "Schmobin", score: 0 },
-    { name: "Krokoboss", score: 0 },
-    { name: "Zarbex", score: 0 },
-    { name: "Elquaria", score: 0 }
-  ]
-};
+  /* ================= DATEN ================= */
 
-/* ====== BOARD RENDER ====== */
-const boardEl = document.getElementById("board");
-const teamsEl = document.getElementById("teams");
+  const data = {
+    categories: [
+      "Lyrics/Songs",
+      "Geografie",
+      "Games",
+      "Sprichwörter",
+      "Abkürzungen",
+      "YT-Titel"
+    ],
+    // hier könntest du später echte Fragen/Antworten eintragen
+    valuesPerCategory: [100, 200, 300, 500],
+    teams: [
+      { label: "Team 1", name: "Schmobin",  score: 0 },
+      { label: "Team 2", name: "Krokoboss", score: 0 },
+      { label: "Team 3", name: "Zarbex",    score: 0 },
+      { label: "Team 4", name: "Elquaria",  score: 0 }
+    ]
+  };
 
-function renderBoard() {
-  boardEl.innerHTML = "";
+  const boardEl = document.getElementById("board");
+  const teamsEl = document.getElementById("teams");
 
-  // Kategorien
-  data.categories.forEach(cat => {
-    const div = document.createElement("div");
-    div.className = "category";
-    div.textContent = cat;
-    boardEl.appendChild(div);
-  });
+  const modal = document.getElementById("modal");
+  const modalMeta = document.getElementById("modalMeta");
+  const modalQuestion = document.getElementById("modalQuestion");
 
-  // Fragen
-  const rows = data.questions[0].length;
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < data.categories.length; c++) {
-      const v = data.questions[c][r];
-      const btn = document.createElement("div");
-      btn.className = "value";
-      btn.textContent = v;
-      btn.onclick = () => openQuestion(v, c, r, btn);
-      boardEl.appendChild(btn);
-    }
+  /* ============= BOARD RENDERING ============= */
+
+  function renderBoard() {
+    boardEl.innerHTML = "";
+
+    // Kategorien-Zeile
+    data.categories.forEach(cat => {
+      const div = document.createElement("div");
+      div.className = "category";
+      div.textContent = cat;
+      boardEl.appendChild(div);
+    });
+
+    // Werte-Zeilen
+    data.valuesPerCategory.forEach(value => {
+      data.categories.forEach((cat, catIndex) => {
+        const btn = document.createElement("div");
+        btn.className = "value";
+        btn.textContent = value;
+        btn.addEventListener("click", () => onValueClick(cat, value, btn));
+        boardEl.appendChild(btn);
+      });
+    });
   }
-}
 
-/* ====== TEAMS ====== */
-function renderTeams() {
-  teamsEl.innerHTML = "";
-  data.teams.forEach(t => {
-    const div = document.createElement("div");
-    div.className = "team";
-    div.innerHTML = `
-      <div class="avatar">${t.name.slice(0,2).toUpperCase()}</div>
-      <div class="team-info">
-        <div class="team-name">${t.name}</div>
-        <div class="team-score">${t.score}</div>
-      </div>
-    `;
-    teamsEl.appendChild(div);
-  });
-}
+  /* ============= TEAMS RENDERING ============= */
 
-/* ====== MODAL ====== */
-const modal = document.getElementById("modal");
-const modalQuestion = document.getElementById("modalQuestion");
+  function renderTeams() {
+    teamsEl.innerHTML = "";
+    data.teams.forEach(team => {
+      const card = document.createElement("article");
+      card.className = "team-card";
 
-function openQuestion(value, col, row, el) {
-  modalQuestion.textContent = `Frage für ${value} Punkte`;
-  modal.classList.add("show");
-  el.classList.add("used");
-}
+      const avatar = document.createElement("div");
+      avatar.className = "team-avatar";
+      avatar.textContent = team.name.slice(0, 2).toUpperCase();
 
-function closeModal() {
-  modal.classList.remove("show");
-}
+      const label = document.createElement("div");
+      label.className = "team-label";
+      label.textContent = team.label;
 
-/* ====== START ====== */
-renderBoard();
-renderTeams();
+      const name = document.createElement("div");
+      name.className = "team-name";
+      name.textContent = team.name;
 
+      const score = document.createElement("div");
+      score.className = "team-score";
+      score.textContent = team.score;
+
+      const caption = document.createElement("div");
+      caption.className = "team-score-caption";
+      caption.textContent = "Punkte";
+
+      card.appendChild(avatar);
+      card.appendChild(label);
+      card.appendChild(name);
+      card.appendChild(score);
+      card.appendChild(caption);
+
+      teamsEl.appendChild(card);
+    });
+  }
+
+  /* ============= MODAL/LOGIK ============= */
+
+  function onValueClick(category, value, btnElement) {
+    // hier später echte Fragen einsetzen – jetzt nur Demo-Text
+    modalMeta.textContent = `${category} • ${value}`;
+    modalQuestion.textContent = `Frage für ${value} Punkte in "${category}"`;
+    modal.classList.add("show");
+    btnElement.classList.add("used");
+  }
+
+  function closeModal() {
+    modal.classList.remove("show");
+  }
+
+  /* ============= INIT ============= */
+
+  renderBoard();
+  renderTeams();
 </script>
 </body>
 </html>
