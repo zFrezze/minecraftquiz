@@ -17,11 +17,7 @@
       --shadow-strong: 0 22px 48px rgba(0,0,0,0.9);
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     /* ========= HINTERGRUND: Vignette + Grid ========= */
 
@@ -34,10 +30,9 @@
       padding: 16px;
       position: relative;
       overflow-x: hidden;
-      background: #020617; /* Basis-Schwarz */
+      background: #020617;
     }
 
-    /* Vignette + Verlauf */
     body::before {
       content: "";
       position: fixed;
@@ -45,16 +40,14 @@
       pointer-events: none;
       background:
         radial-gradient(circle at 50% 40%,
-          #2b2b33 0%,        /* weich graues Zentrum */
-          #111827 45%,       /* dunkler */
-          #020617 80%,       /* fast schwarz */
-          #000000 100%       /* harte Vignette */
+          #2b2b33 0%,
+          #111827 45%,
+          #020617 80%,
+          #000000 100%
         );
-      opacity: 1;
       z-index: -2;
     }
 
-    /* graues Grid darüber */
     body::after {
       content: "";
       position: fixed;
@@ -162,13 +155,13 @@
       color: var(--text-dim);
     }
 
-    /* ========= BOARD – ohne extra Rechteck ========= */
+    /* ========= BOARD ========= */
 
     .board-wrapper {
       flex: 1;
       padding: 10px 0 8px;
       border-radius: var(--radius-lg);
-      background: transparent;   /* kein eigenes Rechteck */
+      background: transparent;
       border: none;
       box-shadow: none;
       display: flex;
@@ -179,7 +172,7 @@
     .board-inner {
       border-radius: 0;
       padding: 0;
-      background: transparent;   /* direkt der Hintergrund */
+      background: transparent;
       border: none;
     }
 
@@ -346,7 +339,7 @@
       box-shadow: 0 6px 16px rgba(0,0,0,1);
     }
 
-    /* ========= TEAMS: 4 Karten, Avatare oben ========= */
+    /* ========= TEAMS: 4 Karten mit Avataren ========= */
 
     .teams-bar {
       margin-top: 10px;
@@ -438,7 +431,7 @@
     .team-score-buttons button.plus { color: #bbf7d0; }
     .team-score-buttons button.minus { color: var(--danger); }
 
-    /* ========= MODAL ========= */
+    /* ========= MODAL (nur Frage, keine Antwort) ========= */
 
     .modal-backdrop {
       position: fixed;
@@ -527,26 +520,11 @@
       font-weight: 700;
     }
 
-    .answer-text {
-      margin-top: 14px;
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: #fef9c3;
-      text-shadow: 0 0 16px rgba(254,240,138,0.9);
-    }
-
-    .answer-text.hidden { display: none; }
-
     .modal-footer-row {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.76rem;
-      opacity: 0.9;
-    }
-
-    .modal-footer-row span.highlight {
-      font-weight: 600;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 8px;
     }
 
     .modal-footer-row button {
@@ -585,7 +563,7 @@
       </div>
     </div>
     <div class="top-right">
-      <div class="turn-indicator" id="turnIndicator">
+      <div class="turn-indicator">
         <span class="turn-dot"></span>
         <span><span id="turnTeamName">Team 1</span> ist dran</span>
       </div>
@@ -601,11 +579,11 @@
 
     <div class="board-footer">
       <div class="hint">
-        Kategorien, Fragen &amp; Teams unten im <code>gameData</code>-Objekt anpassen.
+        Kategorien, Fragen &amp; Teams im <code>gameData</code>-Objekt im Script anpassen.
       </div>
       <div class="footer-controls">
-        <button type="button" class="primary" id="resetBoardBtn">Brett zurücksetzen</button>
-        <button type="button" id="openControllerBtn">Controller öffnen</button>
+        <button type="button" id="resetBoardBtn">Reset</button>
+        <button type="button" class="primary" id="openControllerBtn">Controller öffnen</button>
       </div>
     </div>
 
@@ -613,7 +591,7 @@
   </main>
 </div>
 
-<!-- MODAL -->
+<!-- MODAL (nur Frage) -->
 <div id="modalBackdrop" class="modal-backdrop">
   <div class="modal-card">
     <button class="modal-close" id="closeModalBtn" aria-label="Schließen">×</button>
@@ -625,8 +603,6 @@
 
     <div class="modal-body">
       <div id="modalQuestion" class="question-text"></div>
-      <div id="modalAnswer" class="answer-text hidden"></div>
-
       <div class="modal-turn-pill">
         <div class="modal-turn-avatar" id="modalTurnAvatar">T1</div>
         <div id="modalTurnText">Team 1 ist dran</div>
@@ -634,17 +610,18 @@
     </div>
 
     <div class="modal-footer-row">
-      <div>Antwort nach Diskussion mit <span class="highlight">Leertaste</span> oder Button anzeigen.</div>
-      <div>
-        <button type="button" class="primary" id="showAnswerBtn">Antwort anzeigen</button>
-        <button type="button" id="backToBoardBtn">Schließen</button>
-      </div>
+      <!-- bewusst keine Antwort-Anzeige auf dem Board -->
+      <button type="button" id="backToBoardBtn">Schließen</button>
     </div>
   </div>
 </div>
 
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
 <script>
-  /* ================= KONFIGURATION ================= */
+  /* ========= GAME-DATEN (Fragen / Teams) ========= */
 
   const gameData = {
     categories: [
@@ -703,16 +680,44 @@
         ]
       }
     ],
-    // hier kannst du pro Team mehrere Spieler eintragen
     teams: [
-      { label: "Team 1", players: ["Schmobin"],  score: 0 },
-      { label: "Team 2", players: ["Krokoboss"], score: 0 },
-      { label: "Team 3", players: ["Zarbex"],   score: 0 },
-      { label: "Team 4", players: ["Elquaria"], score: 0 }
+      { label: "Team 1", players: ["Schmobin"] },
+      { label: "Team 2", players: ["Krokoboss"] },
+      { label: "Team 3", players: ["Zarbex"] },
+      { label: "Team 4", players: ["Elquaria"] }
     ]
   };
 
-  /* ================= VARIABLEN & DOM ================= */
+  const NUM_TEAMS = gameData.teams.length;
+
+  const initialState = {
+    currentTeamIndex: 0,
+    scores: Array(NUM_TEAMS).fill(0),
+    used: {},               // key: "catIndex-qIndex": true
+    currentQuestion: null   // { catIndex, qIndex } oder null
+  };
+
+  /* ========= Firebase ========= */
+
+  // !!! HIER DEINE EIGENE CONFIG EINTRAGEN !!!
+  const firebaseConfig = {
+    apiKey: "DEIN_API_KEY",
+    authDomain: "DEIN_PROJEKT.firebaseapp.com",
+    databaseURL: "https://DEIN_PROJEKT-default-rtdb.firebaseio.com",
+    projectId: "DEIN_PROJEKT",
+    storageBucket: "DEIN_PROJEKT.appspot.com",
+    messagingSenderId: "DEINE_SENDER_ID",
+    appId: "DEINE_APP_ID"
+  };
+
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+  const db = firebase.database();
+  const GAME_ID = "quiz-1";           // beliebig setzen, aber in controller.html gleich!
+  const gameRef = db.ref("games/" + GAME_ID);
+
+  /* ========= DOM-VARS ========= */
 
   const boardEl = document.getElementById("board");
   const teamsBar = document.getElementById("teamsBar");
@@ -721,61 +726,24 @@
   const modalHeaderCategory = document.getElementById("modalHeaderCategory");
   const modalHeaderValue = document.getElementById("modalHeaderValue");
   const modalQuestion = document.getElementById("modalQuestion");
-  const modalAnswer = document.getElementById("modalAnswer");
   const modalTurnAvatar = document.getElementById("modalTurnAvatar");
   const modalTurnText = document.getElementById("modalTurnText");
 
-  const showAnswerBtn = document.getElementById("showAnswerBtn");
-  const backToBoardBtn = document.getElementById("backToBoardBtn");
-  const closeModalBtn = document.getElementById("closeModalBtn");
   const resetBoardBtn = document.getElementById("resetBoardBtn");
   const openControllerBtn = document.getElementById("openControllerBtn");
+  const closeModalBtn = document.getElementById("closeModalBtn");
+  const backToBoardBtn = document.getElementById("backToBoardBtn");
   const turnTeamName = document.getElementById("turnTeamName");
 
-  let currentCell = null;
-  let currentQuestionValue = null;
-  let currentTeamIndex = 0;
-  let controllerWindow = null;
+  let currentState = null;          // wird aus DB gelesen
+  const pillMap = new Map();        // key "cat-q" -> DOM-Element
 
-  /* ================ CONTROLLER-KOMMUNIKATION ================= */
+  /* ========= BOARD RENDERN ========= */
 
-  function sendToController(message) {
-    if (!controllerWindow || controllerWindow.closed) return;
-    controllerWindow.postMessage({ source: "board", ...message }, "*");
-  }
-
-  window.addEventListener("message", (event) => {
-    const data = event.data;
-    if (!data || data.source !== "controller") return;
-
-    if (data.type === "register") {
-      controllerWindow = event.source;
-      sendFullState();
-    } else if (data.type === "resolve") {
-      const { teamIndex, correct, value } = data.payload;
-      const v = value ?? currentQuestionValue ?? 0;
-      const delta = correct ? v : -v;
-      adjustScore(teamIndex, delta);
-      closeModal(true);
-      setTurn(teamIndex + 1, true);
-    } else if (data.type === "setTurn") {
-      setTurn(data.payload.teamIndex, true);
-    }
-  });
-
-  function sendFullState() {
-    const teams = gameData.teams.map((t, i) => ({
-      index: i,
-      name: t.label || `Team ${i+1}`,
-      score: t.score
-    }));
-    sendToController({ type: "init", payload: { teams, teamIndex: currentTeamIndex } });
-  }
-
-  /* ================= BOARD ================= */
-
-  function renderBoard() {
+  function renderBoardStructure() {
     boardEl.innerHTML = "";
+    pillMap.clear();
+
     const categories = gameData.categories;
     const colCount = categories.length;
 
@@ -786,7 +754,7 @@
       boardEl.style.setProperty("--col-count", colCount);
     }
 
-    // Header
+    // Kategorien
     categories.forEach((cat) => {
       const cell = document.createElement("div");
       cell.className = "cell category";
@@ -802,11 +770,12 @@
       boardEl.appendChild(cell);
     });
 
+    // Fragen
     const maxQuestions = Math.max(...categories.map(c => c.questions.length));
 
-    for (let row = 0; row < maxQuestions; row++) {
-      categories.forEach((cat) => {
-        const q = cat.questions[row];
+    for (let qIndex = 0; qIndex < maxQuestions; qIndex++) {
+      categories.forEach((cat, catIndex) => {
+        const q = cat.questions[qIndex];
         const cell = document.createElement("div");
         cell.className = "cell";
 
@@ -823,17 +792,25 @@
         label.textContent = q.value;
         pill.appendChild(label);
 
-        pill.addEventListener("click", () => openQuestion(pill, q, cat.name));
+        const key = `${catIndex}-${qIndex}`;
+        pill.dataset.key = key;
+        pill.addEventListener("click", () => {
+          if (!currentState || currentState.used?.[key]) return;
+          gameRef.update({ currentQuestion: { catIndex, qIndex } });
+        });
+
+        pillMap.set(key, pill);
         cell.appendChild(pill);
         boardEl.appendChild(cell);
       });
     }
   }
 
-  /* ================= TEAMS – 4 Karten mit Avataren ================= */
+  /* ========= TEAMS-KARTEN ========= */
 
-  function renderTeams() {
+  function renderTeamsStructure() {
     teamsBar.innerHTML = "";
+
     gameData.teams.forEach((team, index) => {
       const card = document.createElement("article");
       card.className = "team-card";
@@ -863,7 +840,7 @@
       const score = document.createElement("div");
       score.className = "team-score";
       score.id = `teamScore_${index}`;
-      score.textContent = team.score;
+      score.textContent = "0";
 
       const caption = document.createElement("div");
       caption.className = "team-score-caption";
@@ -901,144 +878,115 @@
       const t = e.target;
       if (!(t instanceof HTMLElement)) return;
       const delta = t.dataset.delta;
-      if (!delta) return;
+      if (!delta || !currentState) return;
       const teamIndex = Number(t.dataset.teamIndex ?? 0);
-      adjustScore(teamIndex, Number(delta));
-    }, { once: true });
-
-    updateActiveTeamCard();
-  }
-
-  function updateActiveTeamCard() {
-    const cards = teamsBar.querySelectorAll(".team-card");
-    cards.forEach((c, i) => {
-      c.classList.toggle("active", i === currentTeamIndex);
+      const scores = currentState.scores ? [...currentState.scores] : Array(NUM_TEAMS).fill(0);
+      scores[teamIndex] = (scores[teamIndex] || 0) + Number(delta);
+      gameRef.update({ scores });
     });
   }
 
-  function adjustScore(teamIndex, delta) {
-    const team = gameData.teams[teamIndex];
-    if (!team) return;
-    team.score += delta;
-    const el = document.getElementById(`teamScore_${teamIndex}`);
-    if (el) el.textContent = team.score;
-
-    const teams = gameData.teams.map((t, i) => ({
-      index: i,
-      name: t.label || `Team ${i+1}`,
-      score: t.score
-    }));
-    sendToController({ type: "scoreUpdate", payload: { teams } });
-  }
-
-  /* ================= TURN & MODAL ================= */
-
-  function setTurn(teamIndex, fromController = false) {
-    currentTeamIndex = (teamIndex + gameData.teams.length) % gameData.teams.length;
-    const team = gameData.teams[currentTeamIndex];
-    if (!team) return;
-
-    turnTeamName.textContent = team.label || `Team ${currentTeamIndex+1}`;
-
-    const players = team.players && team.players.length ? team.players : [team.label || `Team ${currentTeamIndex+1}`];
-    const initials = players[0].split(" ").map(x => x[0]).join("").substring(0,2).toUpperCase();
-    modalTurnAvatar.textContent = initials;
-    modalTurnText.textContent = `${team.label || `Team ${currentTeamIndex+1}`} ist dran`;
-
-    updateActiveTeamCard();
-
-    if (!fromController) {
-      sendToController({ type: "turnSet", payload: { teamIndex: currentTeamIndex } });
-    }
-  }
-
-  function openQuestion(cellEl, question, categoryName) {
-    if (cellEl.classList.contains("used")) return;
-
-    currentCell = cellEl;
-    currentQuestionValue = question.value;
-
-    modalHeaderCategory.textContent = categoryName;
-    modalHeaderValue.innerHTML = `<strong>${question.value}</strong>`;
-    modalQuestion.textContent = question.question;
-    modalAnswer.textContent = question.answer;
-    modalAnswer.classList.add("hidden");
-
-    const team = gameData.teams[currentTeamIndex];
-    if (team) {
-      const players = team.players && team.players.length ? team.players : [team.label || `Team ${currentTeamIndex+1}`];
-      const initials = players[0].split(" ").map(x => x[0]).join("").substring(0,2).toUpperCase();
-      modalTurnAvatar.textContent = initials;
-      modalTurnText.textContent = `${team.label || `Team ${currentTeamIndex+1}`} ist dran`;
-    }
-
-    modalBackdrop.classList.add("visible");
-
-    sendToController({
-      type: "questionOpen",
-      payload: {
-        categoryName,
-        value: question.value,
-        question: question.question,
-        teamIndex: currentTeamIndex
+  function updateTeamsFromState(state) {
+    gameData.teams.forEach((_, index) => {
+      const scoreEl = document.getElementById(`teamScore_${index}`);
+      if (scoreEl) {
+        const score = state.scores?.[index] ?? 0;
+        scoreEl.textContent = score;
       }
     });
-  }
 
-  function closeModal(markUsed = true) {
-    modalBackdrop.classList.remove("visible");
-    if (currentCell && markUsed) {
-      currentCell.classList.add("used");
+    const cards = teamsBar.querySelectorAll(".team-card");
+    cards.forEach((card, i) => {
+      card.classList.toggle("active", i === state.currentTeamIndex);
+    });
+
+    const activeTeam = gameData.teams[state.currentTeamIndex];
+    if (activeTeam) {
+      const name = activeTeam.label || `Team ${state.currentTeamIndex+1}`;
+      document.getElementById("turnTeamName").textContent = name;
+      const firstPlayer = (activeTeam.players && activeTeam.players[0]) || name;
+      const initials = firstPlayer.split(" ").map(x => x[0]).join("").substring(0,2).toUpperCase();
+      modalTurnAvatar.textContent = initials;
+      modalTurnText.textContent = `${name} ist dran`;
     }
-    currentCell = null;
-    currentQuestionValue = null;
-    sendToController({ type: "questionClosed" });
   }
 
-  function showAnswer() {
-    modalAnswer.classList.remove("hidden");
+  /* ========= MODAL AUS STATE ========= */
+
+  function updateModalFromState(state) {
+    const cq = state.currentQuestion;
+    if (cq) {
+      const { catIndex, qIndex } = cq;
+      const cat = gameData.categories[catIndex];
+      const q = cat?.questions[qIndex];
+      if (cat && q) {
+        modalHeaderCategory.textContent = cat.name;
+        modalHeaderValue.innerHTML = `<strong>${q.value}</strong>`;
+        modalQuestion.textContent = q.question;
+        modalBackdrop.classList.add("visible");
+      }
+    } else {
+      modalBackdrop.classList.remove("visible");
+    }
   }
 
-  function resetBoard() {
-    const valuePills = boardEl.querySelectorAll(".pill.value-pill");
-    valuePills.forEach(p => p.classList.remove("used"));
+  /* ========= FRAGEN ALS USED MARKIEREN ========= */
+
+  function updateUsedFromState(state) {
+    const used = state.used || {};
+    // alles reset
+    pillMap.forEach(el => el.classList.remove("used"));
+    Object.keys(used).forEach(key => {
+      const el = pillMap.get(key);
+      if (el) el.classList.add("used");
+    });
   }
 
-  /* ================= EVENT HANDLER ================= */
+  /* ========= STATE AUS DB LADEN ========= */
 
-  showAnswerBtn.addEventListener("click", showAnswer);
-  backToBoardBtn.addEventListener("click", () => closeModal(true));
-  closeModalBtn.addEventListener("click", () => closeModal(true));
+  gameRef.on("value", (snapshot) => {
+    if (!snapshot.exists()) {
+      gameRef.set(initialState);
+      return;
+    }
+    const state = snapshot.val() || initialState;
+    currentState = state;
 
-  modalBackdrop.addEventListener("click", (e) => {
-    if (e.target === modalBackdrop) closeModal(true);
+    updateTeamsFromState(state);
+    updateModalFromState(state);
+    updateUsedFromState(state);
   });
 
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && modalBackdrop.classList.contains("visible")) {
-      closeModal(true);
-    } else if (e.key === " " && modalBackdrop.classList.contains("visible")) {
-      e.preventDefault();
-      showAnswer();
-    } else if (e.key === "ArrowRight") {
-      setTurn(currentTeamIndex + 1);
-    } else if (e.key === "ArrowLeft") {
-      setTurn(currentTeamIndex - 1);
-    }
+  /* ========= EVENTS ========= */
+
+  resetBoardBtn.addEventListener("click", () => {
+    gameRef.set(initialState);
   });
 
   openControllerBtn.addEventListener("click", () => {
-    controllerWindow = window.open("controller.html", "quizcontroller", "width=420,height=520");
-    setTimeout(sendFullState, 500);
+    window.open("controller.html", "_blank");
   });
 
-  resetBoardBtn.addEventListener("click", resetBoard);
+  closeModalBtn.addEventListener("click", () => gameRef.update({ currentQuestion: null }));
+  backToBoardBtn.addEventListener("click", () => gameRef.update({ currentQuestion: null }));
 
-  /* ================= INIT ================= */
+  document.addEventListener("keydown", (e) => {
+    if (!currentState) return;
+    if (e.key === "Escape") {
+      gameRef.update({ currentQuestion: null });
+    } else if (e.key === "ArrowRight") {
+      const idx = (currentState.currentTeamIndex + 1) % NUM_TEAMS;
+      gameRef.update({ currentTeamIndex: idx });
+    } else if (e.key === "ArrowLeft") {
+      const idx = (currentState.currentTeamIndex - 1 + NUM_TEAMS) % NUM_TEAMS;
+      gameRef.update({ currentTeamIndex: idx });
+    }
+  });
 
-  renderBoard();
-  renderTeams();
-  setTurn(0, true); // initial
+  /* ========= INIT ========= */
+
+  renderBoardStructure();
+  renderTeamsStructure();
 </script>
 </body>
 </html>
