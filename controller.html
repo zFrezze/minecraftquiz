@@ -2,8 +2,9 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <title>Quizduell Controller</title>
+  <title>Quiz Controller</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap">
   <style>
     :root {
       --primary: #a855ff;
@@ -17,7 +18,7 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       min-height: 100vh;
       background: radial-gradient(circle at top, #111827, #020617 80%);
       color: var(--text-main);
@@ -28,7 +29,7 @@
     }
 
     .card {
-      width: min(440px, 100%);
+      width: min(480px, 100%);
       background: rgba(15,23,42,0.96);
       border-radius: 16px;
       border: 1px solid rgba(148,163,184,0.6);
@@ -60,7 +61,7 @@
     .question-box {
       border-radius: 14px;
       background: linear-gradient(to top, var(--primary-dark), var(--primary-soft));
-      padding: 12px 12px 10px;
+      padding: 12px 12px 12px;
       box-shadow: 0 18px 40px rgba(0,0,0,1);
     }
 
@@ -83,11 +84,26 @@
       font-weight: 600;
       color: #fef9c3;
       text-shadow: 0 0 12px rgba(254,240,138,0.9);
-      display: none;
     }
 
-    .answer-text.visible {
-      display: block;
+    .media-box {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .media-box img {
+      max-width: 100%;
+      max-height: 220px;
+      border-radius: 12px;
+      box-shadow: 0 14px 30px rgba(0,0,0,1);
+    }
+
+    .media-box audio {
+      width: 100%;
+      max-width: 360px;
     }
 
     .current-team-pill {
@@ -111,6 +127,27 @@
       justify-content: center;
       font-size: 0.7rem;
       font-weight: 700;
+    }
+
+    .status-line {
+      margin-top: 6px;
+      font-size: 0.86rem;
+      font-weight: 600;
+    }
+
+    .status-correct {
+      color: #bbf7d0;
+      text-shadow: 0 0 12px rgba(34,197,94,0.9);
+    }
+
+    .status-wrong {
+      color: #fecaca;
+      text-shadow: 0 0 12px rgba(248,113,113,0.9);
+    }
+
+    .status-neutral {
+      color: var(--text-main);
+      opacity: 0.8;
     }
 
     .teams-list {
@@ -169,7 +206,6 @@
 
     button.correct { background: linear-gradient(to top, #15803d, #22c55e); }
     button.wrong { background: linear-gradient(to top, #b91c1c, #f97373); }
-    button.secondary { background: rgba(15,23,42,0.95); }
 
     button:hover {
       transform: translateY(-1px);
@@ -193,33 +229,39 @@
 <div class="card">
   <div class="header">
     <div>Quiz Controller</div>
-    <div class="status-tag" id="statusTag">Verbinde …</div>
+    <div class="status-tag" id="statusTag">Verbinde…</div>
   </div>
 
   <div class="question-box">
     <div class="question-meta" id="qMeta">Keine Frage aktiv</div>
-    <div class="question-text" id="qText">Warte auf Frage vom Board …</div>
+    <div class="question-text" id="qText">Warte auf Frage vom Board…</div>
     <div class="answer-text" id="qAnswer"></div>
+
+    <div class="media-box" id="mediaBox" style="display:none;">
+      <img id="qImage" alt="" style="display:none;">
+      <audio id="qAudio" controls style="display:none;"></audio>
+    </div>
 
     <div class="current-team-pill" id="currentTeamPill" style="display:none;">
       <div class="avatar" id="currentTeamAvatar">T1</div>
       <div id="currentTeamText">Team 1 ist dran</div>
     </div>
+
+    <div class="status-line" id="answerStatus"></div>
   </div>
 
-  <div class="score-info" id="scoreInfo">Lade Teams …</div>
+  <div class="score-info" id="scoreInfo">Lade Teams…</div>
   <div class="teams-list" id="teamsList"></div>
 
   <div class="actions">
-    <button class="secondary" id="btnShowAnswer">Antwort anzeigen</button>
-    <button class="secondary" id="btnHideAnswer">Antwort verstecken</button>
     <button class="correct" id="btnCorrect">Richtig</button>
     <button class="wrong" id="btnWrong">Falsch</button>
   </div>
 
   <div class="small">
-    Tipp: Team oben antippen, um zu bestimmen, wer gerade dran ist.  
-    Das Board zeigt nur die Frage – die Antwort siehst du nur hier.
+    • Team oben antippen, um zu bestimmen, wer startet.<br>
+    • Bei „Falsch“ wird der Buzzer für alle frei. Wer zuerst drückt, ist dran.<br>
+    • Die Antwort ist nur hier sichtbar, nicht auf dem Board.
   </div>
 </div>
 
@@ -228,111 +270,42 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
 <script>
-  /* Dieselben Fragen/Teams wie im Board */
-  const gameData = {
-    categories: [
-      {
-        name: "Lyrics/Songs",
-        questions: [
-          { value: 100, question: "We will, we will ...?", answer: "Rock you" },
-          { value: 200, question: "Wer singt 'Bad Guy'?", answer: "Billie Eilish" },
-          { value: 300, question: "Aus welchem Land kommt ABBA?", answer: "Schweden" },
-          { value: 500, question: "Wer veröffentlichte 'Astroworld'?", answer: "Travis Scott" }
-        ]
-      },
-      {
-        name: "Geografie",
-        questions: [
-          { value: 100, question: "Hauptstadt von Spanien?", answer: "Madrid" },
-          { value: 200, question: "Fluss durch London?", answer: "Die Themse" },
-          { value: 300, question: "In welchem Land liegt Kapstadt?", answer: "Südafrika" },
-          { value: 500, question: "Größter Ozean?", answer: "Der Pazifische Ozean" }
-        ]
-      },
-      {
-        name: "Games",
-        questions: [
-          { value: 100, question: "Nintendo-Klempner mit roter Mütze?", answer: "Mario" },
-          { value: 200, question: "Sandbox-Spiel mit Blöcken?", answer: "Minecraft" },
-          { value: 300, question: "Abkürzung für 'League of Legends'?", answer: "LoL" },
-          { value: 500, question: "Auf welcher Map spielt man Dust II?", answer: "Counter-Strike" }
-        ]
-      },
-      {
-        name: "Sprichwörter",
-        questions: [
-          { value: 100, question: "Morgenstund hat ...", answer: "Gold im Mund" },
-          { value: 200, question: "Wer im Glashaus sitzt, soll nicht mit ...", answer: "Steinen werfen" },
-          { value: 300, question: "Aller guten Dinge sind ...", answer: "Drei" },
-          { value: 500, question: "Viele Köche ...", answer: "verderben den Brei" }
-        ]
-      },
-      {
-        name: "Abkürzungen",
-        questions: [
-          { value: 100, question: "Wofür steht 'LOL'?", answer: "Laughing out loud" },
-          { value: 200, question: "Wofür steht 'FAQ'?", answer: "Frequently Asked Questions" },
-          { value: 300, question: "Was bedeutet 'AFK'?", answer: "Away from keyboard" },
-          { value: 500, question: "Wofür steht 'HDMI'?", answer: "High-Definition Multimedia Interface" }
-        ]
-      },
-      {
-        name: "YT-Titel",
-        questions: [
-          { value: 100, question: "Wie heißt die Plattform?", answer: "YouTube" },
-          { value: 200, question: "Wie nennt man Vorschaubilder?", answer: "Thumbnails" },
-          { value: 300, question: "Button zum Kanalfolgen?", answer: "Abonnieren / Subscribe" },
-          { value: 500, question: "Bezahlte Produktvorstellung?", answer: "Sponsoring / Werbeintegration" }
-        ]
-      }
-    ],
-    teams: [
-      { label: "Team 1", players: ["Schmobin"] },
-      { label: "Team 2", players: ["Krokoboss"] },
-      { label: "Team 3", players: ["Zarbex"] },
-      { label: "Team 4", players: ["Elquaria"] }
-    ]
-  };
+  let gameData = null;
+  let NUM_TEAMS = 0;
+  let currentState = null;
 
-  const NUM_TEAMS = gameData.teams.length;
-
-  /* ========= Firebase ========= */
-
-  // dieselbe Config wie in index.html!
   const firebaseConfig = {
-  apiKey: "AIzaSyCRCG2C89X9eK_s9Lg44jc3rFRrsIua42Q",
-  authDomain: "minecraftquiz-f5686.firebaseapp.com",
-  databaseURL: "https://minecraftquiz-f5686-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "minecraftquiz-f5686",
-  storageBucket: "minecraftquiz-f5686.firebasestorage.app",
-  messagingSenderId: "278820007596",
-  appId: "1:278820007596:web:67ab6be9e47be45a04f909"
-};
+    apiKey: "AIzaSyCRCG2C89X9eK_s9Lg44jc3rFRrsIua42Q",
+    authDomain: "minecraftquiz-f5686.firebaseapp.com",
+    databaseURL: "https://minecraftquiz-f5686-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "minecraftquiz-f5686",
+    storageBucket: "minecraftquiz-f5686.firebasestorage.app",
+    messagingSenderId: "278820007596",
+    appId: "1:278820007596:web:67ab6be9e47be45a04f909"
+  };
   if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
   }
   const db = firebase.database();
-  const GAME_ID = "quiz-1";   // muss gleich sein wie im Board
+  const GAME_ID = "quiz-1";
   const gameRef = db.ref("games/" + GAME_ID);
 
-  /* ========= DOM ========= */
-
+  // DOM
   const statusTag = document.getElementById("statusTag");
   const qMeta = document.getElementById("qMeta");
   const qText = document.getElementById("qText");
   const qAnswer = document.getElementById("qAnswer");
+  const mediaBox = document.getElementById("mediaBox");
+  const qImage = document.getElementById("qImage");
+  const qAudio = document.getElementById("qAudio");
   const currentTeamPill = document.getElementById("currentTeamPill");
   const currentTeamAvatar = document.getElementById("currentTeamAvatar");
   const currentTeamText = document.getElementById("currentTeamText");
+  const answerStatus = document.getElementById("answerStatus");
   const scoreInfo = document.getElementById("scoreInfo");
   const teamsList = document.getElementById("teamsList");
-
-  const btnShowAnswer = document.getElementById("btnShowAnswer");
-  const btnHideAnswer = document.getElementById("btnHideAnswer");
   const btnCorrect = document.getElementById("btnCorrect");
   const btnWrong = document.getElementById("btnWrong");
-
-  let currentState = null;
 
   function setStatus(text, ok = true) {
     statusTag.textContent = text;
@@ -340,7 +313,11 @@
     statusTag.style.borderColor = ok ? "rgba(34,197,94,0.6)" : "rgba(248,113,113,0.8)";
   }
 
-  /* ========= TEAMS-UI ========= */
+  async function loadGameData() {
+    const res = await fetch("gameData.json");
+    gameData = await res.json();
+    NUM_TEAMS = gameData.teams.length;
+  }
 
   function renderTeamsList(state) {
     const scores = state.scores || [];
@@ -360,13 +337,20 @@
       teamsList.appendChild(chip);
     });
 
-    const activeTeam = gameData.teams[currentTeamIndex];
+    const answerIdx = (state.activeAnswerTeamIndex != null)
+      ? state.activeAnswerTeamIndex
+      : currentTeamIndex;
+    const activeTeam = gameData.teams[answerIdx];
     if (activeTeam) {
-      const name = activeTeam.label || `Team ${currentTeamIndex+1}`;
+      const name = activeTeam.label || `Team ${answerIdx+1}`;
       const firstPlayer = (activeTeam.players && activeTeam.players[0]) || name;
       const initials = firstPlayer.split(" ").map(x => x[0]).join("").substring(0,2).toUpperCase();
       currentTeamAvatar.textContent = initials;
-      currentTeamText.textContent = `${name} ist dran`;
+      if (state.buzzOpen && state.activeAnswerTeamIndex == null) {
+        currentTeamText.textContent = "Buzzer ist frei";
+      } else {
+        currentTeamText.textContent = `${name} ist dran`;
+      }
       currentTeamPill.style.display = "inline-flex";
     }
   }
@@ -376,18 +360,36 @@
     if (!(t instanceof HTMLElement)) return;
     const idx = t.dataset.index;
     if (idx == null) return;
-    gameRef.update({ currentTeamIndex: Number(idx) });
+    const n = Number(idx);
+    gameRef.update({ currentTeamIndex: n, activeAnswerTeamIndex: n });
   });
 
-  /* ========= FRAGE-UI ========= */
+  function setAnswerStatus(state) {
+    answerStatus.textContent = "";
+    answerStatus.classList.remove("status-correct", "status-wrong", "status-neutral");
+
+    if (!state.currentQuestion) return;
+
+    if (state.questionResult === "correct") {
+      answerStatus.textContent = "Richtige Antwort!";
+      answerStatus.classList.add("status-correct");
+    } else if (state.questionResult === "wrong" && state.buzzOpen) {
+      answerStatus.textContent = "Falsch – Buzzer ist frei!";
+      answerStatus.classList.add("status-wrong");
+    } else if (state.buzzOpen) {
+      answerStatus.textContent = "Buzzer ist frei!";
+      answerStatus.classList.add("status-neutral");
+    }
+  }
 
   function updateQuestionFromState(state) {
     const cq = state.currentQuestion;
     if (!cq) {
       qMeta.textContent = "Keine Frage aktiv";
-      qText.textContent = "Warte auf Frage vom Board …";
+      qText.textContent = "Warte auf Frage vom Board…";
       qAnswer.textContent = "";
-      qAnswer.classList.remove("visible");
+      mediaBox.style.display = "none";
+      answerStatus.textContent = "";
       return;
     }
 
@@ -399,20 +401,30 @@
     qMeta.textContent = `${cat.name} • ${q.value}`;
     qText.textContent = q.question;
     qAnswer.textContent = q.answer;
+
+    let hasMedia = false;
+    if (q.image) {
+      qImage.src = q.image;
+      qImage.style.display = "block";
+      hasMedia = true;
+    } else {
+      qImage.style.display = "none";
+    }
+    if (q.audio) {
+      qAudio.src = q.audio;
+      qAudio.style.display = "block";
+      hasMedia = true;
+    } else {
+      qAudio.style.display = "none";
+    }
+    mediaBox.style.display = hasMedia ? "flex" : "none";
+
+    setAnswerStatus(state);
   }
-
-  btnShowAnswer.addEventListener("click", () => {
-    qAnswer.classList.add("visible");
-  });
-
-  btnHideAnswer.addEventListener("click", () => {
-    qAnswer.classList.remove("visible");
-  });
-
-  /* ========= RICHTIG / FALSCH ========= */
 
   function resolveQuestion(correct) {
     if (!currentState || !currentState.currentQuestion) return;
+
     const { catIndex, qIndex } = currentState.currentQuestion;
     const cat = gameData.categories[catIndex];
     const q = cat?.questions[qIndex];
@@ -420,41 +432,65 @@
 
     const value = q.value;
     const scores = currentState.scores ? [...currentState.scores] : Array(NUM_TEAMS).fill(0);
-    const teamIndex = currentState.currentTeamIndex || 0;
+    const answerIdx = (currentState.activeAnswerTeamIndex != null)
+      ? currentState.activeAnswerTeamIndex
+      : currentState.currentTeamIndex;
 
-    scores[teamIndex] = (scores[teamIndex] || 0) + (correct ? value : -value);
+    if (correct) {
+      scores[answerIdx] = (scores[answerIdx] || 0) + value;
+      const used = Object.assign({}, currentState.used || {});
+      const key = `${catIndex}-${qIndex}`;
+      used[key] = true;
 
-    const used = Object.assign({}, currentState.used || {});
-    const key = `${catIndex}-${qIndex}`;
-    used[key] = true;
+      const nextTeam = (currentState.currentTeamIndex + 1) % NUM_TEAMS;
 
-    const nextTeam = (teamIndex + 1) % NUM_TEAMS;
+      gameRef.update({
+        scores,
+        used,
+        currentTeamIndex: nextTeam,
+        activeAnswerTeamIndex: nextTeam,
+        questionResult: "correct",
+        buzzOpen: false
+        // currentQuestion bleibt sichtbar – Board schließt
+      });
+    } else {
+      scores[answerIdx] = (scores[answerIdx] || 0) - value;
 
-    gameRef.update({
-      scores,
-      used,
-      currentTeamIndex: nextTeam,
-      currentQuestion: null
-    });
+      gameRef.update({
+        scores,
+        questionResult: "wrong",
+        buzzOpen: true,
+        activeAnswerTeamIndex: null
+      });
+    }
   }
 
   btnCorrect.addEventListener("click", () => resolveQuestion(true));
   btnWrong.addEventListener("click", () => resolveQuestion(false));
 
-  /* ========= STATE-LISTENER ========= */
+  async function start() {
+    try {
+      await loadGameData();
+      setStatus("Verbunden…");
+      gameRef.on("value", (snapshot) => {
+        if (!snapshot.exists()) {
+          setStatus("Keine Daten – zuerst Board öffnen?", false);
+          return;
+        }
+        const state = snapshot.val();
+        currentState = state;
+        setStatus("Verbunden");
 
-  gameRef.on("value", (snapshot) => {
-    if (!snapshot.exists()) {
-      setStatus("Keine Daten – zuerst Board öffnen?", false);
-      return;
+        renderTeamsList(state);
+        updateQuestionFromState(state);
+      });
+    } catch (err) {
+      console.error(err);
+      setStatus("Fehler beim Laden von gameData.json", false);
     }
-    const state = snapshot.val();
-    currentState = state;
-    setStatus("Verbunden");
+  }
 
-    renderTeamsList(state);
-    updateQuestionFromState(state);
-  });
+  start();
 </script>
 </body>
 </html>
