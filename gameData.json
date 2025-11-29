@@ -1,0 +1,70 @@
+{
+  "categories": [
+    {
+      "name": "Lyrics/Songs",
+      "questions": [
+        { "value": 100, "question": "We will, we will ...?", "answer": "Rock you" },
+        { "value": 200, "question": "Wer singt 'Bad Guy'?", "answer": "Billie Eilish" },
+        { "value": 300, "question": "Aus welchem Land kommt ABBA?", "answer": "Schweden" },
+        { "value": 400, "question": "I got a feeling, that tonight’s gonna be a ...", "answer": "Good night" },
+        { "value": 500, "question": "Wer veröffentlichte 'Astroworld'?", "answer": "Travis Scott" }
+      ]
+    },
+    {
+      "name": "Geografie",
+      "questions": [
+        { "value": 100, "question": "Hauptstadt von Spanien?", "answer": "Madrid" },
+        { "value": 200, "question": "Fluss durch London?", "answer": "Die Themse" },
+        { "value": 300, "question": "In welchem Land liegt Kapstadt?", "answer": "Südafrika" },
+        { "value": 400, "question": "Welcher Kontinent hat die meisten Länder?", "answer": "Afrika" },
+        { "value": 500, "question": "Größter Ozean?", "answer": "Der Pazifische Ozean" }
+      ]
+    },
+    {
+      "name": "Games",
+      "questions": [
+        { "value": 100, "question": "Nintendo-Klempner mit roter Mütze?", "answer": "Mario" },
+        { "value": 200, "question": "Sandbox-Spiel mit Blöcken?", "answer": "Minecraft" },
+        { "value": 300, "question": "Abkürzung für 'League of Legends'?", "answer": "LoL" },
+        { "value": 400, "question": "Auf welcher Map spielt man Erangel?", "answer": "PUBG" },
+        { "value": 500, "question": "Auf welcher Map spielt man Dust II?", "answer": "Counter-Strike" }
+      ]
+    },
+    {
+      "name": "Sprichwörter",
+      "questions": [
+        { "value": 100, "question": "Morgenstund hat ...", "answer": "Gold im Mund" },
+        { "value": 200, "question": "Wer im Glashaus sitzt, soll nicht mit ...", "answer": "Steinen werfen" },
+        { "value": 300, "question": "Aller guten Dinge sind ...", "answer": "Drei" },
+        { "value": 400, "question": "Der Apfel fällt nicht weit ...", "answer": "vom Stamm" },
+        { "value": 500, "question": "Viele Köche ...", "answer": "verderben den Brei" }
+      ]
+    },
+    {
+      "name": "Abkürzungen",
+      "questions": [
+        { "value": 100, "question": "Wofür steht 'LOL'?", "answer": "Laughing out loud" },
+        { "value": 200, "question": "Wofür steht 'FAQ'?", "answer": "Frequently Asked Questions" },
+        { "value": 300, "question": "Wofür steht 'AFK'?", "answer": "Away from keyboard" },
+        { "value": 400, "question": "Wofür steht 'FPS'?", "answer": "Frames per second" },
+        { "value": 500, "question": "Wofür steht 'HDMI'?", "answer": "High-Definition Multimedia Interface" }
+      ]
+    },
+    {
+      "name": "YT-Titel",
+      "questions": [
+        { "value": 100, "question": "Wie heißt die Plattform?", "answer": "YouTube" },
+        { "value": 200, "question": "Wie nennt man Vorschaubilder?", "answer": "Thumbnails" },
+        { "value": 300, "question": "Button zum Kanalfolgen?", "answer": "Abonnieren" },
+        { "value": 400, "question": "Bezahlte Produktvorstellung?", "answer": "Sponsoring" },
+        { "value": 500, "question": "Wie heißt der Empfehlungs-Algorithmus?", "answer": "Recommendation Algorithm" }
+      ]
+    }
+  ],
+  "teams": [
+    { "label": "Team 1", "players": ["Schmobin"] },
+    { "label": "Team 2", "players": ["Krokoboss"] },
+    { "label": "Team 3", "players": ["Zarbex"] },
+    { "label": "Team 4", "players": ["Elquaria"] }
+  ]
+}
