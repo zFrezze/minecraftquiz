@@ -6,41 +6,40 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     :root {
-      --bg: #020617;
       --primary: #a855ff;
       --primary-soft: #7c3aed;
+      --primary-dark: #4c1d95;
       --text-main: #f9fafb;
       --text-dim: #9ca3af;
       --danger: #f97373;
-      --radius-lg: 1.2rem;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       min-height: 100vh;
-      background: radial-gradient(circle at top, #111827, #020617);
+      background: radial-gradient(circle at top, #111827, #020617 80%);
       color: var(--text-main);
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
       padding: 10px;
     }
 
     .card {
-      width: min(420px, 100%);
-      background: rgba(15,23,42,0.95);
-      border-radius: var(--radius-lg);
+      width: min(440px, 100%);
+      background: rgba(15,23,42,0.96);
+      border-radius: 16px;
       border: 1px solid rgba(148,163,184,0.6);
       box-shadow: 0 18px 40px rgba(0,0,0,1);
-      padding: 14px 16px 16px;
+      padding: 14px 14px 16px;
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
 
-    .card-header {
+    .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -50,17 +49,17 @@
       color: var(--text-dim);
     }
 
-    .tag {
+    .status-tag {
       padding: 3px 8px;
       border-radius: 999px;
-      background: rgba(15,23,42,0.9);
       border: 1px solid rgba(148,163,184,0.7);
+      background: rgba(15,23,42,0.9);
       font-size: 0.7rem;
     }
 
     .question-box {
-      border-radius: 1rem;
-      background: radial-gradient(circle at top, var(--primary-soft), #4c1d95);
+      border-radius: 14px;
+      background: linear-gradient(to top, var(--primary-dark), var(--primary-soft));
       padding: 12px 12px 10px;
       box-shadow: 0 18px 40px rgba(0,0,0,1);
     }
@@ -74,11 +73,24 @@
 
     .question-text {
       margin-top: 8px;
-      font-size: 0.96rem;
+      font-size: 1rem;
       line-height: 1.4;
     }
 
-    .current-team {
+    .answer-text {
+      margin-top: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #fef9c3;
+      text-shadow: 0 0 12px rgba(254,240,138,0.9);
+      display: none;
+    }
+
+    .answer-text.visible {
+      display: block;
+    }
+
+    .current-team-pill {
       margin-top: 10px;
       display: inline-flex;
       align-items: center;
@@ -89,7 +101,7 @@
       font-size: 0.78rem;
     }
 
-    .team-avatar {
+    .avatar {
       width: 22px;
       height: 22px;
       border-radius: 999px;
@@ -104,8 +116,8 @@
     .teams-list {
       margin-top: 4px;
       display: flex;
-      gap: 6px;
       flex-wrap: wrap;
+      gap: 6px;
     }
 
     .team-chip {
@@ -119,9 +131,9 @@
     }
 
     .team-chip.active {
-      background: rgba(168,85,255,0.2);
-      border-color: var(--primary);
-      color: var(--primary);
+      background: rgba(34,197,94,0.15);
+      border-color: #22c55e;
+      color: #bbf7d0;
     }
 
     .score-info {
@@ -155,18 +167,15 @@
       transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease;
     }
 
-    button.correct {
-      background: radial-gradient(circle at top, #22c55e, #15803d);
-    }
-
-    button.wrong {
-      background: radial-gradient(circle at top, #f97373, #b91c1c);
-    }
+    button.correct { background: linear-gradient(to top, #15803d, #22c55e); }
+    button.wrong { background: linear-gradient(to top, #b91c1c, #f97373); }
+    button.secondary { background: rgba(15,23,42,0.95); }
 
     button:hover {
       transform: translateY(-1px);
       box-shadow: 0 14px 30px rgba(0,0,0,1);
     }
+
     button:active {
       transform: translateY(1px);
       box-shadow: 0 8px 18px rgba(0,0,0,1);
@@ -176,178 +185,276 @@
       margin-top: 4px;
       font-size: 0.72rem;
       color: var(--text-dim);
+      line-height: 1.3;
     }
   </style>
 </head>
 <body>
 <div class="card">
-  <div class="card-header">
+  <div class="header">
     <div>Quiz Controller</div>
-    <div class="tag" id="connectionStatus">Verbindung wird aufgebaut …</div>
+    <div class="status-tag" id="statusTag">Verbinde …</div>
   </div>
 
   <div class="question-box">
     <div class="question-meta" id="qMeta">Keine Frage aktiv</div>
     <div class="question-text" id="qText">Warte auf Frage vom Board …</div>
+    <div class="answer-text" id="qAnswer"></div>
 
-    <div class="current-team" id="currentTeamPill" style="display:none;">
-      <div class="team-avatar" id="currentTeamAvatar">TL</div>
-      <div id="currentTeamText">Team Links ist dran</div>
+    <div class="current-team-pill" id="currentTeamPill" style="display:none;">
+      <div class="avatar" id="currentTeamAvatar">T1</div>
+      <div id="currentTeamText">Team 1 ist dran</div>
     </div>
   </div>
 
-  <div class="teams-section">
-    <div class="score-info" id="scoreInfo">Team-Punkte werden hier angezeigt.</div>
-    <div class="teams-list" id="teamsList"></div>
-  </div>
+  <div class="score-info" id="scoreInfo">Lade Teams …</div>
+  <div class="teams-list" id="teamsList"></div>
 
   <div class="actions">
+    <button class="secondary" id="btnShowAnswer">Antwort anzeigen</button>
+    <button class="secondary" id="btnHideAnswer">Antwort verstecken</button>
     <button class="correct" id="btnCorrect">Richtig</button>
     <button class="wrong" id="btnWrong">Falsch</button>
   </div>
 
   <div class="small">
-    Tipp: Im Board-Fenster kann man mit Pfeiltasten das Team wechseln.  
-    Hier kannst du ein Team antippen, um den Zug zu ändern.
+    Tipp: Team oben antippen, um zu bestimmen, wer gerade dran ist.  
+    Das Board zeigt nur die Frage – die Antwort siehst du nur hier.
   </div>
 </div>
 
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
 <script>
-  const statusEl = document.getElementById("connectionStatus");
+  /* Dieselben Fragen/Teams wie im Board */
+  const gameData = {
+    categories: [
+      {
+        name: "Lyrics/Songs",
+        questions: [
+          { value: 100, question: "We will, we will ...?", answer: "Rock you" },
+          { value: 200, question: "Wer singt 'Bad Guy'?", answer: "Billie Eilish" },
+          { value: 300, question: "Aus welchem Land kommt ABBA?", answer: "Schweden" },
+          { value: 500, question: "Wer veröffentlichte 'Astroworld'?", answer: "Travis Scott" }
+        ]
+      },
+      {
+        name: "Geografie",
+        questions: [
+          { value: 100, question: "Hauptstadt von Spanien?", answer: "Madrid" },
+          { value: 200, question: "Fluss durch London?", answer: "Die Themse" },
+          { value: 300, question: "In welchem Land liegt Kapstadt?", answer: "Südafrika" },
+          { value: 500, question: "Größter Ozean?", answer: "Der Pazifische Ozean" }
+        ]
+      },
+      {
+        name: "Games",
+        questions: [
+          { value: 100, question: "Nintendo-Klempner mit roter Mütze?", answer: "Mario" },
+          { value: 200, question: "Sandbox-Spiel mit Blöcken?", answer: "Minecraft" },
+          { value: 300, question: "Abkürzung für 'League of Legends'?", answer: "LoL" },
+          { value: 500, question: "Auf welcher Map spielt man Dust II?", answer: "Counter-Strike" }
+        ]
+      },
+      {
+        name: "Sprichwörter",
+        questions: [
+          { value: 100, question: "Morgenstund hat ...", answer: "Gold im Mund" },
+          { value: 200, question: "Wer im Glashaus sitzt, soll nicht mit ...", answer: "Steinen werfen" },
+          { value: 300, question: "Aller guten Dinge sind ...", answer: "Drei" },
+          { value: 500, question: "Viele Köche ...", answer: "verderben den Brei" }
+        ]
+      },
+      {
+        name: "Abkürzungen",
+        questions: [
+          { value: 100, question: "Wofür steht 'LOL'?", answer: "Laughing out loud" },
+          { value: 200, question: "Wofür steht 'FAQ'?", answer: "Frequently Asked Questions" },
+          { value: 300, question: "Was bedeutet 'AFK'?", answer: "Away from keyboard" },
+          { value: 500, question: "Wofür steht 'HDMI'?", answer: "High-Definition Multimedia Interface" }
+        ]
+      },
+      {
+        name: "YT-Titel",
+        questions: [
+          { value: 100, question: "Wie heißt die Plattform?", answer: "YouTube" },
+          { value: 200, question: "Wie nennt man Vorschaubilder?", answer: "Thumbnails" },
+          { value: 300, question: "Button zum Kanalfolgen?", answer: "Abonnieren / Subscribe" },
+          { value: 500, question: "Bezahlte Produktvorstellung?", answer: "Sponsoring / Werbeintegration" }
+        ]
+      }
+    ],
+    teams: [
+      { label: "Team 1", players: ["Schmobin"] },
+      { label: "Team 2", players: ["Krokoboss"] },
+      { label: "Team 3", players: ["Zarbex"] },
+      { label: "Team 4", players: ["Elquaria"] }
+    ]
+  };
+
+  const NUM_TEAMS = gameData.teams.length;
+
+  /* ========= Firebase ========= */
+
+  // dieselbe Config wie in index.html!
+  const firebaseConfig = {
+    apiKey: "DEIN_API_KEY",
+    authDomain: "DEIN_PROJEKT.firebaseapp.com",
+    databaseURL: "https://DEIN_PROJEKT-default-rtdb.firebaseio.com",
+    projectId: "DEIN_PROJEKT",
+    storageBucket: "DEIN_PROJEKT.appspot.com",
+    messagingSenderId: "DEINE_SENDER_ID",
+    appId: "DEINE_APP_ID"
+  };
+
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+  const db = firebase.database();
+  const GAME_ID = "quiz-1";   // muss gleich sein wie im Board
+  const gameRef = db.ref("games/" + GAME_ID);
+
+  /* ========= DOM ========= */
+
+  const statusTag = document.getElementById("statusTag");
   const qMeta = document.getElementById("qMeta");
   const qText = document.getElementById("qText");
+  const qAnswer = document.getElementById("qAnswer");
   const currentTeamPill = document.getElementById("currentTeamPill");
   const currentTeamAvatar = document.getElementById("currentTeamAvatar");
   const currentTeamText = document.getElementById("currentTeamText");
-  const teamsList = document.getElementById("teamsList");
   const scoreInfo = document.getElementById("scoreInfo");
+  const teamsList = document.getElementById("teamsList");
+
+  const btnShowAnswer = document.getElementById("btnShowAnswer");
+  const btnHideAnswer = document.getElementById("btnHideAnswer");
   const btnCorrect = document.getElementById("btnCorrect");
   const btnWrong = document.getElementById("btnWrong");
 
-  let teams = [];
-  let activeTeamIndex = 0;
-  let currentValue = 0;
+  let currentState = null;
 
   function setStatus(text, ok = true) {
-    statusEl.textContent = text;
-    statusEl.style.color = ok ? "#bbf7d0" : "#fecaca";
-    statusEl.style.borderColor = ok ? "rgba(34,197,94,0.6)" : "rgba(248,113,113,0.8)";
+    statusTag.textContent = text;
+    statusTag.style.color = ok ? "#bbf7d0" : "#fecaca";
+    statusTag.style.borderColor = ok ? "rgba(34,197,94,0.6)" : "rgba(248,113,113,0.8)";
   }
 
-  function sendToBoard(message) {
-    if (!window.opener || window.opener.closed) {
-      setStatus("Kein Board-Fenster gefunden", false);
-      return;
-    }
-    window.opener.postMessage({ source: "controller", ...message }, "*");
-  }
+  /* ========= TEAMS-UI ========= */
 
-  function renderTeams() {
-    teamsList.innerHTML = "";
-    if (!teams.length) {
-      scoreInfo.textContent = "Noch keine Teams empfangen.";
-      return;
-    }
+  function renderTeamsList(state) {
+    const scores = state.scores || [];
+    const currentTeamIndex = state.currentTeamIndex || 0;
 
-    scoreInfo.textContent = teams
-      .map(t => `${t.name}: ${t.score}`)
+    scoreInfo.textContent = scores
+      .map((s, i) => `${gameData.teams[i]?.label || `Team ${i+1}`}: ${s || 0}`)
       .join(" • ");
 
-    teams.forEach((team, index) => {
+    teamsList.innerHTML = "";
+    gameData.teams.forEach((team, index) => {
       const chip = document.createElement("button");
       chip.type = "button";
-      chip.className = "team-chip" + (index === activeTeamIndex ? " active" : "");
-      chip.textContent = team.name;
+      chip.className = "team-chip" + (index === currentTeamIndex ? " active" : "");
+      chip.textContent = team.label || `Team ${index+1}`;
       chip.dataset.index = String(index);
       teamsList.appendChild(chip);
     });
-  }
 
-  function setActiveTeam(index, fromBoard = false) {
-    activeTeamIndex = (index + teams.length) % (teams.length || 1);
-    renderTeams();
-    const team = teams[activeTeamIndex];
-    if (!team) return;
-
-    const initials = team.name.split(" ").map(x => x[0]).join("").substring(0, 2).toUpperCase();
-    currentTeamAvatar.textContent = initials;
-    currentTeamText.textContent = `${team.name} ist dran`;
-    currentTeamPill.style.display = "inline-flex";
-
-    if (!fromBoard) {
-      sendToBoard({ type: "setTurn", payload: { teamIndex: activeTeamIndex } });
+    const activeTeam = gameData.teams[currentTeamIndex];
+    if (activeTeam) {
+      const name = activeTeam.label || `Team ${currentTeamIndex+1}`;
+      const firstPlayer = (activeTeam.players && activeTeam.players[0]) || name;
+      const initials = firstPlayer.split(" ").map(x => x[0]).join("").substring(0,2).toUpperCase();
+      currentTeamAvatar.textContent = initials;
+      currentTeamText.textContent = `${name} ist dran`;
+      currentTeamPill.style.display = "inline-flex";
     }
   }
-
-  window.addEventListener("message", (event) => {
-    const data = event.data;
-    if (!data || data.source !== "board") return;
-
-    setStatus("Verbunden");
-
-    if (data.type === "init") {
-      teams = data.payload.teams || [];
-      activeTeamIndex = data.payload.teamIndex || 0;
-      renderTeams();
-      setActiveTeam(activeTeamIndex, true);
-    } else if (data.type === "scoreUpdate") {
-      const list = data.payload.teams || [];
-      list.forEach(t => {
-        const local = teams.find(x => x.index === t.index);
-        if (local) local.score = t.score;
-      });
-      renderTeams();
-    } else if (data.type === "questionOpen") {
-      const { categoryName, value, question, teamIndex } = data.payload;
-      currentValue = value;
-      qMeta.textContent = `${categoryName} • ${value}`;
-      qText.textContent = question;
-      if (typeof teamIndex === "number") {
-        activeTeamIndex = teamIndex;
-        setActiveTeam(activeTeamIndex, true);
-      }
-    } else if (data.type === "questionClosed") {
-      qMeta.textContent = "Keine Frage aktiv";
-      qText.textContent = "Warte auf nächste Frage …";
-      currentValue = 0;
-    } else if (data.type === "turnSet") {
-      setActiveTeam(data.payload.teamIndex, true);
-    }
-  });
 
   teamsList.addEventListener("click", (e) => {
     const t = e.target;
     if (!(t instanceof HTMLElement)) return;
     const idx = t.dataset.index;
     if (idx == null) return;
-    setActiveTeam(Number(idx));
+    gameRef.update({ currentTeamIndex: Number(idx) });
   });
 
-  function sendResult(correct) {
-    if (!currentValue) {
-      // kein Fragewert → nichts tun
+  /* ========= FRAGE-UI ========= */
+
+  function updateQuestionFromState(state) {
+    const cq = state.currentQuestion;
+    if (!cq) {
+      qMeta.textContent = "Keine Frage aktiv";
+      qText.textContent = "Warte auf Frage vom Board …";
+      qAnswer.textContent = "";
+      qAnswer.classList.remove("visible");
       return;
     }
-    sendToBoard({
-      type: "resolve",
-      payload: {
-        teamIndex: activeTeamIndex,
-        correct,
-        value: currentValue
-      }
+
+    const { catIndex, qIndex } = cq;
+    const cat = gameData.categories[catIndex];
+    const q = cat?.questions[qIndex];
+    if (!cat || !q) return;
+
+    qMeta.textContent = `${cat.name} • ${q.value}`;
+    qText.textContent = q.question;
+    qAnswer.textContent = q.answer;
+  }
+
+  btnShowAnswer.addEventListener("click", () => {
+    qAnswer.classList.add("visible");
+  });
+
+  btnHideAnswer.addEventListener("click", () => {
+    qAnswer.classList.remove("visible");
+  });
+
+  /* ========= RICHTIG / FALSCH ========= */
+
+  function resolveQuestion(correct) {
+    if (!currentState || !currentState.currentQuestion) return;
+    const { catIndex, qIndex } = currentState.currentQuestion;
+    const cat = gameData.categories[catIndex];
+    const q = cat?.questions[qIndex];
+    if (!q) return;
+
+    const value = q.value;
+    const scores = currentState.scores ? [...currentState.scores] : Array(NUM_TEAMS).fill(0);
+    const teamIndex = currentState.currentTeamIndex || 0;
+
+    scores[teamIndex] = (scores[teamIndex] || 0) + (correct ? value : -value);
+
+    const used = Object.assign({}, currentState.used || {});
+    const key = `${catIndex}-${qIndex}`;
+    used[key] = true;
+
+    const nextTeam = (teamIndex + 1) % NUM_TEAMS;
+
+    gameRef.update({
+      scores,
+      used,
+      currentTeamIndex: nextTeam,
+      currentQuestion: null
     });
   }
 
-  btnCorrect.addEventListener("click", () => sendResult(true));
-  btnWrong.addEventListener("click", () => sendResult(false));
+  btnCorrect.addEventListener("click", () => resolveQuestion(true));
+  btnWrong.addEventListener("click", () => resolveQuestion(false));
 
-  window.addEventListener("load", () => {
-    if (!window.opener || window.opener.closed) {
-      setStatus("Board noch nicht geöffnet", false);
-    } else {
-      setStatus("Verbinde …");
-      sendToBoard({ type: "register" });
+  /* ========= STATE-LISTENER ========= */
+
+  gameRef.on("value", (snapshot) => {
+    if (!snapshot.exists()) {
+      setStatus("Keine Daten – zuerst Board öffnen?", false);
+      return;
     }
+    const state = snapshot.val();
+    currentState = state;
+    setStatus("Verbunden");
+
+    renderTeamsList(state);
+    updateQuestionFromState(state);
   });
 </script>
 </body>
