@@ -13,6 +13,8 @@
       --text-main: #f9fafb;
       --text-dim: #9ca3af;
       --danger: #f97373;
+      --radius-pill: 999px;
+      --radius-lg: 1.4rem;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -29,7 +31,7 @@
     }
 
     .card {
-      width: min(500px, 100%);
+      width: min(900px, 100%);
       background: rgba(15,23,42,0.96);
       border-radius: 18px;
       border: 1px solid rgba(148,163,184,0.6);
@@ -48,6 +50,8 @@
       text-transform: uppercase;
       letter-spacing: 0.1em;
       color: var(--text-dim);
+      flex-wrap: wrap;
+      gap: 6px;
     }
 
     .status-tag {
@@ -81,6 +85,18 @@
       color: #e5e7eb;
     }
 
+    .top-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.4fr);
+      gap: 10px;
+    }
+
+    @media (max-width: 800px) {
+      .top-row {
+        grid-template-columns: minmax(0,1fr);
+      }
+    }
+
     .question-box {
       border-radius: 14px;
       background: linear-gradient(to top, var(--primary-dark), var(--primary-soft));
@@ -111,7 +127,7 @@
 
     .media-box img {
       max-width: 100%;
-      max-height: 220px;
+      max-height: 200px;
       border-radius: 12px;
       box-shadow: 0 14px 30px rgba(0,0,0,1);
     }
@@ -138,8 +154,8 @@
     }
 
     .buzzer-button {
-      width: 150px;
-      height: 150px;
+      width: 140px;
+      height: 140px;
       border-radius: 999px;
       border: none;
       cursor: pointer;
@@ -169,6 +185,82 @@
       box-shadow: 0 8px 20px rgba(0,0,0,0.8);
     }
 
+    /* Mini-Board für Player */
+    .player-board-wrap {
+      border-radius: 14px;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(148,163,184,0.4);
+      padding: 10px;
+      box-shadow: 0 12px 30px rgba(0,0,0,1);
+    }
+
+    .player-board {
+      display: grid;
+      gap: 6px 10px;
+      max-width: 100%;
+    }
+
+    .player-board.dynamic-cols-6 { grid-template-columns: repeat(6, minmax(0,1fr)); }
+    .player-board.dynamic-cols-custom { grid-template-columns: repeat(var(--col-count), minmax(0,1fr)); }
+
+    .pb-cell {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding-inline: 4px;
+      user-select: none;
+    }
+
+    .pb-pill {
+      width: 100%;
+      border-radius: var(--radius-pill);
+      padding: 6px 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      pointer-events: none; /* ganz wichtig: Player kann NICHT klicken */
+    }
+
+    .pb-pill::before {
+      content: "";
+      position: absolute;
+      inset: -60%;
+      background: radial-gradient(circle at top, rgba(255,255,255,0.18), transparent 60%);
+      opacity: 0.75;
+      pointer-events: none;
+    }
+
+    .pb-pill.category {
+      background: linear-gradient(to top, #020617, var(--primary-dark), var(--primary-soft));
+      border: 1px solid #ffffff;
+    }
+
+    .pb-pill.value {
+      background: linear-gradient(to top, #020617, #2b1563, #6d28d9);
+      border: 1px solid #6b7280;
+    }
+
+    .pb-pill.value.used {
+      opacity: 0.2;
+      filter: grayscale(0.4);
+    }
+
+    .pb-cat-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .pb-val-label {
+      font-size: 0.9rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
     .small {
       margin-top: 6px;
       font-size: 0.72rem;
@@ -185,31 +277,39 @@
   </div>
 
   <div class="team-select" id="teamSelectRow">
-    <!-- Team Pills werden per JS eingefügt -->
+    <!-- Team Pills per JS -->
   </div>
 
-  <div class="question-box">
-    <div class="question-meta" id="qMeta">Keine Frage aktiv</div>
-    <div class="question-text" id="qText">Warte auf Frage vom Board…</div>
+  <div class="top-row">
+    <div>
+      <div class="question-box">
+        <div class="question-meta" id="qMeta">Keine Frage aktiv</div>
+        <div class="question-text" id="qText">Warte auf Frage vom Board…</div>
 
-    <div class="media-box" id="mediaBox" style="display:none;">
-      <img id="qImage" alt="" style="display:none;">
-      <audio id="qAudio" controls style="display:none;"></audio>
+        <div class="media-box" id="mediaBox" style="display:none;">
+          <img id="qImage" alt="" style="display:none;">
+          <audio id="qAudio" controls style="display:none;"></audio>
+        </div>
+
+        <div class="info-line info-neutral" id="infoLine">
+          Wähle dein Team oben &amp; warte auf die nächste Frage.
+        </div>
+      </div>
+
+      <div class="buzzer-wrapper">
+        <button id="buzzerBtn" class="buzzer-button disabled">BUZZ</button>
+      </div>
     </div>
 
-    <div class="info-line info-neutral" id="infoLine">
-      Wähle dein Team oben &amp; warte auf die nächste Frage.
+    <div class="player-board-wrap">
+      <div id="playerBoard" class="player-board"></div>
     </div>
-  </div>
-
-  <div class="buzzer-wrapper">
-    <button id="buzzerBtn" class="buzzer-button disabled">BUZZ</button>
   </div>
 
   <div class="small">
-    • Du siehst immer die aktuelle Frage, aber nie die Lösung.<br>
-    • Wenn jemand falsch antwortet, wird der Buzzer frei – wer zuerst drückt, ist dran.<br>
-    • Nur der Moderator im Controller vergibt Punkte.
+    • Du siehst das komplette Spielfeld, kannst aber nichts anklicken.<br>
+    • Wenn dein Team einmal bei einer Frage falsch war, kannst du bei dieser Frage nicht mehr buzzern.<br>
+    • Nur der Moderator im Controller vergibt Punkte und beendet Fragen.
   </div>
 </div>
 
@@ -239,7 +339,6 @@
   const GAME_ID = "quiz-1";
   const gameRef = db.ref("games/" + GAME_ID);
 
-  // DOM
   const statusTag = document.getElementById("statusTag");
   const teamSelectRow = document.getElementById("teamSelectRow");
   const qMeta = document.getElementById("qMeta");
@@ -249,6 +348,9 @@
   const qAudio = document.getElementById("qAudio");
   const infoLine = document.getElementById("infoLine");
   const buzzerBtn = document.getElementById("buzzerBtn");
+  const playerBoard = document.getElementById("playerBoard");
+
+  const pbPillMap = new Map();
 
   function setStatus(text, ok = true) {
     statusTag.textContent = text;
@@ -299,10 +401,86 @@
     saveTeamToStorage();
     renderTeamSelect();
     updateInfoLine(currentState);
+    updateBuzzerState(currentState);
   });
 
+  // ===== Player-Board (Spielfeld) =====
+  function renderPlayerBoard() {
+    playerBoard.innerHTML = "";
+    pbPillMap.clear();
+    const categories = gameData.categories;
+    const colCount = categories.length;
+
+    playerBoard.className = "player-board";
+    if (colCount === 6) playerBoard.classList.add("dynamic-cols-6");
+    else {
+      playerBoard.classList.add("dynamic-cols-custom");
+      playerBoard.style.setProperty("--col-count", colCount);
+    }
+
+    // Kategorien
+    categories.forEach(cat => {
+      const cell = document.createElement("div");
+      cell.className = "pb-cell";
+      const pill = document.createElement("div");
+      pill.className = "pb-pill category";
+      const label = document.createElement("div");
+      label.className = "pb-cat-label";
+      label.textContent = cat.name;
+      pill.appendChild(label);
+      cell.appendChild(pill);
+      playerBoard.appendChild(cell);
+    });
+
+    const maxQuestions = Math.max(...categories.map(c => c.questions.length));
+    for (let qIndex = 0; qIndex < maxQuestions; qIndex++) {
+      categories.forEach((cat, catIndex) => {
+        const q = cat.questions[qIndex];
+        const cell = document.createElement("div");
+        cell.className = "pb-cell";
+
+        if (!q) {
+          cell.style.visibility = "hidden";
+          playerBoard.appendChild(cell);
+          return;
+        }
+
+        const pill = document.createElement("div");
+        pill.className = "pb-pill value";
+        const label = document.createElement("div");
+        label.className = "pb-val-label";
+        label.textContent = q.value;
+        pill.appendChild(label);
+
+        const key = `${catIndex}-${qIndex}`;
+        pbPillMap.set(key, pill);
+
+        cell.appendChild(pill);
+        playerBoard.appendChild(cell);
+      });
+    }
+  }
+
+  function updatePlayerBoardUsed(state) {
+    const used = state?.used || {};
+    pbPillMap.forEach(el => el.classList.remove("used"));
+    Object.keys(used).forEach(key => {
+      const pill = pbPillMap.get(key);
+      if (pill) pill.classList.add("used");
+    });
+  }
+
   function updateQuestionFromState(state) {
-    const cq = state?.currentQuestion;
+    if (!state || state.gamePhase === "lobby") {
+      qMeta.textContent = "Lobby";
+      qText.textContent = "Warte, bis das Spiel gestartet wird.";
+      mediaBox.style.display = "none";
+      qImage.style.display = "none";
+      qAudio.style.display = "none";
+      return;
+    }
+
+    const cq = state.currentQuestion;
     if (!cq || !gameData) {
       qMeta.textContent = "Keine Frage aktiv";
       qText.textContent = "Warte auf Frage vom Board…";
@@ -345,6 +523,12 @@
       return;
     }
 
+    if (state.gamePhase === "lobby") {
+      infoLine.textContent = "Lobby – warte, bis das Spiel gestartet wird.";
+      infoLine.className = "info-line info-neutral";
+      return;
+    }
+
     if (!state.currentQuestion) {
       infoLine.textContent = "Es ist gerade keine Frage aktiv.";
       infoLine.className = "info-line info-neutral";
@@ -353,6 +537,7 @@
 
     const result = state.questionResult || "none";
     const buzzOpen = !!state.buzzOpen;
+    const failedTeams = state.failedTeams || Array(NUM_TEAMS).fill(false);
     const activeIdx = (state.activeAnswerTeamIndex != null)
       ? state.activeAnswerTeamIndex
       : state.currentTeamIndex;
@@ -363,18 +548,22 @@
       return;
     }
 
+    if (failedTeams[myTeamIndex]) {
+      infoLine.textContent = "Dein Team war bei dieser Frage schon falsch – kein Buzzer mehr.";
+      infoLine.className = "info-line info-locked";
+      return;
+    }
+
     if (buzzOpen) {
       if (state.activeAnswerTeamIndex == null) {
         infoLine.textContent = "Buzzer ist frei – drücke, wenn du die Antwort weißt!";
         infoLine.className = "info-line info-ready";
+      } else if (state.activeAnswerTeamIndex === myTeamIndex) {
+        infoLine.textContent = "Du bist dran – warte auf den Moderator.";
+        infoLine.className = "info-line info-neutral";
       } else {
-        if (state.activeAnswerTeamIndex === myTeamIndex) {
-          infoLine.textContent = "Du bist dran – warte auf den Moderator.";
-          infoLine.className = "info-line info-neutral";
-        } else {
-          infoLine.textContent = "Ein anderes Team ist gerade dran.";
-          infoLine.className = "info-line info-locked";
-        }
+        infoLine.textContent = "Ein anderes Team ist gerade dran.";
+        infoLine.className = "info-line info-locked";
       }
       return;
     }
@@ -394,25 +583,6 @@
     infoLine.className = "info-line info-neutral";
   }
 
-  function updateBuzzerState(state) {
-    if (!state || !state.currentQuestion) {
-      setBuzzerDisabled(true);
-      return;
-    }
-
-    const buzzOpen = !!state.buzzOpen;
-    const activeIdx = state.activeAnswerTeamIndex;
-
-    // Buzzer nur, wenn:
-    // - buzzOpen = true
-    // - noch niemand aktiv (activeAnswerTeamIndex == null)
-    if (buzzOpen && activeIdx == null) {
-      setBuzzerDisabled(false);
-    } else {
-      setBuzzerDisabled(true);
-    }
-  }
-
   function setBuzzerDisabled(disabled) {
     if (disabled) {
       buzzerBtn.classList.add("disabled");
@@ -421,13 +591,35 @@
     }
   }
 
+  function updateBuzzerState(state) {
+    if (!state || !state.currentQuestion || state.gamePhase === "lobby") {
+      setBuzzerDisabled(true);
+      return;
+    }
+
+    const buzzOpen = !!state.buzzOpen;
+    const failedTeams = state.failedTeams || Array(NUM_TEAMS).fill(false);
+
+    if (
+      buzzOpen &&
+      state.activeAnswerTeamIndex == null &&
+      !failedTeams[myTeamIndex]
+    ) {
+      setBuzzerDisabled(false);
+    } else {
+      setBuzzerDisabled(true);
+    }
+  }
+
   buzzerBtn.addEventListener("click", () => {
     if (!currentState || !currentState.currentQuestion) return;
+    if (currentState.gamePhase === "lobby") return;
 
-    // Wenn Buzzer nicht aktiv: ignorieren
     if (!currentState.buzzOpen || currentState.activeAnswerTeamIndex != null) return;
 
-    // Wer zuerst klickt, setzt sich als aktives Antwort-Team
+    const failedTeams = currentState.failedTeams || Array(NUM_TEAMS).fill(false);
+    if (failedTeams[myTeamIndex]) return;
+
     gameRef.update({
       buzzOpen: false,
       activeAnswerTeamIndex: myTeamIndex
@@ -439,7 +631,7 @@
       await loadGameData();
       loadTeamFromStorage();
       renderTeamSelect();
-
+      renderPlayerBoard();
       setStatus("Verbunden…");
 
       gameRef.on("value", (snapshot) => {
@@ -454,6 +646,7 @@
         updateQuestionFromState(state);
         updateInfoLine(state);
         updateBuzzerState(state);
+        updatePlayerBoardUsed(state);
       });
     } catch (err) {
       console.error(err);
