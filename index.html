@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <title>Quizduell Board</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- Font -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap">
   <style>
     :root {
@@ -20,8 +19,6 @@
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    /* ========= HINTERGRUND: Vignette + Grid ========= */
 
     body {
       font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -72,7 +69,7 @@
       gap: 16px;
     }
 
-    /* ========= HEADER: Logo + Turn ========= */
+    /* HEADER */
 
     .top-header {
       position: relative;
@@ -189,25 +186,19 @@
       }
     }
 
-    /* ========= BOARD ========= */
+    /* BOARD */
 
     .board-wrapper {
       flex: 1;
       padding: 10px 0 8px;
       border-radius: var(--radius-lg);
-      background: transparent;
-      border: none;
-      box-shadow: none;
       display: flex;
       flex-direction: column;
       gap: 16px;
     }
 
     .board-inner {
-      border-radius: 0;
       padding: 0;
-      background: transparent;
-      border: none;
     }
 
     .board {
@@ -252,33 +243,17 @@
       pointer-events: none;
     }
 
-    /* Kategorien: von unten schwarz nach oben lila */
     .pill.category-pill {
-      background: linear-gradient(
-        to top,
-        #020617 0%,
-        var(--primary-dark) 50%,
-        var(--primary-soft) 100%
-      );
+      background: linear-gradient(to top, #020617 0%, var(--primary-dark) 50%, var(--primary-soft) 100%);
       border: 2px solid #ffffff;
     }
 
-    /* Fragen: Gradient + graue Outline */
     .pill.value-pill {
-      background: linear-gradient(
-        to top,
-        #020617 0%,
-        #2b1563 50%,
-        #6d28d9 100%
-      );
+      background: linear-gradient(to top, #020617 0%, #2b1563 50%, #6d28d9 100%);
       border: 2px solid #6b7280;
       cursor: pointer;
       transition: transform 0.12s ease, box-shadow 0.12s ease,
                   filter 0.12s ease, border-color 0.15s ease, opacity 0.15s ease;
-    }
-
-    .pill.value-pill span {
-      text-shadow: 0 0 12px rgba(168,85,255,0.7);
     }
 
     .pill.value-pill:hover {
@@ -373,7 +348,7 @@
       box-shadow: 0 6px 16px rgba(0,0,0,1);
     }
 
-    /* ========= TEAMS: 4 Karten mit Avataren ========= */
+    /* TEAMS */
 
     .teams-bar {
       margin-top: 10px;
@@ -470,7 +445,7 @@
     .team-score-buttons button.plus { color: #bbf7d0; }
     .team-score-buttons button.minus { color: var(--danger); }
 
-    /* ========= MODAL ========= */
+    /* MODAL */
 
     .modal-backdrop {
       position: fixed;
@@ -628,10 +603,6 @@
       box-shadow: 0 8px 20px rgba(0,0,0,0.9);
     }
 
-    .modal-footer-row button.primary {
-      background: #020617;
-    }
-
     @media (max-width: 1100px) {
       .board { transform: scale(0.95); transform-origin: top center; }
       .teams-bar { grid-template-columns: repeat(2, minmax(0,1fr)); }
@@ -641,6 +612,17 @@
       .board { transform: scale(0.85); }
       .teams-bar { grid-template-columns: repeat(2, minmax(0,1fr)); }
       .board-footer { flex-direction: column; align-items: flex-start; }
+    }
+
+    /* LOBBY-BADGE */
+
+    .lobby-badge {
+      margin-left: 20px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      font-size: 0.75rem;
+      color: var(--text-dim);
     }
   </style>
 </head>
@@ -674,7 +656,7 @@
 
     <div class="board-footer">
       <div class="hint">
-        Kategorien, Fragen &amp; Teams im <code>gameData</code>-Objekt im Script anpassen.
+        <span id="phaseBadge" class="lobby-badge">Lobby – warte auf Start</span>
       </div>
       <div class="footer-controls">
         <button type="button" id="resetBoardBtn">Reset</button>
@@ -719,99 +701,9 @@
   </div>
 </div>
 
-<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-
 <script>
-  /* ========= GAME-DATEN ========= */
-  const gameData = {
-    categories: [
-      {
-        name: "Lyrics/Songs",
-        questions: [
-          { value: 100, question: "We will, we will ...?", answer: "Rock you" },
-          { value: 200, question: "Wer singt 'Bad Guy'?", answer: "Billie Eilish" },
-          { value: 300, question: "Aus welchem Land kommt ABBA?", answer: "Schweden" },
-          { value: 400, question: "Beende: 'I got a feeling, that tonight’s gonna be a ...'", answer: "Good night" },
-          { value: 500, question: "Wer veröffentlichte 'Astroworld'?", answer: "Travis Scott" }
-        ]
-      },
-      {
-        name: "Geografie",
-        questions: [
-          { value: 100, question: "Hauptstadt von Spanien?", answer: "Madrid" },
-          { value: 200, question: "Fluss durch London?", answer: "Die Themse" },
-          { value: 300, question: "In welchem Land liegt Kapstadt?", answer: "Südafrika" },
-          { value: 400, question: "In welchem Land liegt Tokio?", answer: "Japan" },
-          { value: 500, question: "Größter Ozean?", answer: "Der Pazifische Ozean" }
-        ]
-      },
-      {
-        name: "Games",
-        questions: [
-          { value: 100, question: "Nintendo-Klempner mit roter Mütze?", answer: "Mario" },
-          { value: 200, question: "Sandbox-Spiel mit Blöcken?", answer: "Minecraft" },
-          { value: 300, question: "Abkürzung für 'League of Legends'?", answer: "LoL" },
-          { value: 400, question: "Wie heißt die Konsole mit 'Master Chief' als Maskottchen?", answer: "Xbox" },
-          { value: 500, question: "Auf welcher Map spielt man Dust II?", answer: "Counter-Strike" }
-        ]
-      },
-      {
-        name: "Sprichwörter",
-        questions: [
-          { value: 100, question: "Morgenstund hat ...", answer: "Gold im Mund" },
-          { value: 200, question: "Wer im Glashaus sitzt, soll nicht mit ...", answer: "Steinen werfen" },
-          { value: 300, question: "Aller guten Dinge sind ...", answer: "Drei" },
-          { value: 400, question: "Viele Köche ...", answer: "verderben den Brei" },
-          { value: 500, question: "Ende: 'Der Apfel fällt nicht weit ...'", answer: "vom Stamm" }
-        ]
-      },
-      {
-        name: "Abkürzungen",
-        questions: [
-          { value: 100, question: "Wofür steht 'LOL'?", answer: "Laughing out loud" },
-          { value: 200, question: "Wofür steht 'FAQ'?", answer: "Frequently Asked Questions" },
-          { value: 300, question: "Was bedeutet 'AFK'?", answer: "Away from keyboard" },
-          { value: 400, question: "Wofür steht 'FPS' im Gaming?", answer: "Frames per second" },
-          { value: 500, question: "Wofür steht 'HDMI'?", answer: "High-Definition Multimedia Interface" }
-        ]
-      },
-      {
-        name: "YT-Titel",
-        questions: [
-          { value: 100, question: "Wie heißt die Plattform?", answer: "YouTube" },
-          { value: 200, question: "Wie nennt man Vorschaubilder?", answer: "Thumbnails" },
-          { value: 300, question: "Button zum Kanalfolgen?", answer: "Abonnieren / Subscribe" },
-          { value: 400, question: "Wie heißt die Funktion für kurzformatige Videos?", answer: "Shorts" },
-          { value: 500, question: "Bezahlte Produktvorstellung?", answer: "Sponsoring / Werbeintegration" }
-        ]
-      }
-    ],
-    teams: [
-      { label: "Team 1", players: ["Schmobin"] },
-      { label: "Team 2", players: ["Krokoboss"] },
-      { label: "Team 3", players: ["Zarbex"] },
-      { label: "Team 4", players: ["Elquaria"] }
-    ]
-  };
-
-  const NUM_TEAMS = gameData.teams.length;
-
-  const initialState = {
-    gamePhase: "lobby",
-    currentTeamIndex: 0,
-    scores: Array(NUM_TEAMS).fill(0),
-    used: {},
-    currentQuestion: null,
-    buzzOpen: false,
-    activeAnswerTeamIndex: null,
-    failedTeams: Array(NUM_TEAMS).fill(false),
-    questionResult: "none",
-    showAnswer: false
-  };
-
-  /* ========= Firebase ========= */
   const firebaseConfig = {
     apiKey: "AIzaSyCRCG2C89X9eK_s9Lg44jc3rFRrsIua42Q",
     authDomain: "minecraftquiz-f5686.firebaseapp.com",
@@ -822,17 +714,17 @@
     appId: "1:278820007596:web:67ab6be9e47be45a04f909"
   };
 
-  if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-  }
-  const db = firebase.database();
+  let gameData = null;
+  let NUM_TEAMS = 0;
+  let currentState = null;
   const GAME_ID = "quiz-1";
-  const gameRef = db.ref("games/" + GAME_ID);
-
-  /* ========= DOM-VARS ========= */
+  let gameRef = null;
 
   const boardEl = document.getElementById("board");
   const teamsBar = document.getElementById("teamsBar");
+  const resetBoardBtn = document.getElementById("resetBoardBtn");
+  const openControllerBtn = document.getElementById("openControllerBtn");
+  const phaseBadge = document.getElementById("phaseBadge");
 
   const modalBackdrop = document.getElementById("modalBackdrop");
   const modalHeaderCategory = document.getElementById("modalHeaderCategory");
@@ -845,18 +737,28 @@
   const modalAudio = document.getElementById("modalAudio");
   const modalTurnAvatar = document.getElementById("modalTurnAvatar");
   const modalTurnText = document.getElementById("modalTurnText");
-
-  const resetBoardBtn = document.getElementById("resetBoardBtn");
-  const openControllerBtn = document.getElementById("openControllerBtn");
   const closeModalBtn = document.getElementById("closeModalBtn");
   const backToBoardBtn = document.getElementById("backToBoardBtn");
+
   const turnTeamName = document.getElementById("turnTeamName");
   const turnAvatarHeader = document.getElementById("turnAvatarHeader");
 
   const pillMap = new Map();
-  let currentState = null;
 
-  /* ========= BOARD RENDERN ========= */
+  function createInitialState() {
+    return {
+      gamePhase: "lobby",
+      currentTeamIndex: 0,
+      scores: Array(NUM_TEAMS).fill(0),
+      used: {},
+      currentQuestion: null,
+      buzzOpen: false,
+      activeAnswerTeamIndex: null,
+      failedTeams: Array(NUM_TEAMS).fill(false),
+      questionResult: "none",
+      showAnswer: false
+    };
+  }
 
   function renderBoardStructure() {
     boardEl.innerHTML = "";
@@ -872,25 +774,20 @@
       boardEl.style.setProperty("--col-count", colCount);
     }
 
-    // Kategorien
-    categories.forEach((cat) => {
+    categories.forEach(cat => {
       const cell = document.createElement("div");
       cell.className = "cell category";
-
       const pill = document.createElement("div");
       pill.className = "pill category-pill";
       const label = document.createElement("div");
       label.className = "category-label";
       label.textContent = cat.name;
-
       pill.appendChild(label);
       cell.appendChild(pill);
       boardEl.appendChild(cell);
     });
 
-    // Fragen
     const maxQuestions = Math.max(...categories.map(c => c.questions.length));
-
     for (let qIndex = 0; qIndex < maxQuestions; qIndex++) {
       categories.forEach((cat, catIndex) => {
         const q = cat.questions[qIndex];
@@ -914,11 +811,10 @@
         pill.dataset.key = key;
         pill.addEventListener("click", () => {
           if (!currentState || currentState.used?.[key]) return;
+          if (currentState.gamePhase !== "playing") return;
 
           const failedTeams = Array(NUM_TEAMS).fill(false);
-
           gameRef.update({
-            gamePhase: "playing",
             currentQuestion: { catIndex, qIndex },
             questionResult: "none",
             buzzOpen: false,
@@ -935,11 +831,8 @@
     }
   }
 
-  /* ========= TEAMS-KARTEN ========= */
-
   function renderTeamsStructure() {
     teamsBar.innerHTML = "";
-
     gameData.teams.forEach((team, index) => {
       const card = document.createElement("article");
       card.className = "team-card";
@@ -949,7 +842,6 @@
       avatarsRow.className = "team-avatars";
 
       const players = team.players && team.players.length ? team.players : [team.label || `Team ${index+1}`];
-
       players.forEach(name => {
         const avatar = document.createElement("div");
         avatar.className = "team-avatar";
@@ -1003,8 +895,7 @@
       teamsBar.appendChild(card);
     });
 
-    // Manuelle Score-Anpassung
-    teamsBar.addEventListener("click", (e) => {
+    teamsBar.addEventListener("click", e => {
       const t = e.target;
       if (!(t instanceof HTMLElement)) return;
       const delta = t.dataset.delta;
@@ -1043,9 +934,22 @@
       modalTurnAvatar.textContent = initials;
       modalTurnText.textContent = `${name} ist dran`;
     }
+
+    if (state.gamePhase === "lobby") {
+      phaseBadge.textContent = "Lobby – warte auf Start";
+    } else {
+      phaseBadge.textContent = "Spiel läuft";
+    }
   }
 
-  /* ========= MODAL AUS STATE ========= */
+  function updateUsedFromState(state) {
+    const used = state.used || {};
+    pillMap.forEach(el => el.classList.remove("used"));
+    Object.keys(used).forEach(key => {
+      const el = pillMap.get(key);
+      if (el) el.classList.add("used");
+    });
+  }
 
   function updateModalFromState(state) {
     const cq = state.currentQuestion;
@@ -1063,7 +967,6 @@
     modalHeaderValue.innerHTML = `<strong>${q.value}</strong>`;
     modalQuestion.textContent = q.question;
 
-    // Media (Bild / Audio)
     let hasMedia = false;
     if (q.image) {
       modalImage.src = q.image;
@@ -1081,7 +984,6 @@
     }
     modalMedia.style.display = hasMedia ? "flex" : "none";
 
-    // Turn-Info
     const idx = (state.activeAnswerTeamIndex != null)
       ? state.activeAnswerTeamIndex
       : state.currentTeamIndex;
@@ -1100,7 +1002,6 @@
       }
     }
 
-    // Status
     modalStatus.textContent = "";
     modalStatus.classList.remove("modal-status-correct", "modal-status-wrong", "modal-status-buzz");
 
@@ -1123,7 +1024,6 @@
       modalStatus.classList.add("modal-status-buzz");
     }
 
-    // Antwort anzeigen, wenn showAnswer
     if (state.showAnswer && q.answer) {
       modalAnswer.textContent = q.answer;
       modalAnswer.classList.add("visible");
@@ -1134,42 +1034,6 @@
 
     modalBackdrop.classList.add("visible");
   }
-
-  /* ========= FRAGEN ALS USED MARKIEREN ========= */
-
-  function updateUsedFromState(state) {
-    const used = state.used || {};
-    pillMap.forEach(el => el.classList.remove("used"));
-    Object.keys(used).forEach(key => {
-      const el = pillMap.get(key);
-      if (el) el.classList.add("used");
-    });
-  }
-
-  /* ========= STATE AUS DB LADEN ========= */
-
-  gameRef.on("value", (snapshot) => {
-    if (!snapshot.exists()) {
-      gameRef.set(initialState);
-      return;
-    }
-    const state = snapshot.val() || initialState;
-    currentState = state;
-
-    updateTeamsFromState(state);
-    updateModalFromState(state);
-    updateUsedFromState(state);
-  });
-
-  /* ========= EVENTS ========= */
-
-  resetBoardBtn.addEventListener("click", () => {
-    gameRef.set(initialState);
-  });
-
-  openControllerBtn.addEventListener("click", () => {
-    window.open("controller.html", "_blank");
-  });
 
   function closeQuestion() {
     if (!currentState) return;
@@ -1184,10 +1048,19 @@
     });
   }
 
+  resetBoardBtn.addEventListener("click", () => {
+    if (!gameRef) return;
+    gameRef.set(createInitialState());
+  });
+
+  openControllerBtn.addEventListener("click", () => {
+    window.open("controller.html", "_blank");
+  });
+
   closeModalBtn.addEventListener("click", closeQuestion);
   backToBoardBtn.addEventListener("click", closeQuestion);
 
-  document.addEventListener("keydown", (e) => {
+  document.addEventListener("keydown", e => {
     if (!currentState) return;
     if (e.key === "Escape") {
       closeQuestion();
@@ -1200,10 +1073,39 @@
     }
   });
 
-  /* ========= INIT ========= */
+  async function init() {
+    const res = await fetch("gameData.json");
+    gameData = await res.json();
+    NUM_TEAMS = gameData.teams.length;
 
-  renderBoardStructure();
-  renderTeamsStructure();
+    renderBoardStructure();
+    renderTeamsStructure();
+
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.database();
+    gameRef = db.ref("games/" + GAME_ID);
+
+    gameRef.on("value", snapshot => {
+      if (!snapshot.exists()) {
+        const initState = createInitialState();
+        gameRef.set(initState);
+        currentState = initState;
+        updateTeamsFromState(initState);
+        updateUsedFromState(initState);
+        updateModalFromState(initState);
+        return;
+      }
+      const state = snapshot.val() || createInitialState();
+      currentState = state;
+      updateTeamsFromState(state);
+      updateUsedFromState(state);
+      updateModalFromState(state);
+    });
+  }
+
+  init();
 </script>
 </body>
 </html>
