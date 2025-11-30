@@ -6,7 +6,7 @@
         { "value": 100, "question": "We will, we will ...?", "answer": "Rock you" },
         { "value": 200, "question": "Wer singt 'Bad Guy'?", "answer": "Billie Eilish" },
         { "value": 300, "question": "Aus welchem Land kommt ABBA?", "answer": "Schweden" },
-        { "value": 400, "question": "I got a feeling, that tonight’s gonna be a ...", "answer": "Good night" },
+        { "value": 400, "question": "Beende: 'I got a feeling, that tonight’s gonna be a ...'", "answer": "Good night" },
         { "value": 500, "question": "Wer veröffentlichte 'Astroworld'?", "answer": "Travis Scott" }
       ]
     },
@@ -16,7 +16,7 @@
         { "value": 100, "question": "Hauptstadt von Spanien?", "answer": "Madrid" },
         { "value": 200, "question": "Fluss durch London?", "answer": "Die Themse" },
         { "value": 300, "question": "In welchem Land liegt Kapstadt?", "answer": "Südafrika" },
-        { "value": 400, "question": "Welcher Kontinent hat die meisten Länder?", "answer": "Afrika" },
+        { "value": 400, "question": "In welchem Land liegt Tokio?", "answer": "Japan" },
         { "value": 500, "question": "Größter Ozean?", "answer": "Der Pazifische Ozean" }
       ]
     },
@@ -26,7 +26,7 @@
         { "value": 100, "question": "Nintendo-Klempner mit roter Mütze?", "answer": "Mario" },
         { "value": 200, "question": "Sandbox-Spiel mit Blöcken?", "answer": "Minecraft" },
         { "value": 300, "question": "Abkürzung für 'League of Legends'?", "answer": "LoL" },
-        { "value": 400, "question": "Auf welcher Map spielt man Erangel?", "answer": "PUBG" },
+        { "value": 400, "question": "Wie heißt die Konsole mit 'Master Chief' als Maskottchen?", "answer": "Xbox" },
         { "value": 500, "question": "Auf welcher Map spielt man Dust II?", "answer": "Counter-Strike" }
       ]
     },
@@ -36,8 +36,8 @@
         { "value": 100, "question": "Morgenstund hat ...", "answer": "Gold im Mund" },
         { "value": 200, "question": "Wer im Glashaus sitzt, soll nicht mit ...", "answer": "Steinen werfen" },
         { "value": 300, "question": "Aller guten Dinge sind ...", "answer": "Drei" },
-        { "value": 400, "question": "Der Apfel fällt nicht weit ...", "answer": "vom Stamm" },
-        { "value": 500, "question": "Viele Köche ...", "answer": "verderben den Brei" }
+        { "value": 400, "question": "Viele Köche ...", "answer": "verderben den Brei" },
+        { "value": 500, "question": "Ende: 'Der Apfel fällt nicht weit ...'", "answer": "vom Stamm" }
       ]
     },
     {
@@ -45,8 +45,8 @@
       "questions": [
         { "value": 100, "question": "Wofür steht 'LOL'?", "answer": "Laughing out loud" },
         { "value": 200, "question": "Wofür steht 'FAQ'?", "answer": "Frequently Asked Questions" },
-        { "value": 300, "question": "Wofür steht 'AFK'?", "answer": "Away from keyboard" },
-        { "value": 400, "question": "Wofür steht 'FPS'?", "answer": "Frames per second" },
+        { "value": 300, "question": "Was bedeutet 'AFK'?", "answer": "Away from keyboard" },
+        { "value": 400, "question": "Wofür steht 'FPS' im Gaming?", "answer": "Frames per second" },
         { "value": 500, "question": "Wofür steht 'HDMI'?", "answer": "High-Definition Multimedia Interface" }
       ]
     },
@@ -55,9 +55,9 @@
       "questions": [
         { "value": 100, "question": "Wie heißt die Plattform?", "answer": "YouTube" },
         { "value": 200, "question": "Wie nennt man Vorschaubilder?", "answer": "Thumbnails" },
-        { "value": 300, "question": "Button zum Kanalfolgen?", "answer": "Abonnieren" },
-        { "value": 400, "question": "Bezahlte Produktvorstellung?", "answer": "Sponsoring" },
-        { "value": 500, "question": "Wie heißt der Empfehlungs-Algorithmus?", "answer": "Recommendation Algorithm" }
+        { "value": 300, "question": "Button zum Kanalfolgen?", "answer": "Abonnieren / Subscribe" },
+        { "value": 400, "question": "Wie heißt die Funktion für kurzformatige Videos?", "answer": "Shorts" },
+        { "value": 500, "question": "Bezahlte Produktvorstellung?", "answer": "Sponsoring / Werbeintegration" }
       ]
     }
   ],
