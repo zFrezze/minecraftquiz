@@ -908,39 +908,109 @@
   }
 
   function updateTeamsFromState(state) {
-    gameData.teams.forEach((_, index) => {
-      const scoreEl = document.getElementById(`teamScore_${index}`);
-      if (scoreEl) {
-        const score = state.scores?.[index] ?? 0;
-        scoreEl.textContent = score;
+  gameData.teams.forEach((team, index) => {
+    const scoreEl = document.getElementById(`teamScore_${index}`);
+    if (scoreEl) {
+      const score = state.scores?.[index] ?? 0;
+      scoreEl.textContent = score;
+    }
+
+    // Avatare & Namen dynamisch aus Lobby-Players (wenn du das gleich einbaust)
+    const avatarsRow = document.getElementById(`teamAvatars_${index}`);
+    const namesEl = document.getElementById(`teamNames_${index}`);
+    if (avatarsRow && typeof window.currentPlayers === "object") {
+      avatarsRow.innerHTML = "";
+      const players = Object.values(window.currentPlayers)
+        .filter(p => p.teamIndex === index)
+        .slice(0, 2);
+
+      if (players.length > 0) {
+        players.forEach(p => {
+          const avatar = document.createElement("div");
+          avatar.className = "team-avatar";
+          if (p.avatarDataUrl) {
+            avatar.style.backgroundImage = `url(${p.avatarDataUrl})`;
+            avatar.style.backgroundSize = "cover";
+            avatar.style.backgroundPosition = "center";
+            avatar.textContent = "";
+          } else {
+            const initials = p.name
+              .split(" ")
+              .map(x => x[0])
+              .join("")
+              .substring(0, 2)
+              .toUpperCase();
+            avatar.textContent = initials;
+          }
+          avatarsRow.appendChild(avatar);
+        });
+      } else {
+        // Fallback: Standard-Kreis mit Team-Initialen
+        const avatar = document.createElement("div");
+        avatar.className = "team-avatar";
+        const initials = (team.label || `Team ${index + 1}`)
+          .split(" ")
+          .map(x => x[0])
+          .join("")
+          .substring(0, 2)
+          .toUpperCase();
+        avatar.textContent = initials;
+        avatarsRow.appendChild(avatar);
       }
-    });
 
-    const cards = teamsBar.querySelectorAll(".team-card");
-    cards.forEach((card, i) => {
-      const isActive = (i === state.currentTeamIndex);
-      const isBuzzing = (state.activeAnswerTeamIndex != null && i === state.activeAnswerTeamIndex);
-      card.classList.toggle("active", isActive);
-      card.classList.toggle("buzzing", isBuzzing);
-    });
-
-    const activeTeam = gameData.teams[state.currentTeamIndex];
-    if (activeTeam) {
-      const name = activeTeam.label || `Team ${state.currentTeamIndex+1}`;
-      turnTeamName.textContent = name;
-      const firstPlayer = (activeTeam.players && activeTeam.players[0]) || name;
-      const initials = firstPlayer.split(" ").map(x => x[0]).join("").substring(0,2).toUpperCase();
-      turnAvatarHeader.textContent = initials;
-      modalTurnAvatar.textContent = initials;
-      modalTurnText.textContent = `${name} ist dran`;
+      if (namesEl) {
+        if (players.length > 0) {
+          namesEl.textContent = players.map(p => p.name).join(" · ");
+        } else {
+          namesEl.textContent = team.label || `Team ${index + 1}`;
+        }
+      }
     }
+  });
 
-    if (state.gamePhase === "lobby") {
-      phaseBadge.textContent = "Lobby – warte auf Start";
-    } else {
-      phaseBadge.textContent = "Spiel läuft";
-    }
+  const cards = teamsBar.querySelectorAll(".team-card");
+  const hasQuestion = !!state.currentQuestion;
+  cards.forEach((card, i) => {
+    const isActive = i === state.currentTeamIndex;
+    // Roter Buzz-Rahmen NUR wenn eine Frage offen ist & jemand gerade buzzert & Ergebnis noch nicht feststeht
+    const isBuzzing =
+      hasQuestion &&
+      state.questionResult === "none" &&
+      state.activeAnswerTeamIndex != null &&
+      i === state.activeAnswerTeamIndex;
+
+    card.classList.toggle("active", isActive);
+    card.classList.toggle("buzzing", isBuzzing);
+  });
+
+  const activeTeam = gameData.teams[state.currentTeamIndex];
+  if (activeTeam) {
+    const name = activeTeam.label || `Team ${state.currentTeamIndex + 1}`;
+    const firstPlayer =
+      (typeof window.currentPlayers === "object"
+        ? Object.values(window.currentPlayers).find(p => p.teamIndex === state.currentTeamIndex)?.name
+        : null) || name;
+
+    const initials = firstPlayer
+      .split(" ")
+      .map(x => x[0])
+      .join("")
+      .substring(0, 2)
+      .toUpperCase();
+
+    turnTeamName.textContent = `${name} ist dran`;
+    turnAvatarHeader.textContent = initials;
+    modalTurnAvatar.textContent = initials;
+    modalTurnText.textContent = `${name} ist dran`;
   }
+
+  if (state.gamePhase === "lobby") {
+    phaseBadge.textContent = "Lobby – warte auf Start";
+  } else {
+    phaseBadge.textContent = "Spiel läuft";
+  }
+}
+
 
   function updateUsedFromState(state) {
     const used = state.used || {};
