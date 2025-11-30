@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <title>Quiz Board</title>
+  <title>Quizduell Board</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!-- Font -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap">
@@ -21,6 +21,8 @@
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
+    /* ========= HINTERGRUND: Vignette + Grid ========= */
+
     body {
       font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--text-main);
@@ -33,7 +35,6 @@
       background: #020617;
     }
 
-    /* Hintergrund: Vignette + Grid */
     body::before {
       content: "";
       position: fixed;
@@ -48,6 +49,7 @@
         );
       z-index: -2;
     }
+
     body::after {
       content: "";
       position: fixed;
@@ -70,7 +72,7 @@
       gap: 16px;
     }
 
-    /* ========= HEADER LOGO + TURN ========= */
+    /* ========= HEADER: Logo + Turn ========= */
 
     .top-header {
       position: relative;
@@ -84,8 +86,8 @@
 
     .logo-badge {
       position: relative;
-      padding: 16px 42px 24px;
-      border-radius: 32px;
+      padding: 18px 46px 26px;
+      border-radius: 36px;
       background: #7c3aed;
       box-shadow:
         0 18px 40px rgba(0,0,0,0.9),
@@ -93,7 +95,7 @@
         0 0 0 7px #facc15;
       display: inline-flex;
       align-items: flex-end;
-      gap: 10px;
+      gap: 12px;
       transform: translateY(4px);
     }
 
@@ -111,7 +113,7 @@
     }
 
     .logo-main {
-      font-size: 2.8rem;
+      font-size: 3rem;
       line-height: 1;
       font-weight: 900;
       letter-spacing: 0.06em;
@@ -122,7 +124,7 @@
     }
 
     .logo-question {
-      font-size: 2.1rem;
+      font-size: 2.4rem;
       line-height: 1;
       font-weight: 900;
       color: #facc15;
@@ -250,7 +252,7 @@
       pointer-events: none;
     }
 
-    /* Kategorien: unten schwarz, oben lila, weiße Outline */
+    /* Kategorien: von unten schwarz nach oben lila */
     .pill.category-pill {
       background: linear-gradient(
         to top,
@@ -261,7 +263,7 @@
       border: 2px solid #ffffff;
     }
 
-    /* Fragen: unten schwarz, oben lila, graue Outline */
+    /* Fragen: Gradient + graue Outline */
     .pill.value-pill {
       background: linear-gradient(
         to top,
@@ -371,7 +373,7 @@
       box-shadow: 0 6px 16px rgba(0,0,0,1);
     }
 
-    /* ========= TEAMS ========= */
+    /* ========= TEAMS: 4 Karten mit Avataren ========= */
 
     .teams-bar {
       margin-top: 10px;
@@ -396,6 +398,11 @@
       border-color: #22c55e;
       box-shadow: 0 0 24px rgba(34,197,94,0.7);
       transform: translateY(-2px);
+    }
+
+    .team-card.buzzing {
+      border-color: #f97373;
+      box-shadow: 0 0 24px rgba(248,113,113,0.9);
     }
 
     .team-avatars {
@@ -492,6 +499,18 @@
       position: relative;
     }
 
+    .modal-header-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.8rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      opacity: 0.9;
+      margin-bottom: 8px;
+    }
+
     .modal-close {
       position: absolute;
       top: 10px;
@@ -513,20 +532,6 @@
       margin-top: 4px;
       margin-bottom: 8px;
     }
-
-    .modal-header-row {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 12px;
-      font-size: 0.8rem;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      opacity: 0.9;
-      margin-bottom: 8px;
-    }
-
-    #modalHeaderValue { display: none; } /* Punkte oben ausgeblendet */
 
     .question-text {
       font-size: clamp(1.25rem, 1rem + 0.9vw, 1.7rem);
@@ -578,19 +583,53 @@
     }
 
     .modal-status-text {
-      margin-top: 10px;
-      font-size: 0.9rem;
-      font-weight: 600;
+      margin-top: 12px;
+      font-size: 1.1rem;
+      font-weight: 800;
     }
 
     .modal-status-correct {
       color: #bbf7d0;
-      text-shadow: 0 0 12px rgba(34,197,94,0.9);
+      text-shadow: 0 0 16px rgba(34,197,94,0.9);
     }
 
     .modal-status-wrong {
       color: #fecaca;
-      text-shadow: 0 0 12px rgba(248,113,113,0.9);
+      text-shadow: 0 0 16px rgba(248,113,113,0.9);
+    }
+
+    .modal-status-buzz {
+      color: #fed7aa;
+      text-shadow: 0 0 16px rgba(251,191,36,0.9);
+    }
+
+    .answer-text {
+      margin-top: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fef9c3;
+      text-shadow: 0 0 14px rgba(254,240,138,0.95);
+      display: none;
+    }
+
+    .answer-text.visible {
+      display: block;
+    }
+
+    .modal-footer-row {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .modal-footer-row button {
+      background: rgba(15,23,42,0.4);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.9);
+    }
+
+    .modal-footer-row button.primary {
+      background: #020617;
     }
 
     @media (max-width: 1100px) {
@@ -621,7 +660,7 @@
       <span class="turn-star">★</span>
       <div class="turn-player">
         <div class="turn-avatar" id="turnAvatarHeader">T1</div>
-        <span class="turn-label" id="turnTeamName">Team 1's Turn</span>
+        <span class="turn-label" id="turnTeamName">Team 1 ist dran</span>
       </div>
       <span class="turn-star">★</span>
     </div>
@@ -635,7 +674,7 @@
 
     <div class="board-footer">
       <div class="hint">
-        Fragen, Bilder, Sounds &amp; Teams in <code>gameData.json</code> bearbeiten.
+        Kategorien, Fragen &amp; Teams im <code>gameData</code>-Objekt im Script anpassen.
       </div>
       <div class="footer-controls">
         <button type="button" id="resetBoardBtn">Reset</button>
@@ -659,15 +698,19 @@
 
     <div class="modal-body">
       <div id="modalQuestion" class="question-text"></div>
+
       <div class="modal-media" id="modalMedia" style="display:none;">
         <img id="modalImage" alt="" style="display:none;">
         <audio id="modalAudio" controls style="display:none;"></audio>
       </div>
+
       <div class="modal-turn-pill">
         <div class="modal-turn-avatar" id="modalTurnAvatar">T1</div>
         <div id="modalTurnText">Team 1 ist dran</div>
       </div>
+
       <div id="modalStatus" class="modal-status-text"></div>
+      <div id="modalAnswer" class="answer-text"></div>
     </div>
 
     <div class="modal-footer-row">
@@ -676,16 +719,99 @@
   </div>
 </div>
 
-<!-- SOUNDS -->
-<audio id="sfxCorrect" src="sounds/correct.mp3" preload="auto"></audio>
-<audio id="sfxWrong" src="sounds/wrong.mp3" preload="auto"></audio>
-
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
 <script>
-  // ========= Firebase Config =========
+  /* ========= GAME-DATEN ========= */
+  const gameData = {
+    categories: [
+      {
+        name: "Lyrics/Songs",
+        questions: [
+          { value: 100, question: "We will, we will ...?", answer: "Rock you" },
+          { value: 200, question: "Wer singt 'Bad Guy'?", answer: "Billie Eilish" },
+          { value: 300, question: "Aus welchem Land kommt ABBA?", answer: "Schweden" },
+          { value: 400, question: "Beende: 'I got a feeling, that tonight’s gonna be a ...'", answer: "Good night" },
+          { value: 500, question: "Wer veröffentlichte 'Astroworld'?", answer: "Travis Scott" }
+        ]
+      },
+      {
+        name: "Geografie",
+        questions: [
+          { value: 100, question: "Hauptstadt von Spanien?", answer: "Madrid" },
+          { value: 200, question: "Fluss durch London?", answer: "Die Themse" },
+          { value: 300, question: "In welchem Land liegt Kapstadt?", answer: "Südafrika" },
+          { value: 400, question: "In welchem Land liegt Tokio?", answer: "Japan" },
+          { value: 500, question: "Größter Ozean?", answer: "Der Pazifische Ozean" }
+        ]
+      },
+      {
+        name: "Games",
+        questions: [
+          { value: 100, question: "Nintendo-Klempner mit roter Mütze?", answer: "Mario" },
+          { value: 200, question: "Sandbox-Spiel mit Blöcken?", answer: "Minecraft" },
+          { value: 300, question: "Abkürzung für 'League of Legends'?", answer: "LoL" },
+          { value: 400, question: "Wie heißt die Konsole mit 'Master Chief' als Maskottchen?", answer: "Xbox" },
+          { value: 500, question: "Auf welcher Map spielt man Dust II?", answer: "Counter-Strike" }
+        ]
+      },
+      {
+        name: "Sprichwörter",
+        questions: [
+          { value: 100, question: "Morgenstund hat ...", answer: "Gold im Mund" },
+          { value: 200, question: "Wer im Glashaus sitzt, soll nicht mit ...", answer: "Steinen werfen" },
+          { value: 300, question: "Aller guten Dinge sind ...", answer: "Drei" },
+          { value: 400, question: "Viele Köche ...", answer: "verderben den Brei" },
+          { value: 500, question: "Ende: 'Der Apfel fällt nicht weit ...'", answer: "vom Stamm" }
+        ]
+      },
+      {
+        name: "Abkürzungen",
+        questions: [
+          { value: 100, question: "Wofür steht 'LOL'?", answer: "Laughing out loud" },
+          { value: 200, question: "Wofür steht 'FAQ'?", answer: "Frequently Asked Questions" },
+          { value: 300, question: "Was bedeutet 'AFK'?", answer: "Away from keyboard" },
+          { value: 400, question: "Wofür steht 'FPS' im Gaming?", answer: "Frames per second" },
+          { value: 500, question: "Wofür steht 'HDMI'?", answer: "High-Definition Multimedia Interface" }
+        ]
+      },
+      {
+        name: "YT-Titel",
+        questions: [
+          { value: 100, question: "Wie heißt die Plattform?", answer: "YouTube" },
+          { value: 200, question: "Wie nennt man Vorschaubilder?", answer: "Thumbnails" },
+          { value: 300, question: "Button zum Kanalfolgen?", answer: "Abonnieren / Subscribe" },
+          { value: 400, question: "Wie heißt die Funktion für kurzformatige Videos?", answer: "Shorts" },
+          { value: 500, question: "Bezahlte Produktvorstellung?", answer: "Sponsoring / Werbeintegration" }
+        ]
+      }
+    ],
+    teams: [
+      { label: "Team 1", players: ["Schmobin"] },
+      { label: "Team 2", players: ["Krokoboss"] },
+      { label: "Team 3", players: ["Zarbex"] },
+      { label: "Team 4", players: ["Elquaria"] }
+    ]
+  };
+
+  const NUM_TEAMS = gameData.teams.length;
+
+  const initialState = {
+    gamePhase: "lobby",
+    currentTeamIndex: 0,
+    scores: Array(NUM_TEAMS).fill(0),
+    used: {},
+    currentQuestion: null,
+    buzzOpen: false,
+    activeAnswerTeamIndex: null,
+    failedTeams: Array(NUM_TEAMS).fill(false),
+    questionResult: "none",
+    showAnswer: false
+  };
+
+  /* ========= Firebase ========= */
   const firebaseConfig = {
     apiKey: "AIzaSyCRCG2C89X9eK_s9Lg44jc3rFRrsIua42Q",
     authDomain: "minecraftquiz-f5686.firebaseapp.com",
@@ -703,12 +829,7 @@
   const GAME_ID = "quiz-1";
   const gameRef = db.ref("games/" + GAME_ID);
 
-  // ========= globale Variablen =========
-  let gameData = null;
-  let NUM_TEAMS = 0;
-  let initialState = null;
-  let currentState = null;
-  let prevResult = "none";
+  /* ========= DOM-VARS ========= */
 
   const boardEl = document.getElementById("board");
   const teamsBar = document.getElementById("teamsBar");
@@ -717,44 +838,26 @@
   const modalHeaderCategory = document.getElementById("modalHeaderCategory");
   const modalHeaderValue = document.getElementById("modalHeaderValue");
   const modalQuestion = document.getElementById("modalQuestion");
-  const modalTurnAvatar = document.getElementById("modalTurnAvatar");
-  const modalTurnText = document.getElementById("modalTurnText");
   const modalStatus = document.getElementById("modalStatus");
+  const modalAnswer = document.getElementById("modalAnswer");
   const modalMedia = document.getElementById("modalMedia");
   const modalImage = document.getElementById("modalImage");
   const modalAudio = document.getElementById("modalAudio");
+  const modalTurnAvatar = document.getElementById("modalTurnAvatar");
+  const modalTurnText = document.getElementById("modalTurnText");
 
   const resetBoardBtn = document.getElementById("resetBoardBtn");
   const openControllerBtn = document.getElementById("openControllerBtn");
   const closeModalBtn = document.getElementById("closeModalBtn");
   const backToBoardBtn = document.getElementById("backToBoardBtn");
-  const turnTeamNameEl = document.getElementById("turnTeamName");
+  const turnTeamName = document.getElementById("turnTeamName");
   const turnAvatarHeader = document.getElementById("turnAvatarHeader");
 
-  const sfxCorrect = document.getElementById("sfxCorrect");
-  const sfxWrong = document.getElementById("sfxWrong");
-
   const pillMap = new Map();
+  let currentState = null;
 
-  // ========= gameData laden =========
-  async function loadGameData() {
-    const res = await fetch("gameData.json");
-    gameData = await res.json();
-    NUM_TEAMS = gameData.teams.length;
-    initialState = {
-      currentTeamIndex: 0,
-      scores: Array(NUM_TEAMS).fill(0),
-      used: {},
-      currentQuestion: null,
-      activeAnswerTeamIndex: 0,
-      buzzOpen: false,
-      questionResult: "none",
-      failedTeams: Array(NUM_TEAMS).fill(false),
-      gamePhase: "lobby" // Lobby-Phase am Anfang
-    };
-  }
+  /* ========= BOARD RENDERN ========= */
 
-  // ========= Board Aufbau =========
   function renderBoardStructure() {
     boardEl.innerHTML = "";
     pillMap.clear();
@@ -773,11 +876,13 @@
     categories.forEach((cat) => {
       const cell = document.createElement("div");
       cell.className = "cell category";
+
       const pill = document.createElement("div");
       pill.className = "pill category-pill";
       const label = document.createElement("div");
       label.className = "category-label";
       label.textContent = cat.name;
+
       pill.appendChild(label);
       cell.appendChild(pill);
       boardEl.appendChild(cell);
@@ -785,6 +890,7 @@
 
     // Fragen
     const maxQuestions = Math.max(...categories.map(c => c.questions.length));
+
     for (let qIndex = 0; qIndex < maxQuestions; qIndex++) {
       categories.forEach((cat, catIndex) => {
         const q = cat.questions[qIndex];
@@ -808,14 +914,17 @@
         pill.dataset.key = key;
         pill.addEventListener("click", () => {
           if (!currentState || currentState.used?.[key]) return;
-          // aus Lobby -> running wechseln, neue Frage öffnen, FailedTeams resetten
+
+          const failedTeams = Array(NUM_TEAMS).fill(false);
+
           gameRef.update({
+            gamePhase: "playing",
             currentQuestion: { catIndex, qIndex },
-            activeAnswerTeamIndex: currentState.currentTeamIndex ?? 0,
-            buzzOpen: false,
             questionResult: "none",
-            failedTeams: Array(NUM_TEAMS).fill(false),
-            gamePhase: "running"
+            buzzOpen: false,
+            activeAnswerTeamIndex: null,
+            failedTeams,
+            showAnswer: false
           });
         });
 
@@ -826,9 +935,11 @@
     }
   }
 
-  // ========= Teams =========
+  /* ========= TEAMS-KARTEN ========= */
+
   function renderTeamsStructure() {
     teamsBar.innerHTML = "";
+
     gameData.teams.forEach((team, index) => {
       const card = document.createElement("article");
       card.className = "team-card";
@@ -838,6 +949,7 @@
       avatarsRow.className = "team-avatars";
 
       const players = team.players && team.players.length ? team.players : [team.label || `Team ${index+1}`];
+
       players.forEach(name => {
         const avatar = document.createElement("div");
         avatar.className = "team-avatar";
@@ -891,6 +1003,7 @@
       teamsBar.appendChild(card);
     });
 
+    // Manuelle Score-Anpassung
     teamsBar.addEventListener("click", (e) => {
       const t = e.target;
       if (!(t instanceof HTMLElement)) return;
@@ -914,39 +1027,25 @@
 
     const cards = teamsBar.querySelectorAll(".team-card");
     cards.forEach((card, i) => {
-      card.classList.toggle("active", i === state.currentTeamIndex);
+      const isActive = (i === state.currentTeamIndex);
+      const isBuzzing = (state.activeAnswerTeamIndex != null && i === state.activeAnswerTeamIndex);
+      card.classList.toggle("active", isActive);
+      card.classList.toggle("buzzing", isBuzzing);
     });
 
     const activeTeam = gameData.teams[state.currentTeamIndex];
     if (activeTeam) {
       const name = activeTeam.label || `Team ${state.currentTeamIndex+1}`;
+      turnTeamName.textContent = name;
       const firstPlayer = (activeTeam.players && activeTeam.players[0]) || name;
       const initials = firstPlayer.split(" ").map(x => x[0]).join("").substring(0,2).toUpperCase();
-
-      if (turnTeamNameEl) turnTeamNameEl.textContent = `${name}'s Turn`;
-      if (turnAvatarHeader) turnAvatarHeader.textContent = initials;
+      turnAvatarHeader.textContent = initials;
+      modalTurnAvatar.textContent = initials;
+      modalTurnText.textContent = `${name} ist dran`;
     }
   }
 
-  // ========= Modal / Status =========
-  function setModalStatus(state) {
-    modalStatus.textContent = "";
-    modalStatus.classList.remove("modal-status-correct", "modal-status-wrong");
-
-    if (!state.currentQuestion) return;
-
-    if (state.questionResult === "correct") {
-      modalStatus.textContent = "Richtige Antwort!";
-      modalStatus.classList.add("modal-status-correct");
-    } else if (state.questionResult === "wrong" && state.buzzOpen) {
-      modalStatus.textContent = "Falsch – Buzzer ist frei!";
-      modalStatus.classList.add("modal-status-wrong");
-    } else if (state.buzzOpen) {
-      modalStatus.textContent = "Buzzer ist frei!";
-    } else if (state.gamePhase === "lobby") {
-      modalStatus.textContent = "Lobby – warte bis das Spiel gestartet wird";
-    }
-  }
+  /* ========= MODAL AUS STATE ========= */
 
   function updateModalFromState(state) {
     const cq = state.currentQuestion;
@@ -961,9 +1060,10 @@
     if (!cat || !q) return;
 
     modalHeaderCategory.textContent = cat.name;
+    modalHeaderValue.innerHTML = `<strong>${q.value}</strong>`;
     modalQuestion.textContent = q.question;
 
-    // Medien
+    // Media (Bild / Audio)
     let hasMedia = false;
     if (q.image) {
       modalImage.src = q.image;
@@ -981,6 +1081,7 @@
     }
     modalMedia.style.display = hasMedia ? "flex" : "none";
 
+    // Turn-Info
     const idx = (state.activeAnswerTeamIndex != null)
       ? state.activeAnswerTeamIndex
       : state.currentTeamIndex;
@@ -992,14 +1093,49 @@
       modalTurnAvatar.textContent = initials;
       if (state.buzzOpen && state.activeAnswerTeamIndex == null) {
         modalTurnText.textContent = "Buzzer ist frei";
+      } else if (state.activeAnswerTeamIndex != null) {
+        modalTurnText.textContent = `${name} beantwortet`;
       } else {
         modalTurnText.textContent = `${name} ist dran`;
       }
     }
 
-    setModalStatus(state);
+    // Status
+    modalStatus.textContent = "";
+    modalStatus.classList.remove("modal-status-correct", "modal-status-wrong", "modal-status-buzz");
+
+    const qr = state.questionResult || "none";
+    const buzzOpen = !!state.buzzOpen;
+    const activeIdx = state.activeAnswerTeamIndex;
+    const buzzTeam = (activeIdx != null) ? gameData.teams[activeIdx] : null;
+
+    if (qr === "correct" && buzzTeam) {
+      modalStatus.textContent = `Richtige Antwort von ${buzzTeam.label}!`;
+      modalStatus.classList.add("modal-status-correct");
+    } else if (qr === "wrong" && buzzTeam && buzzOpen) {
+      modalStatus.textContent = `Falsche Antwort von ${buzzTeam.label} – Buzzer ist frei!`;
+      modalStatus.classList.add("modal-status-wrong");
+    } else if (activeIdx != null && qr === "none" && buzzTeam) {
+      modalStatus.textContent = `${buzzTeam.label} hat gebuzzert!`;
+      modalStatus.classList.add("modal-status-buzz");
+    } else if (buzzOpen) {
+      modalStatus.textContent = "Buzzer ist frei!";
+      modalStatus.classList.add("modal-status-buzz");
+    }
+
+    // Antwort anzeigen, wenn showAnswer
+    if (state.showAnswer && q.answer) {
+      modalAnswer.textContent = q.answer;
+      modalAnswer.classList.add("visible");
+    } else {
+      modalAnswer.textContent = "";
+      modalAnswer.classList.remove("visible");
+    }
+
     modalBackdrop.classList.add("visible");
   }
+
+  /* ========= FRAGEN ALS USED MARKIEREN ========= */
 
   function updateUsedFromState(state) {
     const used = state.used || {};
@@ -1010,82 +1146,64 @@
     });
   }
 
-  // ========= Sounds bei Ergebnis =========
-  function maybePlayResultSfx(state) {
-    const result = state.questionResult || "none";
-    if (result === prevResult) return;
-    prevResult = result;
+  /* ========= STATE AUS DB LADEN ========= */
 
-    if (result === "correct" && sfxCorrect) {
-      sfxCorrect.currentTime = 0;
-      sfxCorrect.play().catch(() => {});
-    } else if (result === "wrong" && sfxWrong) {
-      sfxWrong.currentTime = 0;
-      sfxWrong.play().catch(() => {});
+  gameRef.on("value", (snapshot) => {
+    if (!snapshot.exists()) {
+      gameRef.set(initialState);
+      return;
     }
-  }
+    const state = snapshot.val() || initialState;
+    currentState = state;
 
-  // ========= Frage schließen =========
-  function closeQuestionOnBoard() {
-    const fallbackIndex = currentState ? (currentState.currentTeamIndex || 0) : 0;
+    updateTeamsFromState(state);
+    updateModalFromState(state);
+    updateUsedFromState(state);
+  });
+
+  /* ========= EVENTS ========= */
+
+  resetBoardBtn.addEventListener("click", () => {
+    gameRef.set(initialState);
+  });
+
+  openControllerBtn.addEventListener("click", () => {
+    window.open("controller.html", "_blank");
+  });
+
+  function closeQuestion() {
+    if (!currentState) return;
+    const failed = Array(NUM_TEAMS).fill(false);
     gameRef.update({
       currentQuestion: null,
-      questionResult: "none",
       buzzOpen: false,
-      activeAnswerTeamIndex: fallbackIndex,
-      failedTeams: Array(NUM_TEAMS).fill(false)
+      activeAnswerTeamIndex: null,
+      questionResult: "none",
+      showAnswer: false,
+      failedTeams: failed
     });
   }
 
-  // ========= Events =========
-  function setupEvents() {
-    resetBoardBtn.addEventListener("click", () => {
-      // Komplett zurück in Lobby
-      gameRef.set(initialState);
-    });
+  closeModalBtn.addEventListener("click", closeQuestion);
+  backToBoardBtn.addEventListener("click", closeQuestion);
 
-    openControllerBtn.addEventListener("click", () => {
-      window.open("controller.html", "_blank");
-    });
+  document.addEventListener("keydown", (e) => {
+    if (!currentState) return;
+    if (e.key === "Escape") {
+      closeQuestion();
+    } else if (e.key === "ArrowRight") {
+      const idx = (currentState.currentTeamIndex + 1) % NUM_TEAMS;
+      gameRef.update({ currentTeamIndex: idx });
+    } else if (e.key === "ArrowLeft") {
+      const idx = (currentState.currentTeamIndex - 1 + NUM_TEAMS) % NUM_TEAMS;
+      gameRef.update({ currentTeamIndex: idx });
+    }
+  });
 
-    closeModalBtn.addEventListener("click", closeQuestionOnBoard);
-    backToBoardBtn.addEventListener("click", closeQuestionOnBoard);
+  /* ========= INIT ========= */
 
-    document.addEventListener("keydown", (e) => {
-      if (!currentState) return;
-      if (e.key === "Escape") {
-        closeQuestionOnBoard();
-      } else if (e.key === "ArrowRight") {
-        const idx = (currentState.currentTeamIndex + 1) % NUM_TEAMS;
-        gameRef.update({ currentTeamIndex: idx, activeAnswerTeamIndex: idx });
-      } else if (e.key === "ArrowLeft") {
-        const idx = (currentState.currentTeamIndex - 1 + NUM_TEAMS) % NUM_TEAMS;
-        gameRef.update({ currentTeamIndex: idx, activeAnswerTeamIndex: idx });
-      }
-    });
-
-    gameRef.on("value", (snapshot) => {
-      if (!snapshot.exists()) {
-        gameRef.set(initialState);
-        return;
-      }
-      const state = snapshot.val() || initialState;
-      currentState = state;
-
-      updateTeamsFromState(state);
-      updateModalFromState(state);
-      updateUsedFromState(state);
-      maybePlayResultSfx(state);
-    });
-  }
-
-  // ========= Start =========
-  (async function start() {
-    await loadGameData();
-    renderBoardStructure();
-    renderTeamsStructure();
-    setupEvents();
-  })();
+  renderBoardStructure();
+  renderTeamsStructure();
 </script>
 </body>
 </html>
