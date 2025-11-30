@@ -290,7 +290,6 @@
   const GAME_ID = "quiz-1";
   const gameRef = db.ref("games/" + GAME_ID);
 
-  // DOM
   const statusTag = document.getElementById("statusTag");
   const qMeta = document.getElementById("qMeta");
   const qText = document.getElementById("qText");
@@ -368,6 +367,12 @@
     answerStatus.textContent = "";
     answerStatus.classList.remove("status-correct", "status-wrong", "status-neutral");
 
+    if (state.gamePhase === "lobby") {
+      answerStatus.textContent = "Lobby – warte bis das Spiel gestartet wird.";
+      answerStatus.classList.add("status-neutral");
+      return;
+    }
+
     if (!state.currentQuestion) return;
 
     if (state.questionResult === "correct") {
@@ -383,6 +388,14 @@
   }
 
   function updateQuestionFromState(state) {
+    if (state.gamePhase === "lobby") {
+      qMeta.textContent = "Lobby";
+      qText.textContent = "Warte, bis das Spiel gestartet wird.";
+      qAnswer.textContent = "";
+      mediaBox.style.display = "none";
+      return;
+    }
+
     const cq = state.currentQuestion;
     if (!cq) {
       qMeta.textContent = "Keine Frage aktiv";
@@ -450,17 +463,23 @@
         currentTeamIndex: nextTeam,
         activeAnswerTeamIndex: nextTeam,
         questionResult: "correct",
-        buzzOpen: false
-        // currentQuestion bleibt sichtbar – Board schließt
+        buzzOpen: false,
+        failedTeams: Array(NUM_TEAMS).fill(false)
+        // currentQuestion bleibt gesetzt, Board schließt extra
       });
     } else {
       scores[answerIdx] = (scores[answerIdx] || 0) - value;
+      const failedTeams = currentState.failedTeams
+        ? [...currentState.failedTeams]
+        : Array(NUM_TEAMS).fill(false);
+      failedTeams[answerIdx] = true;
 
       gameRef.update({
         scores,
         questionResult: "wrong",
         buzzOpen: true,
-        activeAnswerTeamIndex: null
+        activeAnswerTeamIndex: null,
+        failedTeams
       });
     }
   }
