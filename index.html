@@ -685,7 +685,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
 <script>
-  // ========= Firebase Config (deine Daten) =========
+  // ========= Firebase Config =========
   const firebaseConfig = {
     apiKey: "AIzaSyCRCG2C89X9eK_s9Lg44jc3rFRrsIua42Q",
     authDomain: "minecraftquiz-f5686.firebaseapp.com",
@@ -748,7 +748,9 @@
       currentQuestion: null,
       activeAnswerTeamIndex: 0,
       buzzOpen: false,
-      questionResult: "none"
+      questionResult: "none",
+      failedTeams: Array(NUM_TEAMS).fill(false),
+      gamePhase: "lobby" // Lobby-Phase am Anfang
     };
   }
 
@@ -806,11 +808,14 @@
         pill.dataset.key = key;
         pill.addEventListener("click", () => {
           if (!currentState || currentState.used?.[key]) return;
+          // aus Lobby -> running wechseln, neue Frage öffnen, FailedTeams resetten
           gameRef.update({
             currentQuestion: { catIndex, qIndex },
-            activeAnswerTeamIndex: currentState.currentTeamIndex,
+            activeAnswerTeamIndex: currentState.currentTeamIndex ?? 0,
             buzzOpen: false,
-            questionResult: "none"
+            questionResult: "none",
+            failedTeams: Array(NUM_TEAMS).fill(false),
+            gamePhase: "running"
           });
         });
 
@@ -938,6 +943,8 @@
       modalStatus.classList.add("modal-status-wrong");
     } else if (state.buzzOpen) {
       modalStatus.textContent = "Buzzer ist frei!";
+    } else if (state.gamePhase === "lobby") {
+      modalStatus.textContent = "Lobby – warte bis das Spiel gestartet wird";
     }
   }
 
@@ -1020,18 +1027,20 @@
 
   // ========= Frage schließen =========
   function closeQuestionOnBoard() {
-    const fallbackIndex = currentState ? currentState.currentTeamIndex : 0;
+    const fallbackIndex = currentState ? (currentState.currentTeamIndex || 0) : 0;
     gameRef.update({
       currentQuestion: null,
       questionResult: "none",
       buzzOpen: false,
-      activeAnswerTeamIndex: fallbackIndex
+      activeAnswerTeamIndex: fallbackIndex,
+      failedTeams: Array(NUM_TEAMS).fill(false)
     });
   }
 
   // ========= Events =========
   function setupEvents() {
     resetBoardBtn.addEventListener("click", () => {
+      // Komplett zurück in Lobby
       gameRef.set(initialState);
     });
 
