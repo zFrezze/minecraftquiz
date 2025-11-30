@@ -84,8 +84,8 @@
 
     .logo-badge {
       position: relative;
-      padding: 16px 42px 24px;
-      border-radius: 32px;
+      padding: 18px 46px 26px;
+      border-radius: 36px;
       background: #7c3aed;
       box-shadow:
         0 18px 40px rgba(0,0,0,0.9),
@@ -93,7 +93,7 @@
         0 0 0 7px #facc15;
       display: inline-flex;
       align-items: flex-end;
-      gap: 10px;
+      gap: 12px;
       transform: translateY(4px);
     }
 
@@ -111,7 +111,7 @@
     }
 
     .logo-main {
-      font-size: 2.8rem;
+      font-size: 3rem;
       line-height: 1;
       font-weight: 900;
       letter-spacing: 0.06em;
@@ -122,7 +122,7 @@
     }
 
     .logo-question {
-      font-size: 2.1rem;
+      font-size: 2.4rem;
       line-height: 1;
       font-weight: 900;
       color: #facc15;
@@ -355,12 +355,18 @@
       flex-direction: column;
       align-items: center;
       box-shadow: 0 20px 42px rgba(0,0,0,1);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
     }
 
     .team-card.active {
       border-color: #22c55e;
       box-shadow: 0 0 24px rgba(34,197,94,0.7);
       transform: translateY(-2px);
+    }
+
+    .team-card.buzzing {
+      border-color: #f97373;
+      box-shadow: 0 0 24px rgba(248,113,113,0.9);
     }
 
     .team-avatars {
@@ -410,54 +416,6 @@
       text-transform: uppercase;
       color: var(--text-dim);
       margin-top: 1px;
-    }
-
-    /* ========= BUZZER (im Modal) ========= */
-
-    .buzzer-row {
-      margin-top: 16px;
-      display: flex;
-      justify-content: center;
-    }
-
-    .buzzer-button {
-      width: 140px;
-      height: 140px;
-      border-radius: 999px;
-      border: none;
-      cursor: pointer;
-      font-size: 1rem;
-      font-weight: 800;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      background: radial-gradient(circle at top, #f97373, #b91c1c);
-      color: #f9fafb;
-      box-shadow: 0 18px 40px rgba(0,0,0,1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.08s ease, opacity 0.08s ease;
-    }
-
-    .buzzer-button:active {
-      transform: translateY(2px) scale(0.97);
-      box-shadow: 0 10px 24px rgba(0,0,0,1);
-      filter: brightness(0.95);
-    }
-
-    .buzzer-button.disabled {
-      opacity: 0.4;
-      cursor: default;
-      filter: grayscale(0.4);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.8);
-    }
-
-    @media (max-width: 768px) {
-      .buzzer-button {
-        width: 110px;
-        height: 110px;
-        font-size: 0.85rem;
-      }
     }
 
     /* ========= MODAL (Frage) ========= */
@@ -572,6 +530,72 @@
       color: #fecaca;
       text-shadow: 0 0 12px rgba(248,113,113,0.9);
     }
+
+    .modal-status-buzz {
+      color: #fed7aa;
+      text-shadow: 0 0 12px rgba(251,191,36,0.9);
+    }
+
+    .answer-text {
+      margin-top: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fef9c3;
+      text-shadow: 0 0 14px rgba(254,240,138,0.95);
+      display: none;
+    }
+
+    .answer-text.visible {
+      display: block;
+    }
+
+    /* ========= BUZZER (im Modal) ========= */
+
+    .buzzer-row {
+      margin-top: 16px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .buzzer-button {
+      width: 140px;
+      height: 140px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: radial-gradient(circle at top, #f97373, #b91c1c);
+      color: #f9fafb;
+      box-shadow: 0 18px 40px rgba(0,0,0,1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.08s ease, opacity 0.08s ease;
+    }
+
+    .buzzer-button:active {
+      transform: translateY(2px) scale(0.97);
+      box-shadow: 0 10px 24px rgba(0,0,0,1);
+      filter: brightness(0.95);
+    }
+
+    .buzzer-button.disabled {
+      opacity: 0.4;
+      cursor: default;
+      filter: grayscale(0.4);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.8);
+    }
+
+    @media (max-width: 768px) {
+      .buzzer-button {
+        width: 110px;
+        height: 110px;
+        font-size: 0.85rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -625,6 +649,7 @@
 
     <div class="modal-body">
       <div id="modalQuestion" class="question-text"></div>
+
       <div class="modal-media" id="modalMedia" style="display:none;">
         <img id="modalImage" alt="" style="display:none;">
         <audio id="modalAudio" controls style="display:none;"></audio>
@@ -636,8 +661,8 @@
       </div>
 
       <div id="modalStatus" class="modal-status-text"></div>
+      <div id="modalAnswer" class="answer-text"></div>
 
-      <!-- Buzzer direkt unter dem Frage-Window -->
       <div class="buzzer-row">
         <button id="buzzerBtn" class="buzzer-button disabled">BUZZ</button>
       </div>
@@ -653,10 +678,79 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
 <script>
-  let gameData = null;
-  let NUM_TEAMS = 0;
-  let currentState = null;
-  let myTeamIndex = 0;
+  /* dieselben Daten wie Board */
+  const gameData = {
+    categories: [
+      {
+        name: "Lyrics/Songs",
+        questions: [
+          { value: 100, question: "We will, we will ...?", answer: "Rock you" },
+          { value: 200, question: "Wer singt 'Bad Guy'?", answer: "Billie Eilish" },
+          { value: 300, question: "Aus welchem Land kommt ABBA?", answer: "Schweden" },
+          { value: 400, question: "Beende: 'I got a feeling, that tonight’s gonna be a ...'", answer: "Good night" },
+          { value: 500, question: "Wer veröffentlichte 'Astroworld'?", answer: "Travis Scott" }
+        ]
+      },
+      {
+        name: "Geografie",
+        questions: [
+          { value: 100, question: "Hauptstadt von Spanien?", answer: "Madrid" },
+          { value: 200, question: "Fluss durch London?", answer: "Die Themse" },
+          { value: 300, question: "In welchem Land liegt Kapstadt?", answer: "Südafrika" },
+          { value: 400, question: "In welchem Land liegt Tokio?", answer: "Japan" },
+          { value: 500, question: "Größter Ozean?", answer: "Der Pazifische Ozean" }
+        ]
+      },
+      {
+        name: "Games",
+        questions: [
+          { value: 100, question: "Nintendo-Klempner mit roter Mütze?", answer: "Mario" },
+          { value: 200, question: "Sandbox-Spiel mit Blöcken?", answer: "Minecraft" },
+          { value: 300, question: "Abkürzung für 'League of Legends'?", answer: "LoL" },
+          { value: 400, question: "Wie heißt die Konsole mit 'Master Chief' als Maskottchen?", answer: "Xbox" },
+          { value: 500, question: "Auf welcher Map spielt man Dust II?", answer: "Counter-Strike" }
+        ]
+      },
+      {
+        name: "Sprichwörter",
+        questions: [
+          { value: 100, question: "Morgenstund hat ...", answer: "Gold im Mund" },
+          { value: 200, question: "Wer im Glashaus sitzt, soll nicht mit ...", answer: "Steinen werfen" },
+          { value: 300, question: "Aller guten Dinge sind ...", answer: "Drei" },
+          { value: 400, question: "Viele Köche ...", answer: "verderben den Brei" },
+          { value: 500, question: "Ende: 'Der Apfel fällt nicht weit ...'", answer: "vom Stamm" }
+        ]
+      },
+      {
+        name: "Abkürzungen",
+        questions: [
+          { value: 100, question: "Wofür steht 'LOL'?", answer: "Laughing out loud" },
+          { value: 200, question: "Wofür steht 'FAQ'?", answer: "Frequently Asked Questions" },
+          { value: 300, question: "Was bedeutet 'AFK'?", answer: "Away from keyboard" },
+          { value: 400, question: "Wofür steht 'FPS' im Gaming?", answer: "Frames per second" },
+          { value: 500, question: "Wofür steht 'HDMI'?", answer: "High-Definition Multimedia Interface" }
+        ]
+      },
+      {
+        name: "YT-Titel",
+        questions: [
+          { value: 100, question: "Wie heißt die Plattform?", answer: "YouTube" },
+          { value: 200, question: "Wie nennt man Vorschaubilder?", answer: "Thumbnails" },
+          { value: 300, question: "Button zum Kanalfolgen?", answer: "Abonnieren / Subscribe" },
+          { value: 400, question: "Wie heißt die Funktion für kurzformatige Videos?", answer: "Shorts" },
+          { value: 500, question: "Bezahlte Produktvorstellung?", answer: "Sponsoring / Werbeintegration" }
+        ]
+      }
+    ],
+    teams: [
+      { label: "Team 1", players: ["Schmobin"] },
+      { label: "Team 2", players: ["Krokoboss"] },
+      { label: "Team 3", players: ["Zarbex"] },
+      { label: "Team 4", players: ["Elquaria"] }
+    ]
+  };
+
+  const NUM_TEAMS = gameData.teams.length;
 
   const firebaseConfig = {
     apiKey: "AIzaSyCRCG2C89X9eK_s9Lg44jc3rFRrsIua42Q",
@@ -685,17 +779,21 @@
   const modalHeaderCategory = document.getElementById("modalHeaderCategory");
   const modalHeaderValue = document.getElementById("modalHeaderValue");
   const modalQuestion = document.getElementById("modalQuestion");
-  const modalTurnAvatar = document.getElementById("modalTurnAvatar");
-  const modalTurnText = document.getElementById("modalTurnText");
   const modalStatus = document.getElementById("modalStatus");
+  const modalAnswer = document.getElementById("modalAnswer");
   const modalMedia = document.getElementById("modalMedia");
   const modalImage = document.getElementById("modalImage");
   const modalAudio = document.getElementById("modalAudio");
+  const modalTurnAvatar = document.getElementById("modalTurnAvatar");
+  const modalTurnText = document.getElementById("modalTurnText");
 
   const buzzerBtn = document.getElementById("buzzerBtn");
   const buzzerSfx = document.getElementById("buzzerSfx");
 
   const pillMap = new Map();
+
+  let currentState = null;
+  let myTeamIndex = 0;
 
   function loadTeamFromStorage() {
     const stored = localStorage.getItem("quizPlayerTeamIndex");
@@ -709,12 +807,6 @@
 
   function saveTeamToStorage() {
     localStorage.setItem("quizPlayerTeamIndex", String(myTeamIndex));
-  }
-
-  async function loadGameData() {
-    const res = await fetch("gameData.json");
-    gameData = await res.json();
-    NUM_TEAMS = gameData.teams.length;
   }
 
   function renderBoardStructure() {
@@ -831,7 +923,10 @@
 
     const cards = teamsBar.querySelectorAll(".team-card");
     cards.forEach((card, i) => {
-      card.classList.toggle("active", i === state.currentTeamIndex);
+      const isActive = (i === state.currentTeamIndex);
+      const isBuzzing = (state.activeAnswerTeamIndex != null && i === state.activeAnswerTeamIndex);
+      card.classList.toggle("active", isActive);
+      card.classList.toggle("buzzing", isBuzzing);
     });
 
     const activeTeam = gameData.teams[state.currentTeamIndex];
@@ -839,7 +934,6 @@
       const name = activeTeam.label || `Team ${state.currentTeamIndex+1}`;
       const firstPlayer = (activeTeam.players && activeTeam.players[0]) || name;
       const initials = firstPlayer.split(" ").map(x => x[0]).join("").substring(0,2).toUpperCase();
-
       if (turnTeamNameEl) turnTeamNameEl.textContent = `${name}'s Turn`;
       if (turnAvatarHeader) turnAvatarHeader.textContent = initials;
     }
@@ -997,22 +1091,41 @@
       modalTurnAvatar.textContent = initials;
       if (state.buzzOpen && state.activeAnswerTeamIndex == null) {
         modalTurnText.textContent = "Buzzer ist frei";
+      } else if (state.activeAnswerTeamIndex != null) {
+        modalTurnText.textContent = `${name} beantwortet`;
       } else {
         modalTurnText.textContent = `${name} ist dran`;
       }
     }
 
     modalStatus.textContent = "";
-    modalStatus.classList.remove("modal-status-correct", "modal-status-wrong");
+    modalStatus.classList.remove("modal-status-correct", "modal-status-wrong", "modal-status-buzz");
 
-    if (state.questionResult === "correct") {
-      modalStatus.textContent = "Richtige Antwort!";
+    const qr = state.questionResult || "none";
+    const buzzOpen = !!state.buzzOpen;
+    const activeIdx = state.activeAnswerTeamIndex;
+    const buzzTeam = (activeIdx != null) ? gameData.teams[activeIdx] : null;
+
+    if (qr === "correct" && buzzTeam) {
+      modalStatus.textContent = `Richtige Antwort von ${buzzTeam.label}!`;
       modalStatus.classList.add("modal-status-correct");
-    } else if (state.questionResult === "wrong" && state.buzzOpen) {
-      modalStatus.textContent = "Falsch – Buzzer ist frei!";
+    } else if (qr === "wrong" && buzzTeam && buzzOpen) {
+      modalStatus.textContent = `Falsche Antwort von ${buzzTeam.label} – Buzzer ist frei!`;
       modalStatus.classList.add("modal-status-wrong");
-    } else if (state.buzzOpen) {
+    } else if (activeIdx != null && qr === "none" && buzzTeam) {
+      modalStatus.textContent = `${buzzTeam.label} hat gebuzzert!`;
+      modalStatus.classList.add("modal-status-buzz");
+    } else if (buzzOpen) {
       modalStatus.textContent = "Buzzer ist frei!";
+      modalStatus.classList.add("modal-status-buzz");
+    }
+
+    if (state.showAnswer && q.answer) {
+      modalAnswer.textContent = q.answer;
+      modalAnswer.classList.add("visible");
+    } else {
+      modalAnswer.textContent = "";
+      modalAnswer.classList.remove("visible");
     }
 
     modalBackdrop.classList.add("visible");
@@ -1057,8 +1170,7 @@
     });
   });
 
-  (async function start() {
-    await loadGameData();
+  (function start() {
     loadTeamFromStorage();
     renderBoardStructure();
     renderTeamsStructure();
