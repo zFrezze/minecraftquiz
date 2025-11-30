@@ -26,7 +26,7 @@
         },
         {
           "value": 400,
-          "question": "Wie heißt der Song mit dem Refrain 'I'm gonna take my horse to the old town road'?",
+          "question": "Song mit dem Refrain 'I'm gonna take my horse to the old town road'?",
           "answer": "Old Town Road",
           "image": null,
           "audio": null
@@ -242,21 +242,9 @@
     }
   ],
   "teams": [
-    {
-      "label": "Team 1",
-      "players": []
-    },
-    {
-      "label": "Team 2",
-      "players": []
-    },
-    {
-      "label": "Team 3",
-      "players": []
-    },
-    {
-      "label": "Team 4",
-      "players": []
-    }
+    { "label": "Team 1", "players": [] },
+    { "label": "Team 2", "players": [] },
+    { "label": "Team 3", "players": [] },
+    { "label": "Team 4", "players": [] }
   ]
 }
