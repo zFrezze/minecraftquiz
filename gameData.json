@@ -3,68 +3,260 @@
     {
       "name": "Lyrics/Songs",
       "questions": [
-        { "value": 100, "question": "We will, we will ...?", "answer": "Rock you" },
-        { "value": 200, "question": "Wer singt 'Bad Guy'?", "answer": "Billie Eilish" },
-        { "value": 300, "question": "Aus welchem Land kommt ABBA?", "answer": "Schweden" },
-        { "value": 400, "question": "Beende: 'I got a feeling, that tonight’s gonna be a ...'", "answer": "Good night" },
-        { "value": 500, "question": "Wer veröffentlichte 'Astroworld'?", "answer": "Travis Scott" }
+        {
+          "value": 100,
+          "question": "We will, we will ...?",
+          "answer": "Rock you",
+          "image": null,
+          "audio": null
+        },
+        {
+          "value": 200,
+          "question": "Wer singt 'Bad Guy'?",
+          "answer": "Billie Eilish",
+          "image": null,
+          "audio": null
+        },
+        {
+          "value": 300,
+          "question": "Aus welchem Land kommt ABBA?",
+          "answer": "Schweden",
+          "image": null,
+          "audio": null
+        },
+        {
+          "value": 400,
+          "question": "Wie heißt der Song mit dem Refrain 'I'm gonna take my horse to the old town road'?",
+          "answer": "Old Town Road",
+          "image": null,
+          "audio": null
+        },
+        {
+          "value": 500,
+          "question": "Wer veröffentlichte 'Astroworld'?",
+          "answer": "Travis Scott",
+          "image": null,
+          "audio": null
+        }
       ]
     },
     {
       "name": "Geografie",
       "questions": [
-        { "value": 100, "question": "Hauptstadt von Spanien?", "answer": "Madrid" },
-        { "value": 200, "question": "Fluss durch London?", "answer": "Die Themse" },
-        { "value": 300, "question": "In welchem Land liegt Kapstadt?", "answer": "Südafrika" },
-        { "value": 400, "question": "In welchem Land liegt Tokio?", "answer": "Japan" },
-        { "value": 500, "question": "Größter Ozean?", "answer": "Der Pazifische Ozean" }
+        {
+          "value": 100,
+          "question": "Hauptstadt von Spanien?",
+          "answer": "Madrid",
+          "image": null,
+          "audio": null
+        },
+        {
+          "value": 200,
+          "question": "Fluss durch London?",
+          "answer": "Die Themse",
+          "image": null,
+          "audio": null
+        },
+        {
+          "value": 300,
+          "question": "In welchem Land liegt Kapstadt?",
+          "answer": "Südafrika",
+          "image": null,
+          "audio": null
+        },
+        {
+          "value": 400,
+          "question": "Wie heißt der größte Kontinent der Erde?",
+          "answer": "Asien",
+          "image": null,
+          "audio": null
+        },
+        {
+          "value": 500,
+          "question": "Größter Ozean?",
+          "answer": "Der Pazifische Ozean",
+          "image": null,
+          "audio": null
+        }
       ]
     },
     {
       "name": "Games",
       "questions": [
-        { "value": 100, "question": "Nintendo-Klempner mit roter Mütze?", "answer": "Mario" },
-        { "value": 200, "question": "Sandbox-Spiel mit Blöcken?", "answer": "Minecraft" },
-        { "value": 300, "question": "Abkürzung für 'League of Legends'?", "answer": "LoL" },
-        { "value": 400, "question": "Wie heißt die Konsole mit 'Master Chief' als Maskottchen?", "answer": "Xbox" },
-        { "value": 500, "question": "Auf welcher Map spielt man Dust II?", "answer": "Counter-Strike" }
+        {
+          "value": 100,
+          "question": "Nintendo-Klempner mit roter Mütze?",
+          "answer": "Mario",
+          "image": null,
+          "audio": null
+        },
+        {
+          "value": 200,
+          "question": "Sandbox-Spiel mit Blöcken?",
+          "answer": "Minecraft",
+          "image": null,
+          "audio": null
+        },
+        {
+          "value": 300,
+          "question": "Abkürzung für 'League of Legends'?",
+          "answer": "LoL",
+          "image": null,
+          "audio": null
+        },
+        {
+          "value": 400,
+          "question": "Wie heißt der Held in 'The Legend of Zelda'?",
+          "answer": "Link",
+          "image": null,
+          "audio": null
+        },
+        {
+          "value": 500,
+          "question": "Auf welcher Map spielt man Dust II?",
+          "answer": "Counter-Strike",
+          "image": null,
+          "audio": null
+        }
       ]
     },
     {
       "name": "Sprichwörter",
       "questions": [
-        { "value": 100, "question": "Morgenstund hat ...", "answer": "Gold im Mund" },
-        { "value": 200, "question": "Wer im Glashaus sitzt, soll nicht mit ...", "answer": "Steinen werfen" },
-        { "value": 300, "question": "Aller guten Dinge sind ...", "answer": "Drei" },
-        { "value": 400, "question": "Viele Köche ...", "answer": "verderben den Brei" },
-        { "value": 500, "question": "Ende: 'Der Apfel fällt nicht weit ...'", "answer": "vom Stamm" }
+        {
+          "value": 100,
+          "question": "Morgenstund hat ...",
+          "answer": "Gold im Mund",
+          "image": null,
+          "audio": null
+        },
+        {
+          "value": 200,
+          "question": "Wer im Glashaus sitzt, soll nicht mit ...",
+          "answer": "Steinen werfen",
+          "image": null,
+          "audio": null
+        },
+        {
+          "value": 300,
+          "question": "Aller guten Dinge sind ...",
+          "answer": "Drei",
+          "image": null,
+          "audio": null
+        },
+        {
+          "value": 400,
+          "question": "Ende gut, ...",
+          "answer": "alles gut",
+          "image": null,
+          "audio": null
+        },
+        {
+          "value": 500,
+          "question": "Viele Köche ...",
+          "answer": "verderben den Brei",
+          "image": null,
+          "audio": null
+        }
       ]
     },
     {
       "name": "Abkürzungen",
       "questions": [
-        { "value": 100, "question": "Wofür steht 'LOL'?", "answer": "Laughing out loud" },
-        { "value": 200, "question": "Wofür steht 'FAQ'?", "answer": "Frequently Asked Questions" },
-        { "value": 300, "question": "Was bedeutet 'AFK'?", "answer": "Away from keyboard" },
-        { "value": 400, "question": "Wofür steht 'FPS' im Gaming?", "answer": "Frames per second" },
-        { "value": 500, "question": "Wofür steht 'HDMI'?", "answer": "High-Definition Multimedia Interface" }
+        {
+          "value": 100,
+          "question": "Wofür steht 'LOL'?",
+          "answer": "Laughing out loud",
+          "image": null,
+          "audio": null
+        },
+        {
+          "value": 200,
+          "question": "Wofür steht 'FAQ'?",
+          "answer": "Frequently Asked Questions",
+          "image": null,
+          "audio": null
+        },
+        {
+          "value": 300,
+          "question": "Was bedeutet 'AFK'?",
+          "answer": "Away from keyboard",
+          "image": null,
+          "audio": null
+        },
+        {
+          "value": 400,
+          "question": "Wofür steht 'FPS' im Gaming?",
+          "answer": "Frames per second",
+          "image": null,
+          "audio": null
+        },
+        {
+          "value": 500,
+          "question": "Wofür steht 'HDMI'?",
+          "answer": "High-Definition Multimedia Interface",
+          "image": null,
+          "audio": null
+        }
       ]
     },
     {
       "name": "YT-Titel",
       "questions": [
-        { "value": 100, "question": "Wie heißt die Plattform?", "answer": "YouTube" },
-        { "value": 200, "question": "Wie nennt man Vorschaubilder?", "answer": "Thumbnails" },
-        { "value": 300, "question": "Button zum Kanalfolgen?", "answer": "Abonnieren / Subscribe" },
-        { "value": 400, "question": "Wie heißt die Funktion für kurzformatige Videos?", "answer": "Shorts" },
-        { "value": 500, "question": "Bezahlte Produktvorstellung?", "answer": "Sponsoring / Werbeintegration" }
+        {
+          "value": 100,
+          "question": "Wie heißt die Plattform?",
+          "answer": "YouTube",
+          "image": null,
+          "audio": null
+        },
+        {
+          "value": 200,
+          "question": "Wie nennt man Vorschaubilder?",
+          "answer": "Thumbnails",
+          "image": null,
+          "audio": null
+        },
+        {
+          "value": 300,
+          "question": "Button zum Kanalfolgen?",
+          "answer": "Abonnieren / Subscribe",
+          "image": null,
+          "audio": null
+        },
+        {
+          "value": 400,
+          "question": "Wie nennt man Werbung, die man vor dem Video sieht?",
+          "answer": "Pre-Roll Ad",
+          "image": null,
+          "audio": null
+        },
+        {
+          "value": 500,
+          "question": "Bezahlte Produktvorstellung?",
+          "answer": "Sponsoring / Werbeintegration",
+          "image": null,
+          "audio": null
+        }
       ]
     }
   ],
   "teams": [
-    { "label": "Team 1", "players": ["Schmobin"] },
-    { "label": "Team 2", "players": ["Krokoboss"] },
-    { "label": "Team 3", "players": ["Zarbex"] },
-    { "label": "Team 4", "players": ["Elquaria"] }
+    {
+      "label": "Team 1",
+      "players": []
+    },
+    {
+      "label": "Team 2",
+      "players": []
+    },
+    {
+      "label": "Team 3",
+      "players": []
+    },
+    {
+      "label": "Team 4",
+      "players": []
+    }
   ]
 }
