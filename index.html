@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Quizduell Board</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap">
   <style>
     :root {
       --primary: #a855ff;
@@ -83,8 +83,8 @@
 
     .logo-badge {
       position: relative;
-      padding: 18px 46px 26px;
-      border-radius: 36px;
+      padding: 20px 54px 30px;
+      border-radius: 40px;
       background: #7c3aed;
       box-shadow:
         0 18px 40px rgba(0,0,0,0.9),
@@ -92,42 +92,41 @@
         0 0 0 7px #facc15;
       display: inline-flex;
       align-items: flex-end;
-      gap: 12px;
-      transform: translateY(4px);
+      gap: 14px;
     }
 
     .logo-badge::after {
       content: "";
       position: absolute;
-      bottom: -18px;
-      left: 40px;
-      width: 26px;
-      height: 20px;
+      bottom: -20px;
+      left: 46px;
+      width: 30px;
+      height: 22px;
       background: #7c3aed;
-      border-radius: 0 0 20px 20px;
+      border-radius: 0 0 24px 24px;
       transform: skewX(-18deg);
       box-shadow: 0 18px 40px rgba(0,0,0,1);
     }
 
     .logo-main {
-      font-size: 3rem;
+      font-size: 3.4rem;
       line-height: 1;
       font-weight: 900;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.08em;
       color: #facc15;
       text-shadow:
         -3px 3px 0 #000,
-        0 0 20px rgba(250,204,21,0.9);
+        0 0 24px rgba(250,204,21,0.95);
     }
 
     .logo-question {
-      font-size: 2.4rem;
+      font-size: 2.8rem;
       line-height: 1;
       font-weight: 900;
       color: #facc15;
       text-shadow:
         -3px 3px 0 #000,
-        0 0 16px rgba(250,204,21,0.9);
+        0 0 18px rgba(250,204,21,0.95);
     }
 
     .turn-overlay {
@@ -147,7 +146,7 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 5px 14px;
+      padding: 6px 16px;
       border-radius: 999px;
       background: rgba(15,23,42,0.9);
       border: 1px solid rgba(168,85,255,0.7);
@@ -173,8 +172,18 @@
       letter-spacing: 0.04em;
     }
 
-    .turn-star {
-      font-size: 1.1rem;
+    .phase-badge {
+      position: absolute;
+      left: 32px;
+      bottom: 6px;
+      font-size: 0.8rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.7);
+      background: rgba(15,23,42,0.9);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
     }
 
     @media (max-width: 768px) {
@@ -183,6 +192,9 @@
         top: auto;
         bottom: 6px;
         transform: none;
+      }
+      .phase-badge {
+        left: 16px;
       }
     }
 
@@ -333,6 +345,10 @@
       color: #f9fafb;
     }
 
+    button.danger {
+      background: linear-gradient(to top, #b91c1c, #f97373);
+    }
+
     button:hover {
       transform: translateY(-1px);
       box-shadow: 0 10px 24px rgba(0,0,0,1);
@@ -399,6 +415,9 @@
       font-weight: 800;
       text-transform: uppercase;
       box-shadow: 0 12px 26px rgba(0,0,0,1);
+      background-size: cover;
+      background-position: center;
+      color: #f9fafb;
     }
 
     .team-title {
@@ -429,21 +448,16 @@
       margin-top: 1px;
     }
 
-    .team-score-buttons {
-      display: flex;
-      gap: 4px;
-      margin-top: 6px;
+    @media (max-width: 1100px) {
+      .board { transform: scale(0.95); transform-origin: top center; }
+      .teams-bar { grid-template-columns: repeat(2, minmax(0,1fr)); }
     }
 
-    .team-score-buttons button {
-      padding: 2px 8px;
-      font-size: 0.7rem;
-      box-shadow: none;
-      background: rgba(15,23,42,0.9);
+    @media (max-width: 768px) {
+      .board { transform: scale(0.85); }
+      .teams-bar { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .board-footer { flex-direction: column; align-items: flex-start; }
     }
-
-    .team-score-buttons button.plus { color: #bbf7d0; }
-    .team-score-buttons button.minus { color: var(--danger); }
 
     /* MODAL */
 
@@ -467,7 +481,7 @@
       border-radius: 22px;
       border: 2px solid #ffffff;
       background: linear-gradient(to top, #4c1d95, #8b5cf6);
-      padding: 24px 26px 20px;
+      padding: 24px 26px 24px;
       box-shadow: 0 28px 70px rgba(0,0,0,1);
       text-align: center;
       color: #f9fafb;
@@ -484,23 +498,6 @@
       text-transform: uppercase;
       opacity: 0.9;
       margin-bottom: 8px;
-    }
-
-    .modal-close {
-      position: absolute;
-      top: 10px;
-      right: 12px;
-      width: 30px;
-      height: 30px;
-      border-radius: 999px;
-      border: 1px solid rgba(249,250,251,0.7);
-      background: rgba(15,23,42,0.35);
-      color: #f9fafb;
-      font-size: 1.3rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
     }
 
     .modal-body {
@@ -559,7 +556,7 @@
 
     .modal-status-text {
       margin-top: 12px;
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       font-weight: 800;
     }
 
@@ -592,43 +589,17 @@
     }
 
     .modal-footer-row {
+      margin-top: 12px;
       display: flex;
       justify-content: flex-end;
       gap: 8px;
-      margin-top: 8px;
-    }
-
-    .modal-footer-row button {
-      background: rgba(15,23,42,0.4);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.9);
-    }
-
-    @media (max-width: 1100px) {
-      .board { transform: scale(0.95); transform-origin: top center; }
-      .teams-bar { grid-template-columns: repeat(2, minmax(0,1fr)); }
-    }
-
-    @media (max-width: 768px) {
-      .board { transform: scale(0.85); }
-      .teams-bar { grid-template-columns: repeat(2, minmax(0,1fr)); }
-      .board-footer { flex-direction: column; align-items: flex-start; }
-    }
-
-    /* LOBBY-BADGE */
-
-    .lobby-badge {
-      margin-left: 20px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,184,0.6);
-      font-size: 0.75rem;
-      color: var(--text-dim);
+      font-size: 0.8rem;
+      color: rgba(15,23,42,0.9);
     }
   </style>
 </head>
 <body>
 <div class="app-shell">
-
   <!-- HEADER -->
   <header class="top-header">
     <div class="logo-centered">
@@ -637,15 +608,13 @@
         <span class="logo-question">?!</span>
       </div>
     </div>
-
     <div class="turn-overlay">
-      <span class="turn-star">★</span>
       <div class="turn-player">
         <div class="turn-avatar" id="turnAvatarHeader">T1</div>
         <span class="turn-label" id="turnTeamName">Team 1 ist dran</span>
       </div>
-      <span class="turn-star">★</span>
     </div>
+    <div class="phase-badge" id="phaseBadge">Lobby – warte auf Start</div>
   </header>
 
   <!-- BOARD -->
@@ -656,11 +625,14 @@
 
     <div class="board-footer">
       <div class="hint">
-        <span id="phaseBadge" class="lobby-badge">Lobby – warte auf Start</span>
+        Kategorien, Fragen & Medien in <code>gameData.json</code> bearbeiten.
       </div>
       <div class="footer-controls">
-        <button type="button" id="resetBoardBtn">Reset</button>
-        <button type="button" class="primary" id="openControllerBtn">Controller öffnen</button>
+        <button type="button" id="btnLobby">Lobby</button>
+        <button type="button" id="btnPlay" class="primary">Spiel starten</button>
+        <button type="button" id="resetBoardBtn" class="danger">Reset</button>
+        <button type="button" id="openControllerBtn" class="primary">Controller</button>
+        <button type="button" id="openLobbyBtn">Lobby-Ansicht</button>
       </div>
     </div>
 
@@ -671,11 +643,9 @@
 <!-- MODAL -->
 <div id="modalBackdrop" class="modal-backdrop">
   <div class="modal-card">
-    <button class="modal-close" id="closeModalBtn" aria-label="Schließen">×</button>
-
     <div class="modal-header-row">
       <div id="modalHeaderCategory">Kategorie</div>
-      <div id="modalHeaderValue"><strong>100</strong></div>
+      <!-- Punkte oben ausgeblendet – nur Kategorie -->
     </div>
 
     <div class="modal-body">
@@ -696,13 +666,15 @@
     </div>
 
     <div class="modal-footer-row">
-      <button type="button" id="backToBoardBtn">Schließen</button>
+      <span>Die Antwort wird nur gezeigt, wenn im Controller „Antwort anzeigen“ gedrückt wird.</span>
     </div>
   </div>
 </div>
 
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyCRCG2C89X9eK_s9Lg44jc3rFRrsIua42Q",
@@ -714,38 +686,43 @@
     appId: "1:278820007596:web:67ab6be9e47be45a04f909"
   };
 
+  const GAME_ID = "quiz-1";
+
   let gameData = null;
   let NUM_TEAMS = 0;
+
   let currentState = null;
-  const GAME_ID = "quiz-1";
   let gameRef = null;
+  let playersRef = null;
+  let currentPlayers = {};
+  window.currentPlayers = currentPlayers;
 
   const boardEl = document.getElementById("board");
   const teamsBar = document.getElementById("teamsBar");
-  const resetBoardBtn = document.getElementById("resetBoardBtn");
-  const openControllerBtn = document.getElementById("openControllerBtn");
   const phaseBadge = document.getElementById("phaseBadge");
+  const turnTeamName = document.getElementById("turnTeamName");
+  const turnAvatarHeader = document.getElementById("turnAvatarHeader");
 
   const modalBackdrop = document.getElementById("modalBackdrop");
   const modalHeaderCategory = document.getElementById("modalHeaderCategory");
-  const modalHeaderValue = document.getElementById("modalHeaderValue");
   const modalQuestion = document.getElementById("modalQuestion");
-  const modalStatus = document.getElementById("modalStatus");
-  const modalAnswer = document.getElementById("modalAnswer");
   const modalMedia = document.getElementById("modalMedia");
   const modalImage = document.getElementById("modalImage");
   const modalAudio = document.getElementById("modalAudio");
   const modalTurnAvatar = document.getElementById("modalTurnAvatar");
   const modalTurnText = document.getElementById("modalTurnText");
-  const closeModalBtn = document.getElementById("closeModalBtn");
-  const backToBoardBtn = document.getElementById("backToBoardBtn");
+  const modalStatus = document.getElementById("modalStatus");
+  const modalAnswer = document.getElementById("modalAnswer");
 
-  const turnTeamName = document.getElementById("turnTeamName");
-  const turnAvatarHeader = document.getElementById("turnAvatarHeader");
+  const resetBoardBtn = document.getElementById("resetBoardBtn");
+  const openControllerBtn = document.getElementById("openControllerBtn");
+  const openLobbyBtn = document.getElementById("openLobbyBtn");
+  const btnPlay = document.getElementById("btnPlay");
+  const btnLobby = document.getElementById("btnLobby");
 
   const pillMap = new Map();
 
-  function createInitialState() {
+  function getInitialState() {
     return {
       gamePhase: "lobby",
       currentTeamIndex: 0,
@@ -753,8 +730,8 @@
       used: {},
       currentQuestion: null,
       buzzOpen: false,
+      failedTeams: {},
       activeAnswerTeamIndex: null,
-      failedTeams: Array(NUM_TEAMS).fill(false),
       questionResult: "none",
       showAnswer: false
     };
@@ -774,6 +751,7 @@
       boardEl.style.setProperty("--col-count", colCount);
     }
 
+    // Kategorien
     categories.forEach(cat => {
       const cell = document.createElement("div");
       cell.className = "cell category";
@@ -788,6 +766,7 @@
     });
 
     const maxQuestions = Math.max(...categories.map(c => c.questions.length));
+
     for (let qIndex = 0; qIndex < maxQuestions; qIndex++) {
       categories.forEach((cat, catIndex) => {
         const q = cat.questions[qIndex];
@@ -811,17 +790,17 @@
         pill.dataset.key = key;
         pill.addEventListener("click", () => {
           if (!currentState || currentState.used?.[key]) return;
-          if (currentState.gamePhase !== "playing") return;
+          if (currentState.currentQuestion) return; // nicht neue öffnen, wenn noch eine läuft
 
-          const failedTeams = Array(NUM_TEAMS).fill(false);
-          gameRef.update({
+          const newState = {
             currentQuestion: { catIndex, qIndex },
-            questionResult: "none",
             buzzOpen: false,
-            activeAnswerTeamIndex: null,
-            failedTeams,
+            failedTeams: {},
+            activeAnswerTeamIndex: currentState.currentTeamIndex,
+            questionResult: "none",
             showAnswer: false
-          });
+          };
+          gameRef.update(newState);
         });
 
         pillMap.set(key, pill);
@@ -840,15 +819,7 @@
 
       const avatarsRow = document.createElement("div");
       avatarsRow.className = "team-avatars";
-
-      const players = team.players && team.players.length ? team.players : [team.label || `Team ${index+1}`];
-      players.forEach(name => {
-        const avatar = document.createElement("div");
-        avatar.className = "team-avatar";
-        const initials = name.split(" ").map(x => x[0]).join("").substring(0,2).toUpperCase();
-        avatar.textContent = initials;
-        avatarsRow.appendChild(avatar);
-      });
+      avatarsRow.id = `teamAvatars_${index}`;
 
       const title = document.createElement("div");
       title.className = "team-title";
@@ -856,7 +827,7 @@
 
       const names = document.createElement("div");
       names.className = "team-names";
-      names.textContent = players.join(" · ");
+      names.id = `teamNames_${index}`;
 
       const score = document.createElement("div");
       score.className = "team-score";
@@ -867,150 +838,96 @@
       caption.className = "team-score-caption";
       caption.textContent = "Punkte";
 
-      const btnRow = document.createElement("div");
-      btnRow.className = "team-score-buttons";
-
-      const minusBtn = document.createElement("button");
-      minusBtn.className = "minus";
-      minusBtn.textContent = "-100";
-      minusBtn.dataset.teamIndex = String(index);
-      minusBtn.dataset.delta = "-100";
-
-      const plusBtn = document.createElement("button");
-      plusBtn.className = "plus";
-      plusBtn.textContent = "+100";
-      plusBtn.dataset.teamIndex = String(index);
-      plusBtn.dataset.delta = "100";
-
-      btnRow.appendChild(minusBtn);
-      btnRow.appendChild(plusBtn);
-
       card.appendChild(avatarsRow);
       card.appendChild(title);
       card.appendChild(names);
       card.appendChild(score);
       card.appendChild(caption);
-      card.appendChild(btnRow);
-
       teamsBar.appendChild(card);
-    });
-
-    teamsBar.addEventListener("click", e => {
-      const t = e.target;
-      if (!(t instanceof HTMLElement)) return;
-      const delta = t.dataset.delta;
-      if (!delta || !currentState) return;
-      const teamIndex = Number(t.dataset.teamIndex ?? 0);
-      const scores = currentState.scores ? [...currentState.scores] : Array(NUM_TEAMS).fill(0);
-      scores[teamIndex] = (scores[teamIndex] || 0) + Number(delta);
-      gameRef.update({ scores });
     });
   }
 
   function updateTeamsFromState(state) {
-  gameData.teams.forEach((team, index) => {
-    const scoreEl = document.getElementById(`teamScore_${index}`);
-    if (scoreEl) {
-      const score = state.scores?.[index] ?? 0;
-      scoreEl.textContent = score;
-    }
+    gameData.teams.forEach((team, index) => {
+      const scoreEl = document.getElementById(`teamScore_${index}`);
+      if (scoreEl) {
+        const score = state.scores?.[index] ?? 0;
+        scoreEl.textContent = score;
+      }
 
-    // Avatare & Namen dynamisch aus Lobby-Players (wenn du das gleich einbaust)
-    const avatarsRow = document.getElementById(`teamAvatars_${index}`);
-    const namesEl = document.getElementById(`teamNames_${index}`);
-    if (avatarsRow && typeof window.currentPlayers === "object") {
-      avatarsRow.innerHTML = "";
-      const players = Object.values(window.currentPlayers)
-        .filter(p => p.teamIndex === index)
-        .slice(0, 2);
+      const avatarsRow = document.getElementById(`teamAvatars_${index}`);
+      const namesEl = document.getElementById(`teamNames_${index}`);
+      if (avatarsRow) {
+        avatarsRow.innerHTML = "";
+        const players = Object.entries(currentPlayers)
+          .filter(([id, p]) => p.teamIndex === index)
+          .map(([id, p]) => p)
+          .slice(0, 2);
 
-      if (players.length > 0) {
-        players.forEach(p => {
+        if (players.length > 0) {
+          players.forEach(p => {
+            const avatar = document.createElement("div");
+            avatar.className = "team-avatar";
+            if (p.avatarDataUrl) {
+              avatar.style.backgroundImage = `url(${p.avatarDataUrl})`;
+              avatar.textContent = "";
+            } else {
+              const initials = p.name.split(" ").map(x => x[0]).join("").substring(0,2).toUpperCase();
+              avatar.textContent = initials;
+            }
+            avatarsRow.appendChild(avatar);
+          });
+        } else {
           const avatar = document.createElement("div");
           avatar.className = "team-avatar";
-          if (p.avatarDataUrl) {
-            avatar.style.backgroundImage = `url(${p.avatarDataUrl})`;
-            avatar.style.backgroundSize = "cover";
-            avatar.style.backgroundPosition = "center";
-            avatar.textContent = "";
-          } else {
-            const initials = p.name
-              .split(" ")
-              .map(x => x[0])
-              .join("")
-              .substring(0, 2)
-              .toUpperCase();
-            avatar.textContent = initials;
-          }
+          const initials = (team.label || `Team ${index+1}`)
+            .split(" ").map(x => x[0]).join("").substring(0,2).toUpperCase();
+          avatar.textContent = initials;
           avatarsRow.appendChild(avatar);
-        });
-      } else {
-        // Fallback: Standard-Kreis mit Team-Initialen
-        const avatar = document.createElement("div");
-        avatar.className = "team-avatar";
-        const initials = (team.label || `Team ${index + 1}`)
-          .split(" ")
-          .map(x => x[0])
-          .join("")
-          .substring(0, 2)
-          .toUpperCase();
-        avatar.textContent = initials;
-        avatarsRow.appendChild(avatar);
-      }
+        }
 
-      if (namesEl) {
-        if (players.length > 0) {
-          namesEl.textContent = players.map(p => p.name).join(" · ");
-        } else {
-          namesEl.textContent = team.label || `Team ${index + 1}`;
+        if (namesEl) {
+          if (players.length > 0) {
+            namesEl.textContent = players.map(p => p.name).join(" · ");
+          } else {
+            namesEl.textContent = team.label || `Team ${index+1}`;
+          }
         }
       }
+    });
+
+    const cards = teamsBar.querySelectorAll(".team-card");
+    const hasQuestion = !!state.currentQuestion;
+    cards.forEach((card, i) => {
+      const isActive = i === state.currentTeamIndex;
+      const isBuzzing =
+        hasQuestion &&
+        state.questionResult === "none" &&
+        state.activeAnswerTeamIndex != null &&
+        i === state.activeAnswerTeamIndex;
+
+      card.classList.toggle("active", isActive);
+      card.classList.toggle("buzzing", isBuzzing);
+    });
+
+    const activeTeam = gameData.teams[state.currentTeamIndex];
+    if (activeTeam) {
+      const players = Object.values(currentPlayers).filter(p => p.teamIndex === state.currentTeamIndex);
+      const label = activeTeam.label || `Team ${state.currentTeamIndex+1}`;
+      const displayName = players[0]?.name || label;
+      const initials = displayName.split(" ").map(x => x[0]).join("").substring(0,2).toUpperCase();
+      turnTeamName.textContent = `${label} ist dran`;
+      turnAvatarHeader.textContent = initials;
+      modalTurnAvatar.textContent = initials;
+      modalTurnText.textContent = `${label} ist dran`;
     }
-  });
 
-  const cards = teamsBar.querySelectorAll(".team-card");
-  const hasQuestion = !!state.currentQuestion;
-  cards.forEach((card, i) => {
-    const isActive = i === state.currentTeamIndex;
-    // Roter Buzz-Rahmen NUR wenn eine Frage offen ist & jemand gerade buzzert & Ergebnis noch nicht feststeht
-    const isBuzzing =
-      hasQuestion &&
-      state.questionResult === "none" &&
-      state.activeAnswerTeamIndex != null &&
-      i === state.activeAnswerTeamIndex;
-
-    card.classList.toggle("active", isActive);
-    card.classList.toggle("buzzing", isBuzzing);
-  });
-
-  const activeTeam = gameData.teams[state.currentTeamIndex];
-  if (activeTeam) {
-    const name = activeTeam.label || `Team ${state.currentTeamIndex + 1}`;
-    const firstPlayer =
-      (typeof window.currentPlayers === "object"
-        ? Object.values(window.currentPlayers).find(p => p.teamIndex === state.currentTeamIndex)?.name
-        : null) || name;
-
-    const initials = firstPlayer
-      .split(" ")
-      .map(x => x[0])
-      .join("")
-      .substring(0, 2)
-      .toUpperCase();
-
-    turnTeamName.textContent = `${name} ist dran`;
-    turnAvatarHeader.textContent = initials;
-    modalTurnAvatar.textContent = initials;
-    modalTurnText.textContent = `${name} ist dran`;
+    if (state.gamePhase === "lobby") {
+      phaseBadge.textContent = "Lobby – warte auf Start";
+    } else {
+      phaseBadge.textContent = "Spiel läuft";
+    }
   }
-
-  if (state.gamePhase === "lobby") {
-    phaseBadge.textContent = "Lobby – warte auf Start";
-  } else {
-    phaseBadge.textContent = "Spiel läuft";
-  }
-}
-
 
   function updateUsedFromState(state) {
     const used = state.used || {};
@@ -1034,7 +951,6 @@
     if (!cat || !q) return;
 
     modalHeaderCategory.textContent = cat.name;
-    modalHeaderValue.innerHTML = `<strong>${q.value}</strong>`;
     modalQuestion.textContent = q.question;
 
     let hasMedia = false;
@@ -1054,26 +970,29 @@
     }
     modalMedia.style.display = hasMedia ? "flex" : "none";
 
-    const idx = (state.activeAnswerTeamIndex != null)
+    const answerTeamIndex = (state.activeAnswerTeamIndex != null)
       ? state.activeAnswerTeamIndex
       : state.currentTeamIndex;
-    const team = gameData.teams[idx];
-    if (team) {
-      const name = team.label || `Team ${idx+1}`;
-      const firstPlayer = (team.players && team.players[0]) || name;
-      const initials = firstPlayer.split(" ").map(x => x[0]).join("").substring(0,2).toUpperCase();
+    const answerTeam = gameData.teams[answerTeamIndex];
+
+    if (answerTeam) {
+      const players = Object.values(currentPlayers).filter(p => p.teamIndex === answerTeamIndex);
+      const label = answerTeam.label || `Team ${answerTeamIndex+1}`;
+      const displayName = players[0]?.name || label;
+      const initials = displayName.split(" ").map(x => x[0]).join("").substring(0,2).toUpperCase();
       modalTurnAvatar.textContent = initials;
+
       if (state.buzzOpen && state.activeAnswerTeamIndex == null) {
         modalTurnText.textContent = "Buzzer ist frei";
       } else if (state.activeAnswerTeamIndex != null) {
-        modalTurnText.textContent = `${name} beantwortet`;
+        modalTurnText.textContent = `${label} beantwortet`;
       } else {
-        modalTurnText.textContent = `${name} ist dran`;
+        modalTurnText.textContent = `${label} ist dran`;
       }
     }
 
     modalStatus.textContent = "";
-    modalStatus.classList.remove("modal-status-correct", "modal-status-wrong", "modal-status-buzz");
+    modalStatus.className = "modal-status-text";
 
     const qr = state.questionResult || "none";
     const buzzOpen = !!state.buzzOpen;
@@ -1081,13 +1000,13 @@
     const buzzTeam = (activeIdx != null) ? gameData.teams[activeIdx] : null;
 
     if (qr === "correct" && buzzTeam) {
-      modalStatus.textContent = `Richtige Antwort von ${buzzTeam.label}!`;
+      modalStatus.textContent = `Richtige Antwort von ${buzzTeam.label || "dem Team"}!`;
       modalStatus.classList.add("modal-status-correct");
     } else if (qr === "wrong" && buzzTeam && buzzOpen) {
-      modalStatus.textContent = `Falsche Antwort von ${buzzTeam.label} – Buzzer ist frei!`;
+      modalStatus.textContent = `Falsche Antwort von ${buzzTeam.label || "dem Team"} – Buzzer ist frei!`;
       modalStatus.classList.add("modal-status-wrong");
     } else if (activeIdx != null && qr === "none" && buzzTeam) {
-      modalStatus.textContent = `${buzzTeam.label} hat gebuzzert!`;
+      modalStatus.textContent = `${buzzTeam.label || "Ein Team"} hat gebuzzert!`;
       modalStatus.classList.add("modal-status-buzz");
     } else if (buzzOpen) {
       modalStatus.textContent = "Buzzer ist frei!";
@@ -1105,42 +1024,35 @@
     modalBackdrop.classList.add("visible");
   }
 
-  function closeQuestion() {
-    if (!currentState) return;
-    const failed = Array(NUM_TEAMS).fill(false);
-    gameRef.update({
-      currentQuestion: null,
-      buzzOpen: false,
-      activeAnswerTeamIndex: null,
-      questionResult: "none",
-      showAnswer: false,
-      failedTeams: failed
-    });
-  }
-
   resetBoardBtn.addEventListener("click", () => {
     if (!gameRef) return;
-    gameRef.set(createInitialState());
+    gameRef.set(getInitialState());
   });
 
   openControllerBtn.addEventListener("click", () => {
     window.open("controller.html", "_blank");
   });
 
-  closeModalBtn.addEventListener("click", closeQuestion);
-  backToBoardBtn.addEventListener("click", closeQuestion);
+  openLobbyBtn.addEventListener("click", () => {
+    window.open("lobby.html", "_blank");
+  });
 
-  document.addEventListener("keydown", e => {
-    if (!currentState) return;
-    if (e.key === "Escape") {
-      closeQuestion();
-    } else if (e.key === "ArrowRight") {
-      const idx = (currentState.currentTeamIndex + 1) % NUM_TEAMS;
-      gameRef.update({ currentTeamIndex: idx });
-    } else if (e.key === "ArrowLeft") {
-      const idx = (currentState.currentTeamIndex - 1 + NUM_TEAMS) % NUM_TEAMS;
-      gameRef.update({ currentTeamIndex: idx });
-    }
+  btnPlay.addEventListener("click", () => {
+    if (!gameRef || !currentState) return;
+    gameRef.update({ gamePhase: "playing" });
+  });
+
+  btnLobby.addEventListener("click", () => {
+    if (!gameRef || !currentState) return;
+    gameRef.update({
+      gamePhase: "lobby",
+      currentQuestion: null,
+      buzzOpen: false,
+      activeAnswerTeamIndex: null,
+      failedTeams: {},
+      questionResult: "none",
+      showAnswer: false
+    });
   });
 
   async function init() {
@@ -1156,18 +1068,22 @@
     }
     const db = firebase.database();
     gameRef = db.ref("games/" + GAME_ID);
+    playersRef = db.ref("games/" + GAME_ID + "/players");
+
+    playersRef.on("value", snap => {
+      currentPlayers = snap.val() || {};
+      window.currentPlayers = currentPlayers;
+      if (currentState) {
+        updateTeamsFromState(currentState);
+      }
+    });
 
     gameRef.on("value", snapshot => {
       if (!snapshot.exists()) {
-        const initState = createInitialState();
-        gameRef.set(initState);
-        currentState = initState;
-        updateTeamsFromState(initState);
-        updateUsedFromState(initState);
-        updateModalFromState(initState);
+        gameRef.set(getInitialState());
         return;
       }
-      const state = snapshot.val() || createInitialState();
+      const state = snapshot.val();
       currentState = state;
       updateTeamsFromState(state);
       updateUsedFromState(state);
