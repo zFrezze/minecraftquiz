@@ -2,8 +2,9 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <title>Quiz Player & Buzzer</title>
+  <title>Quiz Player</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Font -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap">
   <style>
     :root {
@@ -15,68 +16,501 @@
       --danger: #f97373;
       --radius-pill: 999px;
       --radius-lg: 1.4rem;
+      --shadow-strong: 0 22px 48px rgba(0,0,0,0.9);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      min-height: 100vh;
-      background: radial-gradient(circle at top, #111827, #020617 80%);
       color: var(--text-main);
+      min-height: 100vh;
       display: flex;
       justify-content: center;
-      align-items: center;
-      padding: 10px;
+      padding: 16px;
+      position: relative;
+      overflow-x: hidden;
+      background: #020617;
     }
 
-    .card {
-      width: min(900px, 100%);
-      background: rgba(15,23,42,0.96);
-      border-radius: 18px;
-      border: 1px solid rgba(148,163,184,0.6);
-      box-shadow: 0 18px 40px rgba(0,0,0,1);
-      padding: 14px 14px 18px;
+    /* Hintergrund: Vignette + Grid */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 50% 40%,
+          #2b2b33 0%,
+          #111827 45%,
+          #020617 80%,
+          #000000 100%
+        );
+      z-index: -2;
+    }
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(#3f3f46 1px, transparent 1px),
+        linear-gradient(90deg, #3f3f46 1px, transparent 1px);
+      background-size: 120px 120px;
+      opacity: 0.22;
+      mix-blend-mode: screen;
+      z-index: -1;
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 1500px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 16px;
     }
 
-    .header {
+    /* ========= HEADER LOGO + TURN ========= */
+
+    .top-header {
+      position: relative;
+      padding: 20px 20px 32px;
+    }
+
+    .logo-centered {
+      display: flex;
+      justify-content: center;
+    }
+
+    .logo-badge {
+      position: relative;
+      padding: 16px 42px 24px;
+      border-radius: 32px;
+      background: #7c3aed;
+      box-shadow:
+        0 18px 40px rgba(0,0,0,0.9),
+        0 0 0 4px #000,
+        0 0 0 7px #facc15;
+      display: inline-flex;
+      align-items: flex-end;
+      gap: 10px;
+      transform: translateY(4px);
+    }
+
+    .logo-badge::after {
+      content: "";
+      position: absolute;
+      bottom: -18px;
+      left: 40px;
+      width: 26px;
+      height: 20px;
+      background: #7c3aed;
+      border-radius: 0 0 20px 20px;
+      transform: skewX(-18deg);
+      box-shadow: 0 18px 40px rgba(0,0,0,1);
+    }
+
+    .logo-main {
+      font-size: 2.8rem;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      color: #facc15;
+      text-shadow:
+        -3px 3px 0 #000,
+        0 0 20px rgba(250,204,21,0.9);
+    }
+
+    .logo-question {
+      font-size: 2.1rem;
+      line-height: 1;
+      font-weight: 900;
+      color: #facc15;
+      text-shadow:
+        -3px 3px 0 #000,
+        0 0 16px rgba(250,204,21,0.9);
+    }
+
+    .turn-overlay {
+      position: absolute;
+      right: 32px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.9rem;
+      color: #a855ff;
+      text-shadow: 0 0 14px rgba(168,85,255,0.9);
+    }
+
+    .turn-player {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 14px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(168,85,255,0.7);
+      box-shadow: 0 12px 28px rgba(0,0,0,1);
+    }
+
+    .turn-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: linear-gradient(to top, #020617, var(--primary-dark), var(--primary-soft));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #f9fafb;
+      box-shadow: 0 12px 28px rgba(0,0,0,1);
+    }
+
+    .turn-label {
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .turn-star {
+      font-size: 1.1rem;
+    }
+
+    @media (max-width: 768px) {
+      .turn-overlay {
+        right: 16px;
+        top: auto;
+        bottom: 6px;
+        transform: none;
+      }
+    }
+
+    /* ========= BOARD ========= */
+
+    .board-wrapper {
+      flex: 1;
+      padding: 10px 0 8px;
+      border-radius: var(--radius-lg);
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .board-inner {
+      border-radius: 0;
+      padding: 0;
+      background: transparent;
+      border: none;
+    }
+
+    .board {
+      display: grid;
+      gap: 10px 18px;
+      margin-inline: auto;
+      max-width: 1400px;
+      pointer-events: none; /* ganz wichtig: NICHT klickbar für Player */
+    }
+
+    .board.dynamic-cols-6 { grid-template-columns: repeat(6, minmax(0,1fr)); }
+    .board.dynamic-cols-custom { grid-template-columns: repeat(var(--col-count), minmax(0,1fr)); }
+
+    .cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding-inline: 8px;
+      user-select: none;
+    }
+
+    .cell.category { height: 70px; }
+
+    .pill {
+      width: 100%;
+      border-radius: var(--radius-pill);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 10px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.9);
+    }
+
+    .pill::before {
+      content: "";
+      position: absolute;
+      inset: -60%;
+      background: radial-gradient(circle at top, rgba(255,255,255,0.18), transparent 60%);
+      opacity: 0.75;
+      pointer-events: none;
+    }
+
+    .pill.category-pill {
+      background: linear-gradient(
+        to top,
+        #020617 0%,
+        var(--primary-dark) 50%,
+        var(--primary-soft) 100%
+      );
+      border: 2px solid #ffffff;
+    }
+
+    .pill.value-pill {
+      background: linear-gradient(
+        to top,
+        #020617 0%,
+        #2b1563 50%,
+        #6d28d9 100%
+      );
+      border: 2px solid #6b7280;
+    }
+
+    .pill.value-pill.used {
+      opacity: 0.22;
+      filter: grayscale(0.4);
+      box-shadow: none;
+      border-color: #4b5563;
+    }
+
+    .category-label {
+      font-size: 0.9rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: #f9fafb;
+      padding-inline: 6px;
+      text-shadow: 0 0 14px rgba(255,255,255,0.5);
+    }
+
+    .value-label {
+      font-size: 1.25rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #f9fafb;
+    }
+
+    .board-footer {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
+      gap: 10px;
+      font-size: 0.82rem;
       color: var(--text-dim);
-      flex-wrap: wrap;
-      gap: 6px;
+      padding-inline: 4px;
     }
 
-    .status-tag {
+    .teams-bar {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .team-card {
+      background: radial-gradient(circle at top, #111827, #020617 80%);
+      border-radius: 20px;
+      border: 2px solid rgba(148,163,184,0.6);
+      padding: 14px 12px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 20px 42px rgba(0,0,0,1);
+    }
+
+    .team-card.active {
+      border-color: #22c55e;
+      box-shadow: 0 0 24px rgba(34,197,94,0.7);
+      transform: translateY(-2px);
+    }
+
+    .team-avatars {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .team-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 999px;
+      background: linear-gradient(to top, #020617, var(--primary-dark), var(--primary-soft));
+      border: 3px solid rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      box-shadow: 0 12px 26px rgba(0,0,0,1);
+    }
+
+    .team-title {
+      font-size: 0.8rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .team-names {
+      margin-top: 2px;
+      font-size: 0.9rem;
+    }
+
+    .team-score {
+      margin-top: 6px;
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #fef08a;
+      text-shadow: 0 0 12px rgba(254,240,138,0.8);
+    }
+
+    .team-score-caption {
+      font-size: 0.75rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-top: 1px;
+    }
+
+    /* ========= MODAL (Frage) ========= */
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(15,23,42,0.4), rgba(0,0,0,0.95));
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-backdrop.visible {
+      display: flex;
+    }
+
+    .modal-card {
+      width: min(820px, 95%);
+      border-radius: 22px;
+      border: 2px solid #ffffff;
+      background: linear-gradient(to top, #4c1d95, #8b5cf6);
+      padding: 24px 26px 20px;
+      box-shadow: 0 28px 70px rgba(0,0,0,1);
+      text-align: center;
+      color: #f9fafb;
+      position: relative;
+    }
+
+    .modal-body {
+      margin-top: 4px;
+      margin-bottom: 8px;
+    }
+
+    .modal-header-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.8rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      opacity: 0.9;
+      margin-bottom: 8px;
+    }
+
+    #modalHeaderValue { display: none; } /* Punkte ausgeblendet */
+
+    .question-text {
+      font-size: clamp(1.25rem, 1rem + 0.9vw, 1.7rem);
+      line-height: 1.4;
+    }
+
+    .modal-media {
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .modal-media img {
+      max-width: 100%;
+      max-height: 260px;
+      border-radius: 14px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.9);
+    }
+
+    .modal-media audio {
+      width: 100%;
+      max-width: 360px;
+      margin-top: 4px;
+    }
+
+    .modal-turn-pill {
+      margin-top: 18px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.25);
+      padding: 8px 16px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.82rem;
+    }
+
+    .modal-turn-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .modal-status-text {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .modal-status-correct {
+      color: #bbf7d0;
+      text-shadow: 0 0 12px rgba(34,197,94,0.9);
+    }
+
+    .modal-status-wrong {
+      color: #fecaca;
+      text-shadow: 0 0 12px rgba(248,113,113,0.9);
+    }
+
+    /* ========= TEAM-WAHL / INFO ========= */
+
+    .team-select {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 6px;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+    }
+
+    .team-pill {
       padding: 3px 8px;
       border-radius: 999px;
       border: 1px solid rgba(148,163,184,0.7);
       background: rgba(15,23,42,0.9);
-      font-size: 0.7rem;
-    }
-
-    .team-select {
-      margin-top: 6px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .team-pill {
-      padding: 4px 9px;
-      border-radius: 999px;
-      font-size: 0.75rem;
-      border: 1px solid rgba(148,163,184,0.7);
-      background: rgba(15,23,42,0.9);
-      color: var(--text-dim);
       cursor: pointer;
+      font-size: 0.75rem;
+      color: var(--text-dim);
     }
 
     .team-pill.active {
@@ -85,81 +519,28 @@
       color: #e5e7eb;
     }
 
-    .top-row {
-      display: grid;
-      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.4fr);
-      gap: 10px;
-    }
-
-    @media (max-width: 800px) {
-      .top-row {
-        grid-template-columns: minmax(0,1fr);
-      }
-    }
-
-    .question-box {
-      border-radius: 14px;
-      background: linear-gradient(to top, var(--primary-dark), var(--primary-soft));
-      padding: 12px 12px 12px;
-      box-shadow: 0 18px 40px rgba(0,0,0,1);
-    }
-
-    .question-meta {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      opacity: 0.85;
-    }
-
-    .question-text {
-      margin-top: 8px;
-      font-size: 1rem;
-      line-height: 1.4;
-    }
-
-    .media-box {
-      margin-top: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      align-items: center;
-    }
-
-    .media-box img {
-      max-width: 100%;
-      max-height: 200px;
-      border-radius: 12px;
-      box-shadow: 0 14px 30px rgba(0,0,0,1);
-    }
-
-    .media-box audio {
-      width: 100%;
-      max-width: 360px;
-    }
-
     .info-line {
-      margin-top: 8px;
+      margin-top: 6px;
       font-size: 0.85rem;
       font-weight: 600;
+      color: var(--text-main);
     }
 
-    .info-neutral { color: var(--text-main); opacity: 0.9; }
     .info-ready { color: #bbf7d0; text-shadow: 0 0 10px rgba(34,197,94,0.8); }
     .info-locked { color: #fecaca; text-shadow: 0 0 10px rgba(248,113,113,0.7); }
 
-    .buzzer-wrapper {
-      margin-top: 12px;
-      display: flex;
-      justify-content: center;
-    }
+    /* ========= BUZZER FAB ========= */
 
-    .buzzer-button {
-      width: 140px;
-      height: 140px;
+    .buzzer-fab {
+      position: fixed;
+      right: 32px;
+      bottom: 32px;
+      width: 120px;
+      height: 120px;
       border-radius: 999px;
       border: none;
       cursor: pointer;
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: 800;
       letter-spacing: 0.1em;
       text-transform: uppercase;
@@ -170,148 +551,114 @@
       align-items: center;
       justify-content: center;
       transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.08s ease, opacity 0.08s ease;
+      z-index: 30;
     }
 
-    .buzzer-button:active {
+    .buzzer-fab:active {
       transform: translateY(2px) scale(0.97);
       box-shadow: 0 10px 24px rgba(0,0,0,1);
       filter: brightness(0.95);
     }
 
-    .buzzer-button.disabled {
+    .buzzer-fab.disabled {
       opacity: 0.4;
       cursor: default;
       filter: grayscale(0.4);
       box-shadow: 0 8px 20px rgba(0,0,0,0.8);
     }
 
-    /* Mini-Board für Player */
-    .player-board-wrap {
-      border-radius: 14px;
-      background: rgba(15,23,42,0.9);
-      border: 1px solid rgba(148,163,184,0.4);
-      padding: 10px;
-      box-shadow: 0 12px 30px rgba(0,0,0,1);
+    @media (max-width: 768px) {
+      .buzzer-fab {
+        right: 50%;
+        transform: translateX(50%);
+        bottom: 16px;
+        width: 100px;
+        height: 100px;
+        font-size: 0.85rem;
+      }
+      .buzzer-fab:active {
+        transform: translateX(50%) translateY(2px) scale(0.97);
+      }
     }
 
-    .player-board {
-      display: grid;
-      gap: 6px 10px;
-      max-width: 100%;
-    }
-
-    .player-board.dynamic-cols-6 { grid-template-columns: repeat(6, minmax(0,1fr)); }
-    .player-board.dynamic-cols-custom { grid-template-columns: repeat(var(--col-count), minmax(0,1fr)); }
-
-    .pb-cell {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding-inline: 4px;
-      user-select: none;
-    }
-
-    .pb-pill {
-      width: 100%;
-      border-radius: var(--radius-pill);
-      padding: 6px 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-      pointer-events: none; /* ganz wichtig: Player kann NICHT klicken */
-    }
-
-    .pb-pill::before {
-      content: "";
-      position: absolute;
-      inset: -60%;
-      background: radial-gradient(circle at top, rgba(255,255,255,0.18), transparent 60%);
-      opacity: 0.75;
-      pointer-events: none;
-    }
-
-    .pb-pill.category {
-      background: linear-gradient(to top, #020617, var(--primary-dark), var(--primary-soft));
-      border: 1px solid #ffffff;
-    }
-
-    .pb-pill.value {
-      background: linear-gradient(to top, #020617, #2b1563, #6d28d9);
-      border: 1px solid #6b7280;
-    }
-
-    .pb-pill.value.used {
-      opacity: 0.2;
-      filter: grayscale(0.4);
-    }
-
-    .pb-cat-label {
-      font-size: 0.7rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-    }
-
-    .pb-val-label {
-      font-size: 0.9rem;
-      font-weight: 800;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-    }
-
-    .small {
-      margin-top: 6px;
-      font-size: 0.72rem;
+    .small-hint {
+      font-size: 0.75rem;
       color: var(--text-dim);
-      line-height: 1.35;
+      margin-top: 4px;
     }
   </style>
 </head>
 <body>
-<div class="card">
-  <div class="header">
-    <div>Player &amp; Buzzer</div>
-    <div class="status-tag" id="statusTag">Verbinde…</div>
-  </div>
+<div class="app-shell">
 
+  <!-- HEADER -->
+  <header class="top-header">
+    <div class="logo-centered">
+      <div class="logo-badge">
+        <span class="logo-main">QUIZ</span>
+        <span class="logo-question">?!</span>
+      </div>
+    </div>
+
+    <div class="turn-overlay">
+      <span class="turn-star">★</span>
+      <div class="turn-player">
+        <div class="turn-avatar" id="turnAvatarHeader">T1</div>
+        <span class="turn-label" id="turnTeamName">Team 1's Turn</span>
+      </div>
+      <span class="turn-star">★</span>
+    </div>
+  </header>
+
+  <!-- TEAM-WAHL / INFO -->
   <div class="team-select" id="teamSelectRow">
-    <!-- Team Pills per JS -->
+    <!-- Team Pills -->
+  </div>
+  <div class="small-hint">
+    Wähle dein Team. Wer einmal bei einer Frage falsch lag, kann bei dieser Frage nicht mehr buzzern.
+  </div>
+  <div class="info-line" id="infoLine">
+    Lobby – warte, bis das Spiel gestartet wird.
   </div>
 
-  <div class="top-row">
-    <div>
-      <div class="question-box">
-        <div class="question-meta" id="qMeta">Keine Frage aktiv</div>
-        <div class="question-text" id="qText">Warte auf Frage vom Board…</div>
+  <!-- BOARD -->
+  <main class="board-wrapper">
+    <section class="board-inner">
+      <div id="board" class="board"></div>
+    </section>
 
-        <div class="media-box" id="mediaBox" style="display:none;">
-          <img id="qImage" alt="" style="display:none;">
-          <audio id="qAudio" controls style="display:none;"></audio>
-        </div>
+    <section class="teams-bar" id="teamsBar"></section>
+  </main>
+</div>
 
-        <div class="info-line info-neutral" id="infoLine">
-          Wähle dein Team oben &amp; warte auf die nächste Frage.
-        </div>
-      </div>
-
-      <div class="buzzer-wrapper">
-        <button id="buzzerBtn" class="buzzer-button disabled">BUZZ</button>
-      </div>
+<!-- MODAL (Frage, wie beim Board, ohne Close-Buttons / keine Antwort) -->
+<div id="modalBackdrop" class="modal-backdrop">
+  <div class="modal-card">
+    <div class="modal-header-row">
+      <div id="modalHeaderCategory">Kategorie</div>
+      <div id="modalHeaderValue"><strong>100</strong></div>
     </div>
 
-    <div class="player-board-wrap">
-      <div id="playerBoard" class="player-board"></div>
+    <div class="modal-body">
+      <div id="modalQuestion" class="question-text"></div>
+      <div class="modal-media" id="modalMedia" style="display:none;">
+        <img id="modalImage" alt="" style="display:none;">
+        <audio id="modalAudio" controls style="display:none;"></audio>
+      </div>
+      <div class="modal-turn-pill">
+        <div class="modal-turn-avatar" id="modalTurnAvatar">T1</div>
+        <div id="modalTurnText">Team 1 ist dran</div>
+      </div>
+      <div id="modalStatus" class="modal-status-text"></div>
     </div>
-  </div>
-
-  <div class="small">
-    • Du siehst das komplette Spielfeld, kannst aber nichts anklicken.<br>
-    • Wenn dein Team einmal bei einer Frage falsch war, kannst du bei dieser Frage nicht mehr buzzern.<br>
-    • Nur der Moderator im Controller vergibt Punkte und beendet Fragen.
   </div>
 </div>
+
+<!-- BUZZER -->
+<button id="buzzerBtn" class="buzzer-fab disabled">BUZZ</button>
+
+<!-- optionales Buzzer-SFX -->
+<audio id="buzzerSfx" src="sounds/buzzer.mp3" preload="auto"></audio>
 
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
@@ -339,30 +686,28 @@
   const GAME_ID = "quiz-1";
   const gameRef = db.ref("games/" + GAME_ID);
 
-  const statusTag = document.getElementById("statusTag");
+  const boardEl = document.getElementById("board");
+  const teamsBar = document.getElementById("teamsBar");
   const teamSelectRow = document.getElementById("teamSelectRow");
-  const qMeta = document.getElementById("qMeta");
-  const qText = document.getElementById("qText");
-  const mediaBox = document.getElementById("mediaBox");
-  const qImage = document.getElementById("qImage");
-  const qAudio = document.getElementById("qAudio");
   const infoLine = document.getElementById("infoLine");
+  const turnTeamNameEl = document.getElementById("turnTeamName");
+  const turnAvatarHeader = document.getElementById("turnAvatarHeader");
+
+  const modalBackdrop = document.getElementById("modalBackdrop");
+  const modalHeaderCategory = document.getElementById("modalHeaderCategory");
+  const modalHeaderValue = document.getElementById("modalHeaderValue");
+  const modalQuestion = document.getElementById("modalQuestion");
+  const modalTurnAvatar = document.getElementById("modalTurnAvatar");
+  const modalTurnText = document.getElementById("modalTurnText");
+  const modalStatus = document.getElementById("modalStatus");
+  const modalMedia = document.getElementById("modalMedia");
+  const modalImage = document.getElementById("modalImage");
+  const modalAudio = document.getElementById("modalAudio");
+
   const buzzerBtn = document.getElementById("buzzerBtn");
-  const playerBoard = document.getElementById("playerBoard");
+  const buzzerSfx = document.getElementById("buzzerSfx");
 
-  const pbPillMap = new Map();
-
-  function setStatus(text, ok = true) {
-    statusTag.textContent = text;
-    statusTag.style.color = ok ? "#bbf7d0" : "#fecaca";
-    statusTag.style.borderColor = ok ? "rgba(34,197,94,0.6)" : "rgba(248,113,113,0.8)";
-  }
-
-  async function loadGameData() {
-    const res = await fetch("gameData.json");
-    gameData = await res.json();
-    NUM_TEAMS = gameData.teams.length;
-  }
+  const pillMap = new Map();
 
   function loadTeamFromStorage() {
     const stored = localStorage.getItem("quizPlayerTeamIndex");
@@ -376,6 +721,140 @@
 
   function saveTeamToStorage() {
     localStorage.setItem("quizPlayerTeamIndex", String(myTeamIndex));
+  }
+
+  async function loadGameData() {
+    const res = await fetch("gameData.json");
+    gameData = await res.json();
+    NUM_TEAMS = gameData.teams.length;
+  }
+
+  function renderBoardStructure() {
+    boardEl.innerHTML = "";
+    pillMap.clear();
+
+    const categories = gameData.categories;
+    const colCount = categories.length;
+
+    boardEl.className = "board";
+    if (colCount === 6) boardEl.classList.add("dynamic-cols-6");
+    else {
+      boardEl.classList.add("dynamic-cols-custom");
+      boardEl.style.setProperty("--col-count", colCount);
+    }
+
+    // Kategorien
+    categories.forEach((cat) => {
+      const cell = document.createElement("div");
+      cell.className = "cell category";
+      const pill = document.createElement("div");
+      pill.className = "pill category-pill";
+      const label = document.createElement("div");
+      label.className = "category-label";
+      label.textContent = cat.name;
+      pill.appendChild(label);
+      cell.appendChild(pill);
+      boardEl.appendChild(cell);
+    });
+
+    // Fragen
+    const maxQuestions = Math.max(...categories.map(c => c.questions.length));
+    for (let qIndex = 0; qIndex < maxQuestions; qIndex++) {
+      categories.forEach((cat, catIndex) => {
+        const q = cat.questions[qIndex];
+        const cell = document.createElement("div");
+        cell.className = "cell";
+
+        if (!q) {
+          cell.style.visibility = "hidden";
+          boardEl.appendChild(cell);
+          return;
+        }
+
+        const pill = document.createElement("div");
+        pill.className = "pill value-pill";
+        const label = document.createElement("div");
+        label.className = "value-label";
+        label.textContent = q.value;
+        pill.appendChild(label);
+
+        const key = `${catIndex}-${qIndex}`;
+        pillMap.set(key, pill);
+        cell.appendChild(pill);
+        boardEl.appendChild(cell);
+      });
+    }
+  }
+
+  function renderTeamsStructure() {
+    teamsBar.innerHTML = "";
+    gameData.teams.forEach((team, index) => {
+      const card = document.createElement("article");
+      card.className = "team-card";
+      card.dataset.teamIndex = String(index);
+
+      const avatarsRow = document.createElement("div");
+      avatarsRow.className = "team-avatars";
+
+      const players = team.players && team.players.length ? team.players : [team.label || `Team ${index+1}`];
+      players.forEach(name => {
+        const avatar = document.createElement("div");
+        avatar.className = "team-avatar";
+        const initials = name.split(" ").map(x => x[0]).join("").substring(0,2).toUpperCase();
+        avatar.textContent = initials;
+        avatarsRow.appendChild(avatar);
+      });
+
+      const title = document.createElement("div");
+      title.className = "team-title";
+      title.textContent = team.label || `Team ${index+1}`;
+
+      const names = document.createElement("div");
+      names.className = "team-names";
+      names.textContent = players.join(" · ");
+
+      const score = document.createElement("div");
+      score.className = "team-score";
+      score.id = `teamScore_${index}`;
+      score.textContent = "0";
+
+      const caption = document.createElement("div");
+      caption.className = "team-score-caption";
+      caption.textContent = "Punkte";
+
+      card.appendChild(avatarsRow);
+      card.appendChild(title);
+      card.appendChild(names);
+      card.appendChild(score);
+      card.appendChild(caption);
+
+      teamsBar.appendChild(card);
+    });
+  }
+
+  function updateTeamsFromState(state) {
+    gameData.teams.forEach((_, index) => {
+      const scoreEl = document.getElementById(`teamScore_${index}`);
+      if (scoreEl) {
+        const score = state.scores?.[index] ?? 0;
+        scoreEl.textContent = score;
+      }
+    });
+
+    const cards = teamsBar.querySelectorAll(".team-card");
+    cards.forEach((card, i) => {
+      card.classList.toggle("active", i === state.currentTeamIndex);
+    });
+
+    const activeTeam = gameData.teams[state.currentTeamIndex];
+    if (activeTeam) {
+      const name = activeTeam.label || `Team ${state.currentTeamIndex+1}`;
+      const firstPlayer = (activeTeam.players && activeTeam.players[0]) || name;
+      const initials = firstPlayer.split(" ").map(x => x[0]).join("").substring(0,2).toUpperCase();
+
+      if (turnTeamNameEl) turnTeamNameEl.textContent = `${name}'s Turn`;
+      if (turnAvatarHeader) turnAvatarHeader.textContent = initials;
+    }
   }
 
   function renderTeamSelect() {
@@ -404,134 +883,39 @@
     updateBuzzerState(currentState);
   });
 
-  // ===== Player-Board (Spielfeld) =====
-  function renderPlayerBoard() {
-    playerBoard.innerHTML = "";
-    pbPillMap.clear();
-    const categories = gameData.categories;
-    const colCount = categories.length;
-
-    playerBoard.className = "player-board";
-    if (colCount === 6) playerBoard.classList.add("dynamic-cols-6");
-    else {
-      playerBoard.classList.add("dynamic-cols-custom");
-      playerBoard.style.setProperty("--col-count", colCount);
-    }
-
-    // Kategorien
-    categories.forEach(cat => {
-      const cell = document.createElement("div");
-      cell.className = "pb-cell";
-      const pill = document.createElement("div");
-      pill.className = "pb-pill category";
-      const label = document.createElement("div");
-      label.className = "pb-cat-label";
-      label.textContent = cat.name;
-      pill.appendChild(label);
-      cell.appendChild(pill);
-      playerBoard.appendChild(cell);
-    });
-
-    const maxQuestions = Math.max(...categories.map(c => c.questions.length));
-    for (let qIndex = 0; qIndex < maxQuestions; qIndex++) {
-      categories.forEach((cat, catIndex) => {
-        const q = cat.questions[qIndex];
-        const cell = document.createElement("div");
-        cell.className = "pb-cell";
-
-        if (!q) {
-          cell.style.visibility = "hidden";
-          playerBoard.appendChild(cell);
-          return;
-        }
-
-        const pill = document.createElement("div");
-        pill.className = "pb-pill value";
-        const label = document.createElement("div");
-        label.className = "pb-val-label";
-        label.textContent = q.value;
-        pill.appendChild(label);
-
-        const key = `${catIndex}-${qIndex}`;
-        pbPillMap.set(key, pill);
-
-        cell.appendChild(pill);
-        playerBoard.appendChild(cell);
-      });
-    }
-  }
-
-  function updatePlayerBoardUsed(state) {
+  function updateUsedFromState(state) {
     const used = state?.used || {};
-    pbPillMap.forEach(el => el.classList.remove("used"));
+    pillMap.forEach(el => el.classList.remove("used"));
     Object.keys(used).forEach(key => {
-      const pill = pbPillMap.get(key);
+      const pill = pillMap.get(key);
       if (pill) pill.classList.add("used");
     });
   }
 
-  function updateQuestionFromState(state) {
-    if (!state || state.gamePhase === "lobby") {
-      qMeta.textContent = "Lobby";
-      qText.textContent = "Warte, bis das Spiel gestartet wird.";
-      mediaBox.style.display = "none";
-      qImage.style.display = "none";
-      qAudio.style.display = "none";
-      return;
-    }
-
-    const cq = state.currentQuestion;
-    if (!cq || !gameData) {
-      qMeta.textContent = "Keine Frage aktiv";
-      qText.textContent = "Warte auf Frage vom Board…";
-      mediaBox.style.display = "none";
-      qImage.style.display = "none";
-      qAudio.style.display = "none";
-      return;
-    }
-
-    const { catIndex, qIndex } = cq;
-    const cat = gameData.categories[catIndex];
-    const q = cat?.questions[qIndex];
-    if (!cat || !q) return;
-
-    qMeta.textContent = `${cat.name} • ${q.value}`;
-    qText.textContent = q.question;
-
-    let hasMedia = false;
-    if (q.image) {
-      qImage.src = q.image;
-      qImage.style.display = "block";
-      hasMedia = true;
+  function setBuzzerDisabled(disabled) {
+    if (disabled) {
+      buzzerBtn.classList.add("disabled");
     } else {
-      qImage.style.display = "none";
+      buzzerBtn.classList.remove("disabled");
     }
-    if (q.audio) {
-      qAudio.src = q.audio;
-      qAudio.style.display = "block";
-      hasMedia = true;
-    } else {
-      qAudio.style.display = "none";
-    }
-    mediaBox.style.display = hasMedia ? "flex" : "none";
   }
 
   function updateInfoLine(state) {
     if (!state || !gameData) {
-      infoLine.textContent = "Wähle dein Team oben & warte auf die nächste Frage.";
-      infoLine.className = "info-line info-neutral";
+      infoLine.textContent = "Wähle dein Team & warte auf die Lobby.";
+      infoLine.className = "info-line";
       return;
     }
 
     if (state.gamePhase === "lobby") {
       infoLine.textContent = "Lobby – warte, bis das Spiel gestartet wird.";
-      infoLine.className = "info-line info-neutral";
+      infoLine.className = "info-line";
       return;
     }
 
     if (!state.currentQuestion) {
       infoLine.textContent = "Es ist gerade keine Frage aktiv.";
-      infoLine.className = "info-line info-neutral";
+      infoLine.className = "info-line";
       return;
     }
 
@@ -560,7 +944,7 @@
         infoLine.className = "info-line info-ready";
       } else if (state.activeAnswerTeamIndex === myTeamIndex) {
         infoLine.textContent = "Du bist dran – warte auf den Moderator.";
-        infoLine.className = "info-line info-neutral";
+        infoLine.className = "info-line";
       } else {
         infoLine.textContent = "Ein anderes Team ist gerade dran.";
         infoLine.className = "info-line info-locked";
@@ -571,7 +955,7 @@
     if (!buzzOpen && result === "none") {
       if (activeIdx === myTeamIndex) {
         infoLine.textContent = "Dein Team ist gerade normal an der Reihe.";
-        infoLine.className = "info-line info-neutral";
+        infoLine.className = "info-line";
       } else {
         infoLine.textContent = "Ein anderes Team ist am Zug – Buzzer ist gesperrt.";
         infoLine.className = "info-line info-locked";
@@ -580,19 +964,74 @@
     }
 
     infoLine.textContent = "Warte auf den nächsten Buzzer-Moment.";
-    infoLine.className = "info-line info-neutral";
+    infoLine.className = "info-line";
   }
 
-  function setBuzzerDisabled(disabled) {
-    if (disabled) {
-      buzzerBtn.classList.add("disabled");
-    } else {
-      buzzerBtn.classList.remove("disabled");
+  function updateModalFromState(state) {
+    if (!state || state.gamePhase === "lobby" || !state.currentQuestion) {
+      modalBackdrop.classList.remove("visible");
+      return;
     }
+
+    const { catIndex, qIndex } = state.currentQuestion;
+    const cat = gameData.categories[catIndex];
+    const q = cat?.questions[qIndex];
+    if (!cat || !q) return;
+
+    modalHeaderCategory.textContent = cat.name;
+    modalQuestion.textContent = q.question;
+
+    let hasMedia = false;
+    if (q.image) {
+      modalImage.src = q.image;
+      modalImage.style.display = "block";
+      hasMedia = true;
+    } else {
+      modalImage.style.display = "none";
+    }
+    if (q.audio) {
+      modalAudio.src = q.audio;
+      modalAudio.style.display = "block";
+      hasMedia = true;
+    } else {
+      modalAudio.style.display = "none";
+    }
+    modalMedia.style.display = hasMedia ? "flex" : "none";
+
+    const idx = (state.activeAnswerTeamIndex != null)
+      ? state.activeAnswerTeamIndex
+      : state.currentTeamIndex;
+    const team = gameData.teams[idx];
+    if (team) {
+      const name = team.label || `Team ${idx+1}`;
+      const firstPlayer = (team.players && team.players[0]) || name;
+      const initials = firstPlayer.split(" ").map(x => x[0]).join("").substring(0,2).toUpperCase();
+      modalTurnAvatar.textContent = initials;
+      if (state.buzzOpen && state.activeAnswerTeamIndex == null) {
+        modalTurnText.textContent = "Buzzer ist frei";
+      } else {
+        modalTurnText.textContent = `${name} ist dran`;
+      }
+    }
+
+    modalStatus.textContent = "";
+    modalStatus.classList.remove("modal-status-correct", "modal-status-wrong");
+
+    if (state.questionResult === "correct") {
+      modalStatus.textContent = "Richtige Antwort!";
+      modalStatus.classList.add("modal-status-correct");
+    } else if (state.questionResult === "wrong" && state.buzzOpen) {
+      modalStatus.textContent = "Falsch – Buzzer ist frei!";
+      modalStatus.classList.add("modal-status-wrong");
+    } else if (state.buzzOpen) {
+      modalStatus.textContent = "Buzzer ist frei!";
+    }
+
+    modalBackdrop.classList.add("visible");
   }
 
   function updateBuzzerState(state) {
-    if (!state || !state.currentQuestion || state.gamePhase === "lobby") {
+    if (!state || state.gamePhase === "lobby" || !state.currentQuestion) {
       setBuzzerDisabled(true);
       return;
     }
@@ -614,11 +1053,15 @@
   buzzerBtn.addEventListener("click", () => {
     if (!currentState || !currentState.currentQuestion) return;
     if (currentState.gamePhase === "lobby") return;
-
     if (!currentState.buzzOpen || currentState.activeAnswerTeamIndex != null) return;
 
     const failedTeams = currentState.failedTeams || Array(NUM_TEAMS).fill(false);
     if (failedTeams[myTeamIndex]) return;
+
+    if (buzzerSfx) {
+      buzzerSfx.currentTime = 0;
+      buzzerSfx.play().catch(() => {});
+    }
 
     gameRef.update({
       buzzOpen: false,
@@ -626,35 +1069,25 @@
     });
   });
 
-  async function start() {
-    try {
-      await loadGameData();
-      loadTeamFromStorage();
-      renderTeamSelect();
-      renderPlayerBoard();
-      setStatus("Verbunden…");
+  (async function start() {
+    await loadGameData();
+    loadTeamFromStorage();
+    renderBoardStructure();
+    renderTeamsStructure();
+    renderTeamSelect();
 
-      gameRef.on("value", (snapshot) => {
-        if (!snapshot.exists()) {
-          setStatus("Keine Daten – zuerst Board öffnen?", false);
-          return;
-        }
-        const state = snapshot.val();
-        currentState = state;
-        setStatus("Verbunden");
+    gameRef.on("value", (snapshot) => {
+      if (!snapshot.exists()) return;
+      const state = snapshot.val();
+      currentState = state;
 
-        updateQuestionFromState(state);
-        updateInfoLine(state);
-        updateBuzzerState(state);
-        updatePlayerBoardUsed(state);
-      });
-    } catch (err) {
-      console.error(err);
-      setStatus("Fehler beim Laden von gameData.json", false);
-    }
-  }
-
-  start();
+      updateTeamsFromState(state);
+      updateUsedFromState(state);
+      updateInfoLine(state);
+      updateModalFromState(state);
+      updateBuzzerState(state);
+    });
+  })();
 </script>
 </body>
 </html>
