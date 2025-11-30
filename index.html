@@ -69,8 +69,6 @@
       gap: 16px;
     }
 
-    /* HEADER */
-
     .top-header {
       position: relative;
       padding: 20px 20px 32px;
@@ -197,8 +195,6 @@
         left: 16px;
       }
     }
-
-    /* BOARD */
 
     .board-wrapper {
       flex: 1;
@@ -364,8 +360,6 @@
       box-shadow: 0 6px 16px rgba(0,0,0,1);
     }
 
-    /* TEAMS */
-
     .teams-bar {
       margin-top: 10px;
       display: grid;
@@ -458,8 +452,6 @@
       .teams-bar { grid-template-columns: repeat(2, minmax(0,1fr)); }
       .board-footer { flex-direction: column; align-items: flex-start; }
     }
-
-    /* MODAL */
 
     .modal-backdrop {
       position: fixed;
@@ -600,7 +592,6 @@
 </head>
 <body>
 <div class="app-shell">
-  <!-- HEADER -->
   <header class="top-header">
     <div class="logo-centered">
       <div class="logo-badge">
@@ -617,16 +608,13 @@
     <div class="phase-badge" id="phaseBadge">Lobby – warte auf Start</div>
   </header>
 
-  <!-- BOARD -->
   <main class="board-wrapper">
     <section class="board-inner">
       <div id="board" class="board"></div>
     </section>
 
     <div class="board-footer">
-      <div class="hint">
-        Kategorien, Fragen & Medien in <code>gameData.json</code> bearbeiten.
-      </div>
+      <div class="hint">Kategorien, Fragen & Medien in <code>gameData.json</code> bearbeiten.</div>
       <div class="footer-controls">
         <button type="button" id="btnLobby">Lobby</button>
         <button type="button" id="btnPlay" class="primary">Spiel starten</button>
@@ -640,12 +628,10 @@
   </main>
 </div>
 
-<!-- MODAL -->
 <div id="modalBackdrop" class="modal-backdrop">
   <div class="modal-card">
     <div class="modal-header-row">
       <div id="modalHeaderCategory">Kategorie</div>
-      <!-- Punkte oben ausgeblendet – nur Kategorie -->
     </div>
 
     <div class="modal-body">
@@ -671,7 +657,6 @@
   </div>
 </div>
 
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
@@ -690,7 +675,6 @@
 
   let gameData = null;
   let NUM_TEAMS = 0;
-
   let currentState = null;
   let gameRef = null;
   let playersRef = null;
@@ -751,7 +735,6 @@
       boardEl.style.setProperty("--col-count", colCount);
     }
 
-    // Kategorien
     categories.forEach(cat => {
       const cell = document.createElement("div");
       cell.className = "cell category";
@@ -790,17 +773,16 @@
         pill.dataset.key = key;
         pill.addEventListener("click", () => {
           if (!currentState || currentState.used?.[key]) return;
-          if (currentState.currentQuestion) return; // nicht neue öffnen, wenn noch eine läuft
+          if (currentState.currentQuestion) return;
 
-          const newState = {
+          gameRef.update({
             currentQuestion: { catIndex, qIndex },
             buzzOpen: false,
             failedTeams: {},
             activeAnswerTeamIndex: currentState.currentTeamIndex,
             questionResult: "none",
             showAnswer: false
-          };
-          gameRef.update(newState);
+          });
         });
 
         pillMap.set(key, pill);
@@ -897,12 +879,9 @@
     });
 
     const cards = teamsBar.querySelectorAll(".team-card");
-    const hasQuestion = !!state.currentQuestion;
     cards.forEach((card, i) => {
       const isActive = i === state.currentTeamIndex;
       const isBuzzing =
-        hasQuestion &&
-        state.questionResult === "none" &&
         state.activeAnswerTeamIndex != null &&
         i === state.activeAnswerTeamIndex;
 
@@ -922,11 +901,8 @@
       modalTurnText.textContent = `${label} ist dran`;
     }
 
-    if (state.gamePhase === "lobby") {
-      phaseBadge.textContent = "Lobby – warte auf Start";
-    } else {
-      phaseBadge.textContent = "Spiel läuft";
-    }
+    phaseBadge.textContent =
+      state.gamePhase === "lobby" ? "Lobby – warte auf Start" : "Spiel läuft";
   }
 
   function updateUsedFromState(state) {
@@ -970,9 +946,10 @@
     }
     modalMedia.style.display = hasMedia ? "flex" : "none";
 
-    const answerTeamIndex = (state.activeAnswerTeamIndex != null)
-      ? state.activeAnswerTeamIndex
-      : state.currentTeamIndex;
+    const answerTeamIndex =
+      state.activeAnswerTeamIndex != null
+        ? state.activeAnswerTeamIndex
+        : state.currentTeamIndex;
     const answerTeam = gameData.teams[answerTeamIndex];
 
     if (answerTeam) {
@@ -997,7 +974,7 @@
     const qr = state.questionResult || "none";
     const buzzOpen = !!state.buzzOpen;
     const activeIdx = state.activeAnswerTeamIndex;
-    const buzzTeam = (activeIdx != null) ? gameData.teams[activeIdx] : null;
+    const buzzTeam = activeIdx != null ? gameData.teams[activeIdx] : null;
 
     if (qr === "correct" && buzzTeam) {
       modalStatus.textContent = `Richtige Antwort von ${buzzTeam.label || "dem Team"}!`;
@@ -1048,8 +1025,8 @@
       gamePhase: "lobby",
       currentQuestion: null,
       buzzOpen: false,
-      activeAnswerTeamIndex: null,
       failedTeams: {},
+      activeAnswerTeamIndex: null,
       questionResult: "none",
       showAnswer: false
     });
@@ -1073,9 +1050,7 @@
     playersRef.on("value", snap => {
       currentPlayers = snap.val() || {};
       window.currentPlayers = currentPlayers;
-      if (currentState) {
-        updateTeamsFromState(currentState);
-      }
+      if (currentState) updateTeamsFromState(currentState);
     });
 
     gameRef.on("value", snapshot => {
