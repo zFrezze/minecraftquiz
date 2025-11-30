@@ -412,10 +412,10 @@
       margin-top: 1px;
     }
 
-    /* ========= BUZZER zentriert unter Teams ========= */
+    /* ========= BUZZER (im Modal) ========= */
 
     .buzzer-row {
-      margin-top: 14px;
+      margin-top: 16px;
       display: flex;
       justify-content: center;
     }
@@ -612,14 +612,10 @@
     </section>
 
     <section class="teams-bar" id="teamsBar"></section>
-
-    <div class="buzzer-row">
-      <button id="buzzerBtn" class="buzzer-button disabled">BUZZ</button>
-    </div>
   </main>
 </div>
 
-<!-- MODAL (Frage, wie beim Board, ohne Close-Buttons / keine Antwort) -->
+<!-- MODAL (Frage) -->
 <div id="modalBackdrop" class="modal-backdrop">
   <div class="modal-card">
     <div class="modal-header-row">
@@ -633,11 +629,18 @@
         <img id="modalImage" alt="" style="display:none;">
         <audio id="modalAudio" controls style="display:none;"></audio>
       </div>
+
       <div class="modal-turn-pill">
         <div class="modal-turn-avatar" id="modalTurnAvatar">T1</div>
         <div id="modalTurnText">Team 1 ist dran</div>
       </div>
+
       <div id="modalStatus" class="modal-status-text"></div>
+
+      <!-- Buzzer direkt unter dem Frage-Window -->
+      <div class="buzzer-row">
+        <button id="buzzerBtn" class="buzzer-button disabled">BUZZ</button>
+      </div>
     </div>
   </div>
 </div>
