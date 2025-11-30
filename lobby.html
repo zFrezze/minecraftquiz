@@ -13,6 +13,7 @@
       --text-main: #f9fafb;
       --text-dim: #9ca3af;
       --accent-gold: #facc15;
+      --danger: #f97373;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -53,7 +54,7 @@
     }
 
     .shell {
-      width: min(900px, 100%);
+      width: min(1000px, 100%);
       padding: 24px 20px;
     }
 
@@ -149,7 +150,7 @@
       gap: 18px;
     }
 
-    @media (max-width: 800px) {
+    @media (max-width: 900px) {
       .main-grid {
         grid-template-columns: minmax(0,1fr);
       }
@@ -178,7 +179,7 @@
       margin-top: 6px;
     }
 
-    @media (max-width: 800px) {
+    @media (max-width: 900px) {
       .teams-list {
         grid-template-columns: 1fr;
       }
@@ -192,6 +193,16 @@
       display: flex;
       flex-direction: column;
       gap: 4px;
+    }
+
+    .team-card.active {
+      border-color: #22c55e;
+      box-shadow: 0 0 18px rgba(34,197,94,0.9);
+    }
+
+    .team-card.buzzing {
+      border-color: #f97373;
+      box-shadow: 0 0 18px rgba(248,113,113,0.9);
     }
 
     .team-header-row {
@@ -219,21 +230,33 @@
     }
 
     .team-tag {
-      margin-top: 2px;
       font-size: 0.7rem;
       text-transform: uppercase;
       letter-spacing: 0.12em;
       color: var(--text-dim);
     }
 
-    .team-card.active {
-      border-color: #22c55e;
-      box-shadow: 0 0 18px rgba(34,197,94,0.9);
+    .avatars-row {
+      margin-top: 4px;
+      display: flex;
+      gap: 6px;
     }
 
-    .team-card.buzzing {
-      border-color: #f97373;
-      box-shadow: 0 0 18px rgba(248,113,113,0.9);
+    .avatar-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: linear-gradient(to top, #020617, #4c1d95, #7c3aed);
+      border: 2px solid rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      background-size: cover;
+      background-position: center;
+      color: #f9fafb;
     }
 
     .info-big {
@@ -245,6 +268,86 @@
       margin-top: 4px;
       font-size: 0.8rem;
       color: var(--text-dim);
+    }
+
+    .form-group {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    label {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+    }
+
+    input[type="text"] {
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.7);
+      background: rgba(15,23,42,0.9);
+      padding: 6px 10px;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    input[type="file"] {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+    }
+
+    .team-choose-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .team-choose-btn {
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.7);
+      background: rgba(15,23,42,0.9);
+      padding: 5px 10px;
+      font-size: 0.8rem;
+      color: var(--text-main);
+      cursor: pointer;
+    }
+
+    .team-choose-btn.selected {
+      border-color: #facc15;
+      background: rgba(234,179,8,0.15);
+      color: #facc15;
+    }
+
+    .team-choose-btn.full {
+      opacity: 0.4;
+      cursor: default;
+    }
+
+    button {
+      border-radius: 999px;
+      border: none;
+      padding: 8px 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.9);
+      background: linear-gradient(to top, #0f172a, #4c1d95);
+      color: #e5e7eb;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 8px;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: default;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.9);
     }
 
     .hint-badge {
@@ -264,6 +367,18 @@
       border-radius: 999px;
       background: #38bdf8;
     }
+
+    .error-text {
+      margin-top: 4px;
+      font-size: 0.75rem;
+      color: var(--danger);
+    }
+
+    .success-text {
+      margin-top: 4px;
+      font-size: 0.75rem;
+      color: #bbf7d0;
+    }
   </style>
 </head>
 <body>
@@ -274,7 +389,7 @@
       <span class="logo-question">?!</span>
     </div>
     <div class="subtitle" id="subtitleText">
-      Willkommen in der Lobby – gleich geht's los.
+      Willkommen in der Lobby – wähle dein Team & bereite dich vor.
     </div>
     <div class="phase-pill" id="phasePill">
       <span class="phase-dot"></span>
@@ -284,17 +399,36 @@
 
   <div class="main-grid">
     <section class="card">
-      <div class="card-title">Teams & Punkte</div>
+      <div class="card-title">Teams & Spieler</div>
       <div id="teamsList" class="teams-list"></div>
     </section>
 
     <section class="card">
-      <div class="card-title">Status</div>
-      <div class="info-big" id="statusText">Verbindung wird aufgebaut …</div>
-      <div class="info-small" id="detailText">Bitte Board & Controller starten.</div>
+      <div class="card-title">Deine Teilnahme</div>
+      <div class="info-big" id="statusText">Gib deinen Namen ein und tritt einem Team bei.</div>
+      <div class="info-small" id="detailText">Pro Team können maximal 2 Spieler beitreten.</div>
+
+      <div class="form-group">
+        <label for="playerName">Name</label>
+        <input type="text" id="playerName" autocomplete="name" placeholder="Dein Name">
+      </div>
+
+      <div class="form-group">
+        <label for="playerAvatar">Profilbild (optional)</label>
+        <input type="file" id="playerAvatar" accept="image/*">
+      </div>
+
+      <div class="form-group">
+        <label>Team wählen</label>
+        <div id="teamChooseRow" class="team-choose-row"></div>
+      </div>
+
+      <button id="joinBtn">Team beitreten</button>
+      <div id="joinFeedback"></div>
+
       <div class="hint-badge">
         <span class="dot"></span>
-        <span>Spieler öffnen <strong>player.html</strong> auf dem Handy für Buzzer & Ansicht.</span>
+        <span>Wenn der Moderator startet, wirst du automatisch zur Spieler-Ansicht weitergeleitet.</span>
       </div>
     </section>
   </div>
@@ -316,6 +450,11 @@
   const GAME_ID = "quiz-1";
   let gameData = null;
   let gameRef = null;
+  let playersRef = null;
+  let currentState = null;
+  let currentPlayers = {};
+  let selectedTeamIndex = null;
+  let myPlayerId = null;
 
   const teamsListEl = document.getElementById("teamsList");
   const phasePill = document.getElementById("phasePill");
@@ -323,47 +462,40 @@
   const subtitleText = document.getElementById("subtitleText");
   const statusText = document.getElementById("statusText");
   const detailText = document.getElementById("detailText");
+  const playerNameInput = document.getElementById("playerName");
+  const playerAvatarInput = document.getElementById("playerAvatar");
+  const teamChooseRow = document.getElementById("teamChooseRow");
+  const joinBtn = document.getElementById("joinBtn");
+  const joinFeedback = document.getElementById("joinFeedback");
 
-  async function init() {
-    const res = await fetch("gameData.json");
-    gameData = await res.json();
-
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
-    const db = firebase.database();
-    gameRef = db.ref("games/" + GAME_ID);
-
-    gameRef.on("value", snapshot => {
-      if (!snapshot.exists()) {
-        statusText.textContent = "Noch keine Spiel-Daten gefunden.";
-        detailText.textContent = "Bitte Board öffnen, um das Spiel zu initialisieren.";
-        return;
-      }
-      const state = snapshot.val();
-      renderState(state);
-    });
-  }
-
-  function renderState(state) {
-    renderPhase(state);
-    renderTeams(state);
+  function getOrCreatePlayerId() {
+    const stored = localStorage.getItem("quiz_playerId");
+    if (stored) return stored;
+    const id = "p_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2);
+    localStorage.setItem("quiz_playerId", id);
+    return id;
   }
 
   function renderPhase(state) {
     if (state.gamePhase === "playing") {
       phasePill.classList.add("playing");
       phaseLabel.textContent = "Spiel läuft";
-      subtitleText.textContent = "Das Spiel läuft – viel Erfolg!";
+      subtitleText.textContent = "Das Spiel läuft – du wirst gleich weitergeleitet.";
       statusText.textContent = "Das Quiz ist aktiv.";
-      detailText.textContent = "Board & Controller sind verbunden. Zuschauer können hier den Überblick behalten.";
+      detailText.textContent = "Wenn du einem Team beigetreten bist, wechselt dein Gerät zur Spieler-Ansicht.";
     } else {
       phasePill.classList.remove("playing");
       phaseLabel.textContent = "Lobby";
-      subtitleText.textContent = "Willkommen in der Lobby – gleich geht's los.";
-      statusText.textContent = "Warte auf Spielstart.";
-      detailText.textContent = "Sobald der Host im Controller 'Start' drückt, beginnt die Runde.";
+      subtitleText.textContent = "Willkommen in der Lobby – wähle dein Team & bereite dich vor.";
+      statusText.textContent = "Gib deinen Namen ein und tritt einem Team bei.";
+      detailText.textContent = "Pro Team können maximal 2 Spieler beitreten.";
     }
+  }
+
+  function playersInTeam(teamIndex) {
+    return Object.entries(currentPlayers)
+      .filter(([id, p]) => p.teamIndex === teamIndex)
+      .map(([id, p]) => ({ id, ...p }));
   }
 
   function renderTeams(state) {
@@ -376,7 +508,16 @@
       const card = document.createElement("article");
       card.className = "team-card";
       if (index === activeIndex) card.classList.add("active");
-      if (buzzingIndex != null && index === buzzingIndex) card.classList.add("buzzing");
+
+      const hasQuestion = !!state.currentQuestion;
+      if (
+        hasQuestion &&
+        state.questionResult === "none" &&
+        buzzingIndex != null &&
+        index === buzzingIndex
+      ) {
+        card.classList.add("buzzing");
+      }
 
       const headerRow = document.createElement("div");
       headerRow.className = "team-header-row";
@@ -392,26 +533,169 @@
       headerRow.appendChild(name);
       headerRow.appendChild(score);
 
-      const players = document.createElement("div");
-      players.className = "team-players";
-      const list = team.players && team.players.length ? team.players.join(" · ") : "–";
-      players.textContent = list;
+      const players = playersInTeam(index);
+      const playersEl = document.createElement("div");
+      playersEl.className = "team-players";
+      if (players.length > 0) {
+        playersEl.textContent = players.map(p => p.name).join(" · ");
+      } else {
+        playersEl.textContent = "Noch frei";
+      }
+
+      const avatarsRow = document.createElement("div");
+      avatarsRow.className = "avatars-row";
+      players.slice(0, 2).forEach(p => {
+        const av = document.createElement("div");
+        av.className = "avatar-circle";
+        if (p.avatarDataUrl) {
+          av.style.backgroundImage = `url(${p.avatarDataUrl})`;
+          av.textContent = "";
+        } else {
+          const initials = p.name.split(" ").map(x => x[0]).join("").substring(0,2).toUpperCase();
+          av.textContent = initials;
+        }
+        avatarsRow.appendChild(av);
+      });
 
       const tag = document.createElement("div");
       tag.className = "team-tag";
 
-      if (buzzingIndex === index) {
-        tag.textContent = "Hat gebuzzert";
-      } else if (activeIndex === index) {
-        tag.textContent = "Ist am Zug";
+      if (players.length >= 2) {
+        tag.textContent = "Team voll";
+      } else if (players.length === 1) {
+        tag.textContent = "1 Platz frei";
       } else {
-        tag.textContent = "Wartet";
+        tag.textContent = "2 Plätze frei";
       }
 
       card.appendChild(headerRow);
-      card.appendChild(players);
+      card.appendChild(playersEl);
+      card.appendChild(avatarsRow);
       card.appendChild(tag);
       teamsListEl.appendChild(card);
+    });
+  }
+
+  function renderTeamChooseButtons() {
+    teamChooseRow.innerHTML = "";
+    const myId = myPlayerId;
+
+    gameData.teams.forEach((team, index) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "team-choose-btn";
+      btn.textContent = team.label || `Team ${index+1}`;
+
+      const players = playersInTeam(index);
+      const isFull = players.length >= 2;
+      if (isFull && selectedTeamIndex !== index) {
+        btn.classList.add("full");
+        btn.disabled = true;
+      }
+
+      if (selectedTeamIndex === index) {
+        btn.classList.add("selected");
+      }
+
+      btn.addEventListener("click", () => {
+        if (isFull && selectedTeamIndex !== index) return;
+        selectedTeamIndex = index;
+        renderTeamChooseButtons();
+      });
+
+      teamChooseRow.appendChild(btn);
+    });
+  }
+
+  function readAvatarFile() {
+    return new Promise(resolve => {
+      const file = playerAvatarInput.files[0];
+      if (!file) return resolve(null);
+      const reader = new FileReader();
+      reader.onload = () => {
+        resolve(reader.result);
+      };
+      reader.onerror = () => resolve(null);
+      reader.readAsDataURL(file);
+    });
+  }
+
+  joinBtn.addEventListener("click", async () => {
+    joinFeedback.textContent = "";
+    joinFeedback.className = "";
+
+    const name = playerNameInput.value.trim();
+    if (!name) {
+      joinFeedback.textContent = "Bitte gib einen Namen ein.";
+      joinFeedback.className = "error-text";
+      return;
+    }
+    if (selectedTeamIndex == null) {
+      joinFeedback.textContent = "Bitte wähle ein Team.";
+      joinFeedback.className = "error-text";
+      return;
+    }
+
+    const players = playersInTeam(selectedTeamIndex);
+    if (players.length >= 2) {
+      joinFeedback.textContent = "Dieses Team ist bereits voll. Wähle ein anderes Team.";
+      joinFeedback.className = "error-text";
+      renderTeamChooseButtons();
+      return;
+    }
+
+    joinBtn.disabled = true;
+
+    const avatarDataUrl = await readAvatarFile();
+
+    const playerData = {
+      name,
+      teamIndex: selectedTeamIndex,
+      avatarDataUrl: avatarDataUrl || null
+    };
+
+    playersRef.child(myPlayerId).set(playerData, err => {
+      joinBtn.disabled = false;
+      if (err) {
+        joinFeedback.textContent = "Fehler beim Beitreten. Bitte nochmal versuchen.";
+        joinFeedback.className = "error-text";
+      } else {
+        joinFeedback.textContent = `Du bist jetzt in ${gameData.teams[selectedTeamIndex].label || "deinem Team"}.`;
+        joinFeedback.className = "success-text";
+      }
+    });
+  });
+
+  async function init() {
+    myPlayerId = getOrCreatePlayerId();
+
+    const res = await fetch("gameData.json");
+    gameData = await res.json();
+
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.database();
+    gameRef = db.ref("games/" + GAME_ID);
+    playersRef = db.ref("games/" + GAME_ID + "/players");
+
+    gameRef.on("value", snapshot => {
+      if (!snapshot.exists()) return;
+      currentState = snapshot.val();
+      renderPhase(currentState);
+      renderTeams(currentState);
+
+      // Wenn Moderator das Spiel startet und dieser Client in einem Team ist → zu player.html
+      const myPlayer = currentPlayers[myPlayerId];
+      if (currentState.gamePhase === "playing" && myPlayer) {
+        window.location.href = "player.html";
+      }
+    });
+
+    playersRef.on("value", snapshot => {
+      currentPlayers = snapshot.val() || {};
+      renderTeams(currentState || { scores: [] });
+      renderTeamChooseButtons();
     });
   }
 
