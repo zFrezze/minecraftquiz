@@ -195,16 +195,6 @@
       gap: 4px;
     }
 
-    .team-card.active {
-      border-color: #22c55e;
-      box-shadow: 0 0 18px rgba(34,197,94,0.9);
-    }
-
-    .team-card.buzzing {
-      border-color: #f97373;
-      box-shadow: 0 0 18px rgba(248,113,113,0.9);
-    }
-
     .team-header-row {
       display: flex;
       justify-content: space-between;
@@ -436,6 +426,7 @@
 
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyCRCG2C89X9eK_s9Lg44jc3rFRrsIua42Q",
@@ -477,6 +468,7 @@
   }
 
   function renderPhase(state) {
+    if (!state) return;
     if (state.gamePhase === "playing") {
       phasePill.classList.add("playing");
       phaseLabel.textContent = "Spiel läuft";
@@ -499,25 +491,13 @@
   }
 
   function renderTeams(state) {
-    teamsListEl.innerHTML = "";
+    if (!state || !gameData) return;
     const scores = state.scores || [];
-    const activeIndex = state.currentTeamIndex || 0;
-    const buzzingIndex = state.activeAnswerTeamIndex;
+    teamsListEl.innerHTML = "";
 
     gameData.teams.forEach((team, index) => {
       const card = document.createElement("article");
       card.className = "team-card";
-      if (index === activeIndex) card.classList.add("active");
-
-      const hasQuestion = !!state.currentQuestion;
-      if (
-        hasQuestion &&
-        state.questionResult === "none" &&
-        buzzingIndex != null &&
-        index === buzzingIndex
-      ) {
-        card.classList.add("buzzing");
-      }
 
       const headerRow = document.createElement("div");
       headerRow.className = "team-header-row";
@@ -559,7 +539,6 @@
 
       const tag = document.createElement("div");
       tag.className = "team-tag";
-
       if (players.length >= 2) {
         tag.textContent = "Team voll";
       } else if (players.length === 1) {
@@ -577,8 +556,8 @@
   }
 
   function renderTeamChooseButtons() {
+    if (!gameData) return;
     teamChooseRow.innerHTML = "";
-    const myId = myPlayerId;
 
     gameData.teams.forEach((team, index) => {
       const btn = document.createElement("button");
@@ -612,9 +591,7 @@
       const file = playerAvatarInput.files[0];
       if (!file) return resolve(null);
       const reader = new FileReader();
-      reader.onload = () => {
-        resolve(reader.result);
-      };
+      reader.onload = () => resolve(reader.result);
       reader.onerror = () => resolve(null);
       reader.readAsDataURL(file);
     });
@@ -645,7 +622,6 @@
     }
 
     joinBtn.disabled = true;
-
     const avatarDataUrl = await readAvatarFile();
 
     const playerData = {
@@ -685,9 +661,8 @@
       renderPhase(currentState);
       renderTeams(currentState);
 
-      // Wenn Moderator das Spiel startet und dieser Client in einem Team ist → zu player.html
-      const myPlayer = currentPlayers[myPlayerId];
-      if (currentState.gamePhase === "playing" && myPlayer) {
+      const myP = currentPlayers[myPlayerId];
+      if (currentState.gamePhase === "playing" && myP) {
         window.location.href = "player.html";
       }
     });
