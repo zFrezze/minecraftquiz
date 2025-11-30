@@ -28,7 +28,7 @@
     }
 
     .card {
-      width: min(460px, 100%);
+      width: min(480px, 100%);
       background: rgba(15,23,42,0.96);
       border-radius: 16px;
       border: 1px solid rgba(148,163,184,0.6);
@@ -55,6 +55,27 @@
       border: 1px solid rgba(148,163,184,0.7);
       background: rgba(15,23,42,0.9);
       font-size: 0.7rem;
+    }
+
+    .phase-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 4px;
+      font-size: 0.75rem;
+      align-items: center;
+    }
+
+    .phase-label {
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .phase-chip {
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.7);
+      font-size: 0.75rem;
     }
 
     .question-box {
@@ -136,6 +157,12 @@
       color: var(--text-dim);
     }
 
+    .actions-top {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
     .actions {
       margin-top: 6px;
       display: grid;
@@ -197,6 +224,13 @@
     <div class="status-tag" id="statusTag">Verbinde …</div>
   </div>
 
+  <div class="phase-row">
+    <span class="phase-label">Phase:</span>
+    <span class="phase-chip" id="phaseChip">–</span>
+    <button class="secondary" id="btnToLobby" style="padding:3px 8px;font-size:0.7rem;">Lobby</button>
+    <button class="secondary" id="btnToPlay" style="padding:3px 8px;font-size:0.7rem;">Start</button>
+  </div>
+
   <div class="question-box">
     <div class="question-meta" id="qMeta">Keine Frage aktiv</div>
     <div class="question-text" id="qText">Warte auf Frage vom Board …</div>
@@ -211,99 +245,26 @@
   <div class="score-info" id="scoreInfo">Lade Teams …</div>
   <div class="teams-list" id="teamsList"></div>
 
-  <div class="actions">
+  <div class="actions-top">
     <button class="secondary" id="btnRevealAll">Antwort anzeigen</button>
+    <button class="secondary" id="btnHideAll">Antwort verstecken</button>
+  </div>
+
+  <div class="actions">
     <button class="correct" id="btnCorrect">Richtig</button>
     <button class="wrong" id="btnWrong">Falsch</button>
+    <button class="secondary" id="btnClearQuestion">Frage schließen</button>
   </div>
 
   <div class="small">
-    Tipp: Team-Chip oben antippen, um zu bestimmen, wer normal dran ist.  
-    Buzzer-Phase wird automatisch über Falsch/Richtig gesteuert.
+    Tipp: Phase steuern mit „Lobby“ / „Start“.  
+    „Antwort anzeigen“ zeigt die Lösung auf Board & Player – hier siehst du sie immer.
   </div>
 </div>
 
-<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-
 <script>
-  /* Dieselben Fragen/Teams wie im Board */
-  const gameData = {
-    categories: [
-      {
-        name: "Lyrics/Songs",
-        questions: [
-          { value: 100, question: "We will, we will ...?", answer: "Rock you" },
-          { value: 200, question: "Wer singt 'Bad Guy'?", answer: "Billie Eilish" },
-          { value: 300, question: "Aus welchem Land kommt ABBA?", answer: "Schweden" },
-          { value: 400, question: "Beende: 'I got a feeling, that tonight’s gonna be a ...'", answer: "Good night" },
-          { value: 500, question: "Wer veröffentlichte 'Astroworld'?", answer: "Travis Scott" }
-        ]
-      },
-      {
-        name: "Geografie",
-        questions: [
-          { value: 100, question: "Hauptstadt von Spanien?", answer: "Madrid" },
-          { value: 200, question: "Fluss durch London?", answer: "Die Themse" },
-          { value: 300, question: "In welchem Land liegt Kapstadt?", answer: "Südafrika" },
-          { value: 400, question: "In welchem Land liegt Tokio?", answer: "Japan" },
-          { value: 500, question: "Größter Ozean?", answer: "Der Pazifische Ozean" }
-        ]
-      },
-      {
-        name: "Games",
-        questions: [
-          { value: 100, question: "Nintendo-Klempner mit roter Mütze?", answer: "Mario" },
-          { value: 200, question: "Sandbox-Spiel mit Blöcken?", answer: "Minecraft" },
-          { value: 300, question: "Abkürzung für 'League of Legends'?", answer: "LoL" },
-          { value: 400, question: "Wie heißt die Konsole mit 'Master Chief' als Maskottchen?", answer: "Xbox" },
-          { value: 500, question: "Auf welcher Map spielt man Dust II?", answer: "Counter-Strike" }
-        ]
-      },
-      {
-        name: "Sprichwörter",
-        questions: [
-          { value: 100, question: "Morgenstund hat ...", answer: "Gold im Mund" },
-          { value: 200, question: "Wer im Glashaus sitzt, soll nicht mit ...", answer: "Steinen werfen" },
-          { value: 300, question: "Aller guten Dinge sind ...", answer: "Drei" },
-          { value: 400, question: "Viele Köche ...", answer: "verderben den Brei" },
-          { value: 500, question: "Ende: 'Der Apfel fällt nicht weit ...'", answer: "vom Stamm" }
-        ]
-      },
-      {
-        name: "Abkürzungen",
-        questions: [
-          { value: 100, question: "Wofür steht 'LOL'?", answer: "Laughing out loud" },
-          { value: 200, question: "Wofür steht 'FAQ'?", answer: "Frequently Asked Questions" },
-          { value: 300, question: "Was bedeutet 'AFK'?", answer: "Away from keyboard" },
-          { value: 400, question: "Wofür steht 'FPS' im Gaming?", answer: "Frames per second" },
-          { value: 500, question: "Wofür steht 'HDMI'?", answer: "High-Definition Multimedia Interface" }
-        ]
-      },
-      {
-        name: "YT-Titel",
-        questions: [
-          { value: 100, question: "Wie heißt die Plattform?", answer: "YouTube" },
-          { value: 200, question: "Wie nennt man Vorschaubilder?", answer: "Thumbnails" },
-          { value: 300, question: "Button zum Kanalfolgen?", answer: "Abonnieren / Subscribe" },
-          { value: 400, question: "Wie heißt die Funktion für kurzformatige Videos?", answer: "Shorts" },
-          { value: 500, question: "Bezahlte Produktvorstellung?", answer: "Sponsoring / Werbeintegration" }
-        ]
-      }
-    ],
-    teams: [
-      { label: "Team 1", players: ["Schmobin"] },
-      { label: "Team 2", players: ["Krokoboss"] },
-      { label: "Team 3", players: ["Zarbex"] },
-      { label: "Team 4", players: ["Elquaria"] }
-    ]
-  };
-
-  const NUM_TEAMS = gameData.teams.length;
-
-  /* ========= Firebase ========= */
-
   const firebaseConfig = {
     apiKey: "AIzaSyCRCG2C89X9eK_s9Lg44jc3rFRrsIua42Q",
     authDomain: "minecraftquiz-f5686.firebaseapp.com",
@@ -313,16 +274,15 @@
     messagingSenderId: "278820007596",
     appId: "1:278820007596:web:67ab6be9e47be45a04f909"
   };
-  if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-  }
-  const db = firebase.database();
-  const GAME_ID = "quiz-1";
-  const gameRef = db.ref("games/" + GAME_ID);
 
-  /* ========= DOM ========= */
+  let gameData = null;
+  let NUM_TEAMS = 0;
+  let currentState = null;
+  const GAME_ID = "quiz-1";
+  let gameRef = null;
 
   const statusTag = document.getElementById("statusTag");
+  const phaseChip = document.getElementById("phaseChip");
   const qMeta = document.getElementById("qMeta");
   const qText = document.getElementById("qText");
   const qAnswer = document.getElementById("qAnswer");
@@ -333,10 +293,12 @@
   const teamsList = document.getElementById("teamsList");
 
   const btnRevealAll = document.getElementById("btnRevealAll");
+  const btnHideAll = document.getElementById("btnHideAll");
   const btnCorrect = document.getElementById("btnCorrect");
   const btnWrong = document.getElementById("btnWrong");
-
-  let currentState = null;
+  const btnClearQuestion = document.getElementById("btnClearQuestion");
+  const btnToLobby = document.getElementById("btnToLobby");
+  const btnToPlay = document.getElementById("btnToPlay");
 
   function setStatus(text, ok = true) {
     statusTag.textContent = text;
@@ -344,14 +306,12 @@
     statusTag.style.borderColor = ok ? "rgba(34,197,94,0.6)" : "rgba(248,113,113,0.8)";
   }
 
-  /* ========= TEAMS-UI ========= */
-
   function renderTeamsList(state) {
     const scores = state.scores || [];
     const currentTeamIndex = state.currentTeamIndex || 0;
 
     scoreInfo.textContent = scores
-      .map((s, i) => `${gameData.teams[i]?.label || `Team ${i+1}`}: ${s || 0}`)
+      .map((s, i) => `${gameData.teams[i]?.label || "Team " + (i+1)}: ${s || 0}`)
       .join(" • ");
 
     teamsList.innerHTML = "";
@@ -375,15 +335,15 @@
     }
   }
 
-  teamsList.addEventListener("click", (e) => {
+  teamsList.addEventListener("click", e => {
     const t = e.target;
     if (!(t instanceof HTMLElement)) return;
     const idx = t.dataset.index;
-    if (idx == null) return;
-    gameRef.update({ currentTeamIndex: Number(idx) });
+    if (idx == null || !currentState) return;
+    const n = Number(idx);
+    if (Number.isNaN(n)) return;
+    gameRef.update({ currentTeamIndex: n });
   });
-
-  /* ========= FRAGE-UI ========= */
 
   function updateQuestionFromState(state) {
     const cq = state.currentQuestion;
@@ -393,7 +353,6 @@
       qAnswer.textContent = "";
       return;
     }
-
     const { catIndex, qIndex } = cq;
     const cat = gameData.categories[catIndex];
     const q = cat?.questions[qIndex];
@@ -404,24 +363,71 @@
     qAnswer.textContent = q.answer || "";
   }
 
-  function updateRevealButton(state) {
+  function updatePhase(state) {
+    if (state.gamePhase === "lobby") {
+      phaseChip.textContent = "Lobby";
+      phaseChip.style.borderColor = "rgba(148,163,184,0.7)";
+    } else {
+      phaseChip.textContent = "Playing";
+      phaseChip.style.borderColor = "rgba(34,197,94,0.7)";
+    }
+  }
+
+  btnToLobby.addEventListener("click", () => {
+    if (!gameRef) return;
+    const failed = Array(NUM_TEAMS).fill(false);
+    gameRef.update({
+      gamePhase: "lobby",
+      currentQuestion: null,
+      buzzOpen: false,
+      activeAnswerTeamIndex: null,
+      questionResult: "none",
+      showAnswer: false,
+      failedTeams: failed
+    });
+  });
+
+  btnToPlay.addEventListener("click", () => {
+    if (!gameRef) return;
+    gameRef.update({ gamePhase: "playing" });
+  });
+
+  function updateRevealButtons(state) {
     if (state.showAnswer) {
       btnRevealAll.disabled = true;
       btnRevealAll.textContent = "Antwort wird angezeigt";
+      btnHideAll.disabled = false;
     } else {
       btnRevealAll.disabled = false;
       btnRevealAll.textContent = "Antwort anzeigen";
+      btnHideAll.disabled = true;
     }
   }
 
   btnRevealAll.addEventListener("click", () => {
     if (!currentState) return;
     gameRef.update({ showAnswer: true });
-    btnRevealAll.disabled = true;
-    btnRevealAll.textContent = "Antwort wird angezeigt";
   });
 
-  /* ========= RICHTIG / FALSCH ========= */
+  btnHideAll.addEventListener("click", () => {
+    if (!currentState) return;
+    gameRef.update({ showAnswer: false });
+  });
+
+  function clearQuestion() {
+    if (!currentState) return;
+    const failed = Array(NUM_TEAMS).fill(false);
+    gameRef.update({
+      currentQuestion: null,
+      buzzOpen: false,
+      activeAnswerTeamIndex: null,
+      questionResult: "none",
+      showAnswer: false,
+      failedTeams: failed
+    });
+  }
+
+  btnClearQuestion.addEventListener("click", clearQuestion);
 
   function resolveCorrect() {
     if (!currentState || !currentState.currentQuestion) return;
@@ -432,26 +438,33 @@
 
     const value = q.value;
     const scores = currentState.scores ? [...currentState.scores] : Array(NUM_TEAMS).fill(0);
-    const teamIndex = (currentState.activeAnswerTeamIndex != null)
-      ? currentState.activeAnswerTeamIndex
-      : (currentState.currentTeamIndex || 0);
 
-    scores[teamIndex] = (scores[teamIndex] || 0) + value;
+    const answerTeamIndex =
+      currentState.activeAnswerTeamIndex != null
+        ? currentState.activeAnswerTeamIndex
+        : currentState.currentTeamIndex || 0;
+
+    scores[answerTeamIndex] = (scores[answerTeamIndex] || 0) + value;
 
     const used = Object.assign({}, currentState.used || {});
     const key = `${catIndex}-${qIndex}`;
     used[key] = true;
 
-    const failedTeams = currentState.failedTeams ? [...currentState.failedTeams] : Array(NUM_TEAMS).fill(false);
+    const failedTeams = currentState.failedTeams
+      ? [...currentState.failedTeams]
+      : Array(NUM_TEAMS).fill(false);
+
+    const nextTeamIndex = (answerTeamIndex + 1) % NUM_TEAMS;
 
     gameRef.update({
       scores,
       used,
       questionResult: "correct",
       buzzOpen: false,
-      activeAnswerTeamIndex: teamIndex,
+      activeAnswerTeamIndex: answerTeamIndex,
       failedTeams,
-      showAnswer: true
+      showAnswer: false,          // wichtig: NICHT automatisch einblenden
+      currentTeamIndex: nextTeamIndex
     });
   }
 
@@ -464,11 +477,14 @@
 
     const value = q.value;
     const scores = currentState.scores ? [...currentState.scores] : Array(NUM_TEAMS).fill(0);
-    const failedTeams = currentState.failedTeams ? [...currentState.failedTeams] : Array(NUM_TEAMS).fill(false);
+    const failedTeams = currentState.failedTeams
+      ? [...currentState.failedTeams]
+      : Array(NUM_TEAMS).fill(false);
 
-    const teamIndex = (currentState.activeAnswerTeamIndex != null)
-      ? currentState.activeAnswerTeamIndex
-      : (currentState.currentTeamIndex || 0);
+    const teamIndex =
+      currentState.activeAnswerTeamIndex != null
+        ? currentState.activeAnswerTeamIndex
+        : currentState.currentTeamIndex || 0;
 
     scores[teamIndex] = (scores[teamIndex] || 0) - value;
     failedTeams[teamIndex] = true;
@@ -490,7 +506,7 @@
       updates.buzzOpen = false;
       updates.activeAnswerTeamIndex = null;
     } else {
-      updates.buzzOpen = true;          // Buzzer freigeben
+      updates.buzzOpen = true;
       updates.activeAnswerTeamIndex = null;
     }
 
@@ -500,21 +516,33 @@
   btnCorrect.addEventListener("click", resolveCorrect);
   btnWrong.addEventListener("click", resolveWrong);
 
-  /* ========= STATE-LISTENER ========= */
+  async function init() {
+    const res = await fetch("gameData.json");
+    gameData = await res.json();
+    NUM_TEAMS = gameData.teams.length;
 
-  gameRef.on("value", (snapshot) => {
-    if (!snapshot.exists()) {
-      setStatus("Keine Daten – zuerst Board öffnen?", false);
-      return;
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
     }
-    const state = snapshot.val();
-    currentState = state;
-    setStatus("Verbunden");
+    const db = firebase.database();
+    gameRef = db.ref("games/" + GAME_ID);
 
-    renderTeamsList(state);
-    updateQuestionFromState(state);
-    updateRevealButton(state);
-  });
+    gameRef.on("value", snapshot => {
+      if (!snapshot.exists()) {
+        setStatus("Keine Daten – Board noch nicht initialisiert?", false);
+        return;
+      }
+      const state = snapshot.val();
+      currentState = state;
+      setStatus("Verbunden");
+      updatePhase(state);
+      renderTeamsList(state);
+      updateQuestionFromState(state);
+      updateRevealButtons(state);
+    });
+  }
+
+  init();
 </script>
 </body>
 </html>
