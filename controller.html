@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>Quizduell Controller</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap">
   <style>
     :root {
       --primary: #a855ff;
@@ -12,12 +13,13 @@
       --text-main: #f9fafb;
       --text-dim: #9ca3af;
       --danger: #f97373;
+      --success: #22c55e;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       min-height: 100vh;
       background: radial-gradient(circle at top, #111827, #020617 80%);
       color: var(--text-main);
@@ -61,21 +63,23 @@
       display: flex;
       gap: 6px;
       margin-top: 4px;
-      font-size: 0.75rem;
-      align-items: center;
     }
 
-    .phase-label {
-      color: var(--text-dim);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .phase-chip {
-      padding: 2px 8px;
+    .phase-pill {
+      padding: 3px 8px;
       border-radius: 999px;
       border: 1px solid rgba(148,163,184,0.7);
-      font-size: 0.75rem;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      background: rgba(15,23,42,0.9);
+    }
+
+    .phase-pill.active {
+      border-color: #22c55e;
+      color: #bbf7d0;
+      background: rgba(22,163,74,0.16);
     }
 
     .question-box {
@@ -98,8 +102,16 @@
       line-height: 1.4;
     }
 
-    .answer-text {
+    .answer-label {
       margin-top: 8px;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.9;
+    }
+
+    .answer-text {
+      margin-top: 4px;
       font-size: 0.95rem;
       font-weight: 600;
       color: #fef9c3;
@@ -157,17 +169,18 @@
       color: var(--text-dim);
     }
 
-    .actions-top {
-      display: flex;
-      gap: 8px;
-      margin-top: 4px;
-    }
-
     .actions {
       margin-top: 6px;
       display: grid;
-      grid-template-columns: repeat(3, minmax(0,1fr));
+      grid-template-columns: repeat(2, minmax(0,1fr));
       gap: 8px;
+    }
+
+    .row {
+      margin-top: 6px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     button {
@@ -186,27 +199,21 @@
       color: #e5e7eb;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease, opacity 0.15s ease;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease;
     }
 
     button.correct { background: linear-gradient(to top, #15803d, #22c55e); }
     button.wrong { background: linear-gradient(to top, #b91c1c, #f97373); }
     button.secondary { background: rgba(15,23,42,0.95); }
 
-    button:hover:not(:disabled) {
+    button:hover {
       transform: translateY(-1px);
       box-shadow: 0 14px 30px rgba(0,0,0,1);
     }
 
-    button:active:not(:disabled) {
+    button:active {
       transform: translateY(1px);
       box-shadow: 0 8px 18px rgba(0,0,0,1);
-    }
-
-    button:disabled {
-      opacity: 0.5;
-      cursor: default;
-      box-shadow: 0 6px 14px rgba(0,0,0,0.8);
     }
 
     .small {
@@ -220,21 +227,22 @@
 <body>
 <div class="card">
   <div class="header">
-    <div>Quiz Controller</div>
+    <div>
+      <div>Quiz Controller</div>
+      <div class="phase-row">
+        <button class="phase-pill" id="phaseLobby">Lobby</button>
+        <button class="phase-pill" id="phasePlay">Spiel</button>
+      </div>
+    </div>
     <div class="status-tag" id="statusTag">Verbinde …</div>
-  </div>
-
-  <div class="phase-row">
-    <span class="phase-label">Phase:</span>
-    <span class="phase-chip" id="phaseChip">–</span>
-    <button class="secondary" id="btnToLobby" style="padding:3px 8px;font-size:0.7rem;">Lobby</button>
-    <button class="secondary" id="btnToPlay" style="padding:3px 8px;font-size:0.7rem;">Start</button>
   </div>
 
   <div class="question-box">
     <div class="question-meta" id="qMeta">Keine Frage aktiv</div>
     <div class="question-text" id="qText">Warte auf Frage vom Board …</div>
-    <div class="answer-text" id="qAnswer"></div>
+
+    <div class="answer-label">Antwort (nur Controller)</div>
+    <div class="answer-text" id="qAnswer">–</div>
 
     <div class="current-team-pill" id="currentTeamPill" style="display:none;">
       <div class="avatar" id="currentTeamAvatar">T1</div>
@@ -245,25 +253,32 @@
   <div class="score-info" id="scoreInfo">Lade Teams …</div>
   <div class="teams-list" id="teamsList"></div>
 
-  <div class="actions-top">
-    <button class="secondary" id="btnRevealAll">Antwort anzeigen</button>
-    <button class="secondary" id="btnHideAll">Antwort verstecken</button>
+  <div class="row">
+    <button class="secondary" id="btnShowAnswer">Antwort anzeigen</button>
+    <button class="secondary" id="btnHideAnswer">Antwort verstecken</button>
   </div>
 
   <div class="actions">
     <button class="correct" id="btnCorrect">Richtig</button>
     <button class="wrong" id="btnWrong">Falsch</button>
-    <button class="secondary" id="btnClearQuestion">Frage schließen</button>
+  </div>
+
+  <div class="row">
+    <button class="secondary" id="btnNextTeam">Nächstes Team</button>
+    <button class="secondary" id="btnOpenBuzz">Buzzer freigeben</button>
   </div>
 
   <div class="small">
-    Tipp: Phase steuern mit „Lobby“ / „Start“.  
-    „Antwort anzeigen“ zeigt die Lösung auf Board & Player – hier siehst du sie immer.
+    • Antwort wird nur auf Board/Player angezeigt, wenn du „Antwort anzeigen“ drückst.  
+    • „Falsch“: Team verliert Punkte & darf nicht mehr buzzern – andere Teams können buzzern.  
+    • „Richtig“: Punkte, Frage wird geschlossen, nächstes Team ist dran.
   </div>
 </div>
 
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyCRCG2C89X9eK_s9Lg44jc3rFRrsIua42Q",
@@ -275,14 +290,16 @@
     appId: "1:278820007596:web:67ab6be9e47be45a04f909"
   };
 
+  const GAME_ID = "quiz-1";
+
   let gameData = null;
   let NUM_TEAMS = 0;
   let currentState = null;
-  const GAME_ID = "quiz-1";
   let gameRef = null;
+  let playersRef = null;
+  let currentPlayers = {};
 
   const statusTag = document.getElementById("statusTag");
-  const phaseChip = document.getElementById("phaseChip");
   const qMeta = document.getElementById("qMeta");
   const qText = document.getElementById("qText");
   const qAnswer = document.getElementById("qAnswer");
@@ -291,14 +308,14 @@
   const currentTeamText = document.getElementById("currentTeamText");
   const scoreInfo = document.getElementById("scoreInfo");
   const teamsList = document.getElementById("teamsList");
-
-  const btnRevealAll = document.getElementById("btnRevealAll");
-  const btnHideAll = document.getElementById("btnHideAll");
+  const btnShowAnswer = document.getElementById("btnShowAnswer");
+  const btnHideAnswer = document.getElementById("btnHideAnswer");
   const btnCorrect = document.getElementById("btnCorrect");
   const btnWrong = document.getElementById("btnWrong");
-  const btnClearQuestion = document.getElementById("btnClearQuestion");
-  const btnToLobby = document.getElementById("btnToLobby");
-  const btnToPlay = document.getElementById("btnToPlay");
+  const btnNextTeam = document.getElementById("btnNextTeam");
+  const btnOpenBuzz = document.getElementById("btnOpenBuzz");
+  const phaseLobby = document.getElementById("phaseLobby");
+  const phasePlay = document.getElementById("phasePlay");
 
   function setStatus(text, ok = true) {
     statusTag.textContent = text;
@@ -306,12 +323,25 @@
     statusTag.style.borderColor = ok ? "rgba(34,197,94,0.6)" : "rgba(248,113,113,0.8)";
   }
 
+  function setPhaseButtons(state) {
+    const phase = state.gamePhase || "lobby";
+    phaseLobby.classList.toggle("active", phase === "lobby");
+    phasePlay.classList.toggle("active", phase === "playing");
+  }
+
+  function playersInTeam(teamIndex) {
+    return Object.entries(currentPlayers)
+      .filter(([id, p]) => p.teamIndex === teamIndex)
+      .map(([id, p]) => ({ id, ...p }));
+  }
+
   function renderTeamsList(state) {
     const scores = state.scores || [];
     const currentTeamIndex = state.currentTeamIndex || 0;
+    const buzzingIndex = state.activeAnswerTeamIndex;
 
     scoreInfo.textContent = scores
-      .map((s, i) => `${gameData.teams[i]?.label || "Team " + (i+1)}: ${s || 0}`)
+      .map((s, i) => `${gameData.teams[i]?.label || `Team ${i+1}`}: ${s || 0}`)
       .join(" • ");
 
     teamsList.innerHTML = "";
@@ -326,23 +356,24 @@
 
     const activeTeam = gameData.teams[currentTeamIndex];
     if (activeTeam) {
-      const name = activeTeam.label || `Team ${currentTeamIndex+1}`;
-      const firstPlayer = (activeTeam.players && activeTeam.players[0]) || name;
-      const initials = firstPlayer.split(" ").map(x => x[0]).join("").substring(0,2).toUpperCase();
+      const players = playersInTeam(currentTeamIndex);
+      const label = activeTeam.label || `Team ${currentTeamIndex+1}`;
+      const displayName = players[0]?.name || label;
+      const initials = displayName.split(" ").map(x => x[0]).join("").substring(0,2).toUpperCase();
       currentTeamAvatar.textContent = initials;
-      currentTeamText.textContent = `${name} ist dran`;
+      currentTeamText.textContent = `${label} ist dran`;
       currentTeamPill.style.display = "inline-flex";
     }
   }
 
-  teamsList.addEventListener("click", e => {
+  teamsList.addEventListener("click", (e) => {
     const t = e.target;
     if (!(t instanceof HTMLElement)) return;
     const idx = t.dataset.index;
-    if (idx == null || !currentState) return;
-    const n = Number(idx);
-    if (Number.isNaN(n)) return;
-    gameRef.update({ currentTeamIndex: n });
+    if (idx == null) return;
+    if (!gameRef || !currentState) return;
+    const newIdx = Number(idx);
+    gameRef.update({ currentTeamIndex: newIdx });
   });
 
   function updateQuestionFromState(state) {
@@ -350,9 +381,10 @@
     if (!cq) {
       qMeta.textContent = "Keine Frage aktiv";
       qText.textContent = "Warte auf Frage vom Board …";
-      qAnswer.textContent = "";
+      qAnswer.textContent = "–";
       return;
     }
+
     const { catIndex, qIndex } = cq;
     const cat = gameData.categories[catIndex];
     const q = cat?.questions[qIndex];
@@ -360,161 +392,132 @@
 
     qMeta.textContent = `${cat.name} • ${q.value}`;
     qText.textContent = q.question;
-    qAnswer.textContent = q.answer || "";
+    qAnswer.textContent = q.answer || "–";
   }
 
-  function updatePhase(state) {
-    if (state.gamePhase === "lobby") {
-      phaseChip.textContent = "Lobby";
-      phaseChip.style.borderColor = "rgba(148,163,184,0.7)";
+  btnShowAnswer.addEventListener("click", () => {
+    if (!gameRef) return;
+    gameRef.update({ showAnswer: true });
+  });
+
+  btnHideAnswer.addEventListener("click", () => {
+    if (!gameRef) return;
+    gameRef.update({ showAnswer: false });
+  });
+
+  function resolveQuestion(correct) {
+    if (!currentState || !currentState.currentQuestion) return;
+    const { catIndex, qIndex } = currentState.currentQuestion;
+    const cat = gameData.categories[catIndex];
+    const q = cat?.questions[qIndex];
+    if (!q) return;
+
+    const value = q.value;
+    const scores = currentState.scores ? [...currentState.scores] : Array(NUM_TEAMS).fill(0);
+
+    const teamIndex = currentState.activeAnswerTeamIndex != null
+      ? currentState.activeAnswerTeamIndex
+      : currentState.currentTeamIndex || 0;
+
+    const failed = { ...(currentState.failedTeams || {}) };
+
+    if (correct) {
+      scores[teamIndex] = (scores[teamIndex] || 0) + value;
+      const used = Object.assign({}, currentState.used || {});
+      const key = `${catIndex}-${qIndex}`;
+      used[key] = true;
+
+      const nextTeam = (currentState.currentTeamIndex + 1) % NUM_TEAMS;
+
+      gameRef.update({
+        scores,
+        used,
+        currentTeamIndex: nextTeam,
+        currentQuestion: null,
+        buzzOpen: false,
+        failedTeams: {},
+        activeAnswerTeamIndex: null,
+        questionResult: "correct",
+        showAnswer: false
+      });
     } else {
-      phaseChip.textContent = "Playing";
-      phaseChip.style.borderColor = "rgba(34,197,94,0.7)";
+      scores[teamIndex] = (scores[teamIndex] || 0) - value;
+      failed[teamIndex] = true;
+
+      // gibt es noch Teams, die nicht failed sind?
+      let anyCanBuzz = false;
+      for (let i = 0; i < NUM_TEAMS; i++) {
+        if (!failed[i]) { anyCanBuzz = true; break; }
+      }
+
+      const update = {
+        scores,
+        failedTeams: failed,
+        activeAnswerTeamIndex: null,
+        questionResult: "wrong"
+      };
+
+      if (anyCanBuzz) {
+        update.buzzOpen = true;
+      } else {
+        // alle falsch -> Frage wird als verwendet markiert & geschlossen
+        const used = Object.assign({}, currentState.used || {});
+        const key = `${catIndex}-${qIndex}`;
+        used[key] = true;
+        update.used = used;
+        update.currentQuestion = null;
+        update.buzzOpen = false;
+        update.failedTeams = {};
+        update.activeAnswerTeamIndex = null;
+        update.showAnswer = false;
+      }
+
+      gameRef.update(update);
     }
   }
 
-  btnToLobby.addEventListener("click", () => {
-    if (!gameRef) return;
-    const failed = Array(NUM_TEAMS).fill(false);
+  btnCorrect.addEventListener("click", () => resolveQuestion(true));
+  btnWrong.addEventListener("click", () => resolveQuestion(false));
+
+  btnNextTeam.addEventListener("click", () => {
+    if (!gameRef || !currentState) return;
+    const nextTeam = (currentState.currentTeamIndex + 1) % NUM_TEAMS;
+    gameRef.update({ currentTeamIndex: nextTeam });
+  });
+
+  btnOpenBuzz.addEventListener("click", () => {
+    if (!gameRef || !currentState) return;
+    if (!currentState.currentQuestion) return;
+    const failed = currentState.failedTeams || {};
+    let anyCanBuzz = false;
+    for (let i = 0; i < NUM_TEAMS; i++) {
+      if (!failed[i]) { anyCanBuzz = true; break; }
+    }
+    if (!anyCanBuzz) return;
+    gameRef.update({
+      buzzOpen: true,
+      activeAnswerTeamIndex: null,
+      questionResult: "none"
+    });
+  });
+
+  phaseLobby.addEventListener("click", () => {
+    if (!gameRef || !currentState) return;
     gameRef.update({
       gamePhase: "lobby",
       currentQuestion: null,
       buzzOpen: false,
+      failedTeams: {},
       activeAnswerTeamIndex: null,
       questionResult: "none",
-      showAnswer: false,
-      failedTeams: failed
+      showAnswer: false
     });
   });
 
-  btnToPlay.addEventListener("click", () => {
-    if (!gameRef) return;
+  phasePlay.addEventListener("click", () => {
+    if (!gameRef || !currentState) return;
     gameRef.update({ gamePhase: "playing" });
   });
-
-  function updateRevealButtons(state) {
-    if (state.showAnswer) {
-      btnRevealAll.disabled = true;
-      btnRevealAll.textContent = "Antwort wird angezeigt";
-      btnHideAll.disabled = false;
-    } else {
-      btnRevealAll.disabled = false;
-      btnRevealAll.textContent = "Antwort anzeigen";
-      btnHideAll.disabled = true;
-    }
-  }
-
-  btnRevealAll.addEventListener("click", () => {
-    if (!currentState) return;
-    gameRef.update({ showAnswer: true });
-  });
-
-  btnHideAll.addEventListener("click", () => {
-    if (!currentState) return;
-    gameRef.update({ showAnswer: false });
-  });
-
-  function clearQuestion() {
-    if (!currentState) return;
-    const failed = Array(NUM_TEAMS).fill(false);
-    gameRef.update({
-      currentQuestion: null,
-      buzzOpen: false,
-      activeAnswerTeamIndex: null,
-      questionResult: "none",
-      showAnswer: false,
-      failedTeams: failed
-    });
-  }
-
-  btnClearQuestion.addEventListener("click", clearQuestion);
-
-  function resolveCorrect() {
-    if (!currentState || !currentState.currentQuestion) return;
-    const { catIndex, qIndex } = currentState.currentQuestion;
-    const cat = gameData.categories[catIndex];
-    const q = cat?.questions[qIndex];
-    if (!q) return;
-
-    const value = q.value;
-    const scores = currentState.scores ? [...currentState.scores] : Array(NUM_TEAMS).fill(0);
-
-    const answerTeamIndex =
-      currentState.activeAnswerTeamIndex != null
-        ? currentState.activeAnswerTeamIndex
-        : currentState.currentTeamIndex || 0;
-
-    scores[answerTeamIndex] = (scores[answerTeamIndex] || 0) + value;
-
-    const used = Object.assign({}, currentState.used || {});
-    const key = `${catIndex}-${qIndex}`;
-    used[key] = true;
-
-    const failedTeams = currentState.failedTeams
-      ? [...currentState.failedTeams]
-      : Array(NUM_TEAMS).fill(false);
-
-    const nextTeamIndex = (answerTeamIndex + 1) % NUM_TEAMS;
-
-    gameRef.update({
-      scores,
-      used,
-      questionResult: "correct",
-      buzzOpen: false,
-      activeAnswerTeamIndex: answerTeamIndex,
-      failedTeams,
-      showAnswer: false,          // wichtig: NICHT automatisch einblenden
-      currentTeamIndex: nextTeamIndex
-    });
-  }
-
-  function resolveWrong() {
-    if (!currentState || !currentState.currentQuestion) return;
-    const { catIndex, qIndex } = currentState.currentQuestion;
-    const cat = gameData.categories[catIndex];
-    const q = cat?.questions[qIndex];
-    if (!q) return;
-
-    const value = q.value;
-    const scores = currentState.scores ? [...currentState.scores] : Array(NUM_TEAMS).fill(0);
-    const failedTeams = currentState.failedTeams
-      ? [...currentState.failedTeams]
-      : Array(NUM_TEAMS).fill(false);
-
-    const teamIndex =
-      currentState.activeAnswerTeamIndex != null
-        ? currentState.activeAnswerTeamIndex
-        : currentState.currentTeamIndex || 0;
-
-    scores[teamIndex] = (scores[teamIndex] || 0) - value;
-    failedTeams[teamIndex] = true;
-
-    const allFailed = failedTeams.every(Boolean);
-
-    const updates = {
-      scores,
-      failedTeams,
-      questionResult: "wrong",
-      showAnswer: false
-    };
-
-    if (allFailed) {
-      const used = Object.assign({}, currentState.used || {});
-      const key = `${catIndex}-${qIndex}`;
-      used[key] = true;
-      updates.used = used;
-      updates.buzzOpen = false;
-      updates.activeAnswerTeamIndex = null;
-    } else {
-      updates.buzzOpen = true;
-      updates.activeAnswerTeamIndex = null;
-    }
-
-    gameRef.update(updates);
-  }
-
-  btnCorrect.addEventListener("click", resolveCorrect);
-  btnWrong.addEventListener("click", resolveWrong);
 
   async function init() {
     const res = await fetch("gameData.json");
@@ -526,19 +529,24 @@
     }
     const db = firebase.database();
     gameRef = db.ref("games/" + GAME_ID);
+    playersRef = db.ref("games/" + GAME_ID + "/players");
+
+    playersRef.on("value", snapshot => {
+      currentPlayers = snapshot.val() || {};
+      if (currentState) renderTeamsList(currentState);
+    });
 
     gameRef.on("value", snapshot => {
       if (!snapshot.exists()) {
-        setStatus("Keine Daten – Board noch nicht initialisiert?", false);
+        setStatus("Keine Daten – Board öffnen, um zu starten.", false);
         return;
       }
       const state = snapshot.val();
       currentState = state;
       setStatus("Verbunden");
-      updatePhase(state);
+      setPhaseButtons(state);
       renderTeamsList(state);
       updateQuestionFromState(state);
-      updateRevealButtons(state);
     });
   }
 
